@@ -46,12 +46,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.events.PacketListener;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerAbstract;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.event.PacketSendEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChunkData;
 
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
@@ -66,24 +66,23 @@ public class PortalListener implements Listener {
 
 	//private Dimensions pl;
 	
-	private PacketListener packetListener1;
-	//private PacketListener packetListener2;
-	
 	public PortalListener(Dimensions pl) {
 		//this.pl = pl;
-		//PacketType.Play.Server.UNLOAD_CHUNK = new PacketType(Protocol.PLAY, Sender.SERVER, 0x22, "MapChunk", "SPacketChunkData");
 		
-		packetListener1 = new PacketAdapter(pl, ListenerPriority.MONITOR, PacketType.Play.Server.MAP_CHUNK) {
+		PacketEvents.getAPI().getEventManager().registerListener(new PacketListenerAbstract(PacketListenerPriority.MONITOR) {
 			@Override
-			public void onPacketSending(PacketEvent event) {
-				if (event.getPacketType() == PacketType.Play.Server.MAP_CHUNK) {
-					for (CompletePortal complete : Dimensions.getCompletePortalManager().getCompletePortals(event.getPlayer().getWorld(), event.getPacket().getIntegers().read(0), event.getPacket().getIntegers().read(1))) {
-						complete.fill(event.getPlayer());
+			public void onPacketSend(PacketSendEvent event) {
+				if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
+					WrapperPlayServerChunkData wrapper = new WrapperPlayServerChunkData(event);
+					Player player = event.getPlayer();
+					if (player != null) {
+						for (CompletePortal complete : Dimensions.getCompletePortalManager().getCompletePortals(player.getWorld(), wrapper.getColumn().getX(), wrapper.getColumn().getZ())) {
+							complete.fill(player);
+						}
 					}
-					
 				}
 			}
-		};
+		});
 		
 		if (DimensionsSettings.enableEntitiesTeleport) {
 			Bukkit.getScheduler().scheduleSyncRepeatingTask(pl, new Runnable() {
@@ -96,23 +95,6 @@ public class PortalListener implements Listener {
 				}
 			}, 0, DimensionsSettings.updateEveryTick);
 		}
-		/*packetListener2 = new PacketAdapter(pl, ListenerPriority.NORMAL, PacketType.Play.Server.UNLOAD_CHUNK) {
-			@Override
-			public void onPacketSending(PacketEvent event) {
-				if (event.getPacketType() == PacketType.Play.Server.UNLOAD_CHUNK) {
-
-					System.out.println("TTtttt");
-					for (CompletePortal complete : Dimensions.getCompletePortalManager().getCompletePortals(event.getPacket().getIntegers().read(0), event.getPacket().getIntegers().read(1))) {
-						System.out.println(complete.getWorld()+", "+complete.getCenter());
-						complete.destroy(event.getPlayer());
-					}
-				}
-			}
-		};*/
-		
-
-		ProtocolLibrary.getProtocolManager().addPacketListener(packetListener1);
-		//ProtocolLibrary.getProtocolManager().addPacketListener(packetListener2);
 		
 		Bukkit.getPluginManager().registerEvents(this, pl);
 	}

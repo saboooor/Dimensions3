@@ -19,8 +19,6 @@ import org.bukkit.block.data.Orientable;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 
-import com.comphenix.protocol.utility.MinecraftReflection;
-
 import me.xxastaspastaxx.dimensions.AxisOrFace;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
@@ -36,28 +34,53 @@ public class CustomPortalLoader {
 	public static final File PORTALS_DIRECTORY = new File(DIRECTORY_PATH);
 	public static final String CONFIG_VERSION = "3.0.1";
 	
-	private static Class<?> blockClass;
 	private static Class<?> craftBlockDataClass;
-	private static Method getCombinedIdMethod;
 	private static Method getStateMethod;
-	
+	private static Class<?> blockClass;
+	private static Method getCombinedIdMethod;
+
 	static {
 		try {
-			blockClass = MinecraftReflection.getBlockClass();
-			craftBlockDataClass = MinecraftReflection.getCraftBukkitClass("block.data.CraftBlockData");
+			try {
+				craftBlockDataClass = Class.forName("org.bukkit.craftbukkit.block.data.CraftBlockData");
+			} catch (ClassNotFoundException e) {
+				String version = org.bukkit.Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+				craftBlockDataClass = Class.forName("org.bukkit.craftbukkit." + version + ".block.data.CraftBlockData");
+			}
+			getStateMethod = craftBlockDataClass.getMethod("getState");
 
-			Class<?> iBlockDataClass = MinecraftReflection.getIBlockDataClass();
-			if (blockClass != null && iBlockDataClass != null) {
-				for (String methodName : new String[]{"i", "getCombinedId", "j", "m"}) {
-					try {
-						getCombinedIdMethod = blockClass.getMethod(methodName, iBlockDataClass);
-						break;
-					} catch (NoSuchMethodException ignored) {}
+			try {
+				blockClass = Class.forName("net.minecraft.world.level.block.Block");
+			} catch (ClassNotFoundException e) {
+				try {
+					blockClass = Class.forName("net.minecraft.world.item.Block");
+				} catch (ClassNotFoundException e2) {
+					String version = org.bukkit.Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+					blockClass = Class.forName("net.minecraft.server." + version + ".Block");
 				}
 			}
 
-			if (craftBlockDataClass != null) {
-				getStateMethod = craftBlockDataClass.getMethod("getState");
+			Class<?> blockStateClass;
+			try {
+				blockStateClass = Class.forName("net.minecraft.world.level.block.state.BlockState");
+			} catch (ClassNotFoundException e) {
+				try {
+					blockStateClass = Class.forName("net.minecraft.world.level.block.state.IBlockData");
+				} catch (ClassNotFoundException e2) {
+					try {
+						String version = org.bukkit.Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+						blockStateClass = Class.forName("net.minecraft.server." + version + ".IBlockData");
+					} catch (ClassNotFoundException e3) {
+						blockStateClass = getStateMethod.getReturnType();
+					}
+				}
+			}
+
+			for (String methodName : new String[]{"getCombinedId", "i", "j", "m"}) {
+				try {
+					getCombinedIdMethod = blockClass.getMethod(methodName, blockStateClass);
+					break;
+				} catch (NoSuchMethodException ignored) {}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -199,10 +222,10 @@ public class CustomPortalLoader {
 		if (insideMaterial.isSolid() || insideMaterial==Material.NETHER_PORTAL || insideMaterial==Material.END_GATEWAY) {
 			if (getStateMethod != null && getCombinedIdMethod != null) try {
 				Object nmsBlockData = getStateMethod.invoke(insideBlockData[0]);
-				combinedId[0] = (int) getCombinedIdMethod.invoke(blockClass,nmsBlockData);
+				combinedId[0] = (int) getCombinedIdMethod.invoke(null, nmsBlockData);
 				
 				nmsBlockData = getStateMethod.invoke(insideBlockData[1]);
-				combinedId[1] = (int) getCombinedIdMethod.invoke(blockClass,nmsBlockData);
+				combinedId[1] = (int) getCombinedIdMethod.invoke(null, nmsBlockData);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}

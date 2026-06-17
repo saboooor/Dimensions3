@@ -4,7 +4,7 @@ author: astaspasta
 description: Allow players to easily build portals to another world
 api-version: 26.1
 version: 3.3.0
-depend: [ProtocolLib]
+depend: [packetevents]
 softdepend: [BetterPortals, Vault, WorldEdit, WorldGuard, BentoBox, IridiumSkyblock, SuperiorSkyblock2, Oraxen, ItemsAdder, CustomItems, ModelEngine, LightAPI]
 commands:
    dimensions:
