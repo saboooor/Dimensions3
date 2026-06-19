@@ -2,7 +2,8 @@ package me.xxastaspastaxx.dimensions.addons.patreoncosmetics;
 
 import me.xxastaspastaxx.dimensions.commands.DimensionsCommand;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -30,7 +31,9 @@ public class PatreonDisableCommand extends DimensionsCommand {
     main.getUsers().remove(((Player) sender).getUniqueId());
     sender.sendMessage(
         DimensionsSettings.getPrefix()
-            + ChatColor.GREEN
-            + "Succesfully disabled portal effects for the current session.");
+            .append(
+                Component.text(
+                    "Succesfully disabled portal effects for the current session.",
+                    NamedTextColor.GREEN)));
   }
 }

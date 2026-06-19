@@ -7,8 +7,9 @@ import me.xxastaspastaxx.dimensions.builder.CreatePortalInstance;
 import me.xxastaspastaxx.dimensions.gui.CreatePortalGUI;
 import me.xxastaspastaxx.dimensions.gui.DimensionsGUIType;
 import me.xxastaspastaxx.dimensions.gui.DimensionsGUIUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +27,9 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
 
   @Override
   public Inventory createInventory() {
-    Inventory inv = Bukkit.createInventory(p, 54, "{{portal_displayName}}");
+    Inventory inv =
+        Bukkit.createInventory(
+            p, 54, Component.text(instance.selectedPortal.getDisplayName(), NamedTextColor.GOLD));
 
     for (int i = 0; i < 6; i++) {
       inv.setItem(4 + (9 * i), DimensionsGUIUtils.BLACK_GLASS);
@@ -36,12 +39,17 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
 
     // Navigation
     inv.setItem(
-        51, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, ChatColor.GRAY + "Previous page"));
+        51,
+        DimensionsGUIUtils.createItem(
+            Material.BIRCH_BOAT, Component.text("Previous page", NamedTextColor.GRAY)));
     inv.setItem(
-        52, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, ChatColor.GRAY + "Next page"));
+        52,
+        DimensionsGUIUtils.createItem(
+            Material.BIRCH_BOAT, Component.text("Next page", NamedTextColor.GRAY)));
 
     ItemStack closeItemStack =
-        DimensionsGUIUtils.createItem(Material.GREEN_STAINED_GLASS_PANE, ChatColor.GREEN + "Close");
+        DimensionsGUIUtils.createItem(
+            Material.GREEN_STAINED_GLASS_PANE, Component.text("Close", NamedTextColor.GREEN));
     inv.setItem(45, closeItemStack);
     inv.setItem(46, closeItemStack);
     inv.setItem(47, closeItemStack);
@@ -59,7 +67,9 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
     ItemStack[] contents = inventory.getContents();
     inventory =
         Bukkit.createInventory(
-            p, inventory.getSize(), ChatColor.WHITE + instance.selectedPortal.getDisplayName());
+            p,
+            inventory.getSize(),
+            Component.text(instance.selectedPortal.getDisplayName(), NamedTextColor.GOLD));
     inventory.setContents(contents);
 
     for (int i = 0; i < MAX_ITEMS_PER_PAGE; i++) {
@@ -75,8 +85,9 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
     ItemStack portalBlock =
         DimensionsGUIUtils.createItem(
             instance.selectedPortal.getOutsideMaterial(),
-            ChatColor.WHITE + instance.selectedPortal.getOutsideMaterial().name(),
-            new String[] {ChatColor.GRAY + "Build using this block."});
+            Component.text(
+                instance.selectedPortal.getOutsideMaterial().name(), NamedTextColor.WHITE),
+            java.util.List.of(Component.text("Build using this block.", NamedTextColor.GRAY)));
     for (int i = 0; i < 4; i++) {
       inventory.setItem(i, portalBlock);
       inventory.setItem(36 + i, portalBlock);
@@ -91,18 +102,21 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
           29,
           DimensionsGUIUtils.createItem(
               Material.BARRIER,
-              ChatColor.WHITE + "{{customItem}}",
-              new String[] {
-                ChatColor.GRAY + "This should have been replaced by the responsible addon",
-                ChatColor.GRAY + "Please make sure everything is setup correctly"
-              }));
+              Component.text("{{customItem}}", NamedTextColor.WHITE),
+              java.util.List.of(
+                  Component.text(
+                      "This should have been replaced by the responsible addon",
+                      NamedTextColor.GRAY),
+                  Component.text(
+                      "Please make sure everything is setup correctly", NamedTextColor.GRAY))));
     } else {
       inventory.setItem(
           29,
           DimensionsGUIUtils.createItem(
               instance.selectedPortal.getLighterMaterial(),
-              ChatColor.WHITE + instance.selectedPortal.getLighterMaterial().name(),
-              new String[] {ChatColor.GRAY + "Ignite using this item."}));
+              Component.text(
+                  instance.selectedPortal.getLighterMaterial().name(), NamedTextColor.WHITE),
+              java.util.List.of(Component.text("Ignite using this item.", NamedTextColor.GRAY))));
     }
 
     inventory.getItem(51).setType(page == 0 ? Material.MINECART : Material.CHEST_MINECART);

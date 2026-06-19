@@ -220,7 +220,11 @@ public class DimensionsPatreonCosmetics implements Listener {
                   BufferedReader in =
                       new BufferedReader(
                           new InputStreamReader(
-                              URI.create("https://astaspasta.alwaysdata.net/api/userData.php?ingameCosmetics=" + uuid).toURL().openStream(),
+                              URI.create(
+                                      "https://astaspasta.alwaysdata.net/api/userData.php?ingameCosmetics="
+                                          + uuid)
+                                  .toURL()
+                                  .openStream(),
                               "UTF-8"));
 
                   Gson gson = new Gson();

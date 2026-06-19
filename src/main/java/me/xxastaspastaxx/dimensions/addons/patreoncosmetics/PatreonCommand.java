@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import me.xxastaspastaxx.dimensions.commands.DimensionsCommand;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -35,45 +37,47 @@ public class PatreonCommand extends DimensionsCommand {
     if (args.length >= 2) {
       Player p2;
       if ((p2 = Bukkit.getPlayer(args[1])) != null) {
-        p.sendMessage(DimensionsSettings.getPrefix() + getStatusString(p2));
+        p.sendMessage(DimensionsSettings.getPrefix().append(getStatusString(p2)));
       } else {
         p.sendMessage(
-            DimensionsSettings.getPrefix() + ChatColor.RED + "Could not find player " + args[1]);
+            DimensionsSettings.getPrefix()
+                .append(Component.text("Could not find player " + args[1], NamedTextColor.RED)));
       }
     } else {
-      p.sendMessage(DimensionsSettings.getPrefix() + getStatusString(p));
+      p.sendMessage(DimensionsSettings.getPrefix().append(getStatusString(p)));
     }
   }
 
-  public String getStatusString(Player p) {
-    String res =
-        ChatColor.GRAY
-            + "Player: "
-            + ChatColor.GREEN
-            + p.getName()
-            + "\n"
-            + ChatColor.GRAY
-            + "UUID: "
-            + ChatColor.GREEN
-            + p.getUniqueId().toString()
-            + "\n";
-    res +=
-        ChatColor.GRAY
-            + "Supporter: "
-            + (main.getUsers().containsKey(p.getUniqueId())
-                ? ChatColor.GREEN + "true"
-                : ChatColor.RED + "false")
-            + "\n";
-    res += ChatColor.GRAY + "Effects:\n";
+  public Component getStatusString(Player p) {
+    TextComponent.Builder builder =
+        Component.text()
+            .append(Component.text("Player: ", NamedTextColor.GRAY))
+            .append(Component.text(p.getName(), NamedTextColor.GREEN))
+            .append(Component.newline())
+            .append(Component.text("UUID: ", NamedTextColor.GRAY))
+            .append(Component.text(p.getUniqueId().toString(), NamedTextColor.GREEN))
+            .append(Component.newline())
+            .append(Component.text("Supporter: ", NamedTextColor.GRAY));
+
+    if (main.getUsers().containsKey(p.getUniqueId())) {
+      builder.append(Component.text("true", NamedTextColor.GREEN));
+    } else {
+      builder.append(Component.text("false", NamedTextColor.RED));
+    }
+    builder.append(Component.newline());
+    builder.append(Component.text("Effects:\n", NamedTextColor.GRAY));
+
     if (main.getUsers().containsKey(p.getUniqueId())) {
       for (String s : main.getUsers().get(p.getUniqueId()).keySet()) {
-        res +=
-            "  " + ChatColor.GREEN + s + ": " + main.getUsers().get(p.getUniqueId()).get(s) + "\n";
+        builder.append(
+            Component.text(
+                "  " + s + ": " + main.getUsers().get(p.getUniqueId()).get(s) + "\n",
+                NamedTextColor.GREEN));
       }
     } else {
-      res += "  " + ChatColor.RED + "No active effects";
+      builder.append(Component.text("  No active effects", NamedTextColor.RED));
     }
-    return res;
+    return builder.build();
   }
 
   @Override

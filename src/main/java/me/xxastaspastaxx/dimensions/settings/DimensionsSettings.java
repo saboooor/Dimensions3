@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortalDestroyCause;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -87,7 +88,7 @@ public class DimensionsSettings {
   /** Check for entities inside the portal every set ticks */
   public static long portalInsideDelay = 1;
 
-  public static String prefix = "&7[&cDimensions&7] &r";
+  public static String prefix = "<gray>[<red>Dimensions<gray>] <reset>";
 
   /** List of configuration per world for easier access + override */
   private static HashMap<String, WorldConfiguration> worldConfigurations =
@@ -171,8 +172,8 @@ public class DimensionsSettings {
     }
   }
 
-  public static String getPrefix() {
-    return ChatColor.translateAlternateColorCodes('&', DimensionsSettings.prefix);
+  public static Component getPrefix() {
+    return MiniMessage.miniMessage().deserialize(prefix);
   }
 
   /** Get the ./plugins/Dimensions/config.yml instance of FileConfiguration */

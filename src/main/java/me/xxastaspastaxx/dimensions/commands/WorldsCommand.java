@@ -1,7 +1,8 @@
 package me.xxastaspastaxx.dimensions.commands;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
@@ -19,9 +20,11 @@ public class WorldsCommand extends DimensionsCommand {
 
   @Override
   public void execute(CommandSender sender, String[] args) {
-    sender.sendMessage(ChatColor.GRAY + "Available worlds: ");
+    sender.sendMessage(Component.text("Available worlds: ", NamedTextColor.GRAY));
     for (World world : Bukkit.getWorlds()) {
-      sender.sendMessage(ChatColor.GRAY + "- " + ChatColor.RED + world.getName());
+      sender.sendMessage(
+          Component.text("- ", NamedTextColor.GRAY)
+              .append(Component.text(world.getName(), NamedTextColor.RED)));
     }
   }
 }

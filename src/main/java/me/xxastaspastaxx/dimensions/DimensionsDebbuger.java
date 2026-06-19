@@ -3,6 +3,7 @@ package me.xxastaspastaxx.dimensions;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 
 /**
@@ -42,14 +43,15 @@ public class DimensionsDebbuger {
    * @param str The message to print
    */
   public void print(Object... str) {
-    if (DimensionsSettings.debugLevel >= level)
+    if (DimensionsSettings.debugLevel >= level) {
+      String message =
+          String.join(
+              ", ",
+              Arrays.asList(str).stream()
+                  .map((s) -> s == null ? "null" : s.toString())
+                  .collect(Collectors.toList()));
       Bukkit.getConsoleSender()
-          .sendMessage(
-              DimensionsSettings.getPrefix()
-                  + String.join(
-                      ", ",
-                      Arrays.asList(str).stream()
-                          .map((s) -> s == null ? "null" : s.toString())
-                          .collect(Collectors.toList())));
+          .sendMessage(DimensionsSettings.getPrefix().append(Component.text(message)));
+    }
   }
 }

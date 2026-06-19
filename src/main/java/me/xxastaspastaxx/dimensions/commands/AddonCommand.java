@@ -1,11 +1,12 @@
 package me.xxastaspastaxx.dimensions.commands;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,30 +39,30 @@ public class AddonCommand extends DimensionsCommand implements Listener {
       boolean adminCommand) {
     super(command, args, aliases, description, permission, adminCommand);
 
-    mainGUI = Bukkit.createInventory(null, 9, ChatColor.RED + "Dimensions addons manager");
+    mainGUI =
+        Bukkit.createInventory(
+            null, 9, Component.text("Dimensions addons manager", NamedTextColor.GREEN));
 
     installedAddonsItemStack = new ItemStack(Material.COMMAND_BLOCK, 1);
     ItemMeta installedAddonsItemStackMeta = installedAddonsItemStack.getItemMeta();
-    installedAddonsItemStackMeta.setDisplayName(ChatColor.GREEN + "Installed addons");
-    installedAddonsItemStackMeta.setLore(
-        new ArrayList<String>(
-            Arrays.asList(
-                new String[] {
-                  ChatColor.GRAY + "There are currently",
-                  ChatColor.GREEN.toString()
-                      + Dimensions.getAddonManager().getAddons().size()
-                      + ChatColor.GRAY
-                      + " addons installed"
-                })));
+    installedAddonsItemStackMeta.displayName(
+        Component.text("Installed addons", NamedTextColor.GREEN));
+    installedAddonsItemStackMeta.lore(
+        Arrays.asList(
+            new Component[] {
+              Component.text("There are currently", NamedTextColor.GRAY),
+              Component.text(Dimensions.getAddonManager().getAddons().size(), NamedTextColor.GREEN)
+                  .append(Component.text(" addons installed", NamedTextColor.GRAY))
+            }));
     installedAddonsItemStack.setItemMeta(installedAddonsItemStackMeta);
     mainGUI.addItem(installedAddonsItemStack);
 
     installAddonsItemStack = new ItemStack(Material.COMMAND_BLOCK_MINECART, 1);
     ItemMeta installAddonsItemStackkMeta = installAddonsItemStack.getItemMeta();
-    installAddonsItemStackkMeta.setDisplayName(ChatColor.GREEN + "Browse addons");
-    installAddonsItemStackkMeta.setLore(
-        new ArrayList<String>(
-            Arrays.asList(new String[] {ChatColor.GRAY + "Currently unavailable"})));
+    installAddonsItemStackkMeta.displayName(Component.text("Browse addons", NamedTextColor.GREEN));
+    installAddonsItemStackkMeta.lore(
+        Arrays.asList(
+            new Component[] {Component.text("Currently unavailable", NamedTextColor.GRAY)}));
     installAddonsItemStack.setItemMeta(installAddonsItemStackkMeta);
     mainGUI.addItem(installAddonsItemStack);
 
@@ -69,51 +70,53 @@ public class AddonCommand extends DimensionsCommand implements Listener {
         Bukkit.createInventory(
             null,
             (int) Math.ceil(Dimensions.getAddonManager().getAddons().size() / 9f) * 9,
-            ChatColor.RED + "Dimensions addons manager");
+            Component.text("Dimensions addons manager", NamedTextColor.GREEN));
 
     for (DimensionsAddon addon : Dimensions.getAddonManager().getAddons()) {
       ItemStack item = new ItemStack(Material.GREEN_STAINED_GLASS, 1);
       ItemMeta itemMeta = item.getItemMeta();
-      itemMeta.setDisplayName(ChatColor.GREEN + addon.getName());
-      itemMeta.setLore(
-          new ArrayList<String>(
-              Arrays.asList(
-                  new String[] {
-                    ChatColor.GRAY + addon.getDescription(),
-                    ChatColor.GRAY + "v" + addon.getVersion(),
-                    ChatColor.GRAY + "Click for more options"
-                  })));
+      itemMeta.displayName(Component.text(addon.getName(), NamedTextColor.GREEN));
+      itemMeta.lore(
+          Arrays.asList(
+              new Component[] {
+                Component.text(addon.getDescription(), NamedTextColor.GRAY),
+                Component.text("v" + addon.getVersion(), NamedTextColor.GRAY),
+                Component.text("Click for more options", NamedTextColor.GRAY)
+              }));
       item.setItemMeta(itemMeta);
 
       installedAddonsGUI.addItem(item);
     }
 
-    manageAddonGUI = Bukkit.createInventory(null, 9, ChatColor.RED + "Dimensions addons manager");
+    manageAddonGUI =
+        Bukkit.createInventory(
+            null, 9, Component.text("Dimensions addons manager", NamedTextColor.RED));
 
     addonInfoItemStack = new ItemStack(Material.COMMAND_BLOCK, 1);
     ItemMeta addonInfoItemStackMeta = addonInfoItemStack.getItemMeta();
-    addonInfoItemStackMeta.setDisplayName(ChatColor.DARK_RED + "Something went wrong");
-    addonInfoItemStackMeta.setLore(
-        new ArrayList<String>(
-            Arrays.asList(new String[] {ChatColor.GRAY + "Something went wrong"})));
+    addonInfoItemStackMeta.displayName(
+        Component.text("Something went wrong", NamedTextColor.DARK_RED));
+    addonInfoItemStackMeta.lore(
+        Arrays.asList(
+            new Component[] {Component.text("Something went wrong", NamedTextColor.GRAY)}));
     addonInfoItemStack.setItemMeta(addonInfoItemStackMeta);
     manageAddonGUI.addItem(addonInfoItemStack);
 
     updateAddonItemStack = new ItemStack(Material.GREEN_BANNER, 1);
     ItemMeta updateAddonItemStackMeta = updateAddonItemStack.getItemMeta();
-    updateAddonItemStackMeta.setDisplayName(ChatColor.RED + "Update addon");
-    updateAddonItemStackMeta.setLore(
-        new ArrayList<String>(
-            Arrays.asList(new String[] {ChatColor.GRAY + "Click to update the addon"})));
+    updateAddonItemStackMeta.displayName(Component.text("Update addon", NamedTextColor.GREEN));
+    updateAddonItemStackMeta.lore(
+        Arrays.asList(
+            new Component[] {Component.text("Click to update the addon", NamedTextColor.GRAY)}));
     updateAddonItemStack.setItemMeta(updateAddonItemStackMeta);
     manageAddonGUI.addItem(updateAddonItemStack);
 
     unloadAddonItemStack = new ItemStack(Material.RED_BANNER, 1);
     ItemMeta unloadAddonItemStackMeta = unloadAddonItemStack.getItemMeta();
-    unloadAddonItemStackMeta.setDisplayName(ChatColor.RED + "Unload addon");
-    unloadAddonItemStackMeta.setLore(
-        new ArrayList<String>(
-            Arrays.asList(new String[] {ChatColor.GRAY + "Click to unload the addon"})));
+    unloadAddonItemStackMeta.displayName(Component.text("Unload addon", NamedTextColor.RED));
+    unloadAddonItemStackMeta.lore(
+        Arrays.asList(
+            new Component[] {Component.text("Click to unload the addon", NamedTextColor.GRAY)}));
     unloadAddonItemStack.setItemMeta(unloadAddonItemStackMeta);
     manageAddonGUI.addItem(unloadAddonItemStack);
 
@@ -126,7 +129,8 @@ public class AddonCommand extends DimensionsCommand implements Listener {
     if (sender instanceof Player) {
       ((Player) sender).openInventory(mainGUI);
     } else {
-      sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
+      sender.sendMessage(
+          Component.text("You must be a player to use this command.", NamedTextColor.RED));
     }
   }
 
@@ -145,52 +149,58 @@ public class AddonCommand extends DimensionsCommand implements Listener {
       } else if (e.getCurrentItem().isSimilar(installAddonsItemStack)) {
         e.getWhoClicked()
             .sendMessage(
-                ChatColor.GRAY + "This feature is not ready yet. It will be added in the future.");
+                Component.text(
+                    "This feature is not ready yet. It will be added in the future.",
+                    NamedTextColor.GRAY));
         e.setCancelled(true);
       } else if (e.getClickedInventory().equals(installedAddonsGUI)) {
         DimensionsAddon addon =
             Dimensions.getAddonManager()
-                .getAddonByName(e.getCurrentItem().getItemMeta().getDisplayName());
+                .getAddonByName(
+                    PlainTextComponentSerializer.plainText()
+                        .serialize(e.getCurrentItem().getItemMeta().displayName()));
         if (addon == null) {
           e.getWhoClicked()
-              .sendMessage(ChatColor.RED + "There was a problem while trying to access the addon");
+              .sendMessage(
+                  Component.text(
+                      "There was a problem while trying to access the addon", NamedTextColor.RED));
         } else {
-          Inventory guiClone = Bukkit.createInventory(e.getWhoClicked(), 9, addon.getName());
+          Inventory guiClone =
+              Bukkit.createInventory(e.getWhoClicked(), 9, Component.text(addon.getName()));
           guiClone.setContents(manageAddonGUI.getContents());
 
           ItemMeta addonInfoItemStackMeta = addonInfoItemStack.getItemMeta();
-          addonInfoItemStackMeta.setDisplayName(ChatColor.RED + addon.getName());
-          addonInfoItemStackMeta.setLore(
-              new ArrayList<String>(
-                  Arrays.asList(
-                      new String[] {
-                        ChatColor.GRAY + addon.getDescription(),
-                        ChatColor.GRAY + "v" + addon.getVersion()
-                      })));
+          addonInfoItemStackMeta.displayName(Component.text(addon.getName(), NamedTextColor.RED));
+          addonInfoItemStackMeta.lore(
+              Arrays.asList(
+                  new Component[] {
+                    Component.text(addon.getDescription(), NamedTextColor.GRAY),
+                    Component.text("v" + addon.getVersion(), NamedTextColor.GRAY)
+                  }));
           guiClone.getItem(0).setItemMeta(addonInfoItemStackMeta);
           e.getWhoClicked().openInventory(guiClone);
         }
         e.setCancelled(true);
-      } else if (e.getView().getTitle() != null) {
-        DimensionsAddon addon = Dimensions.getAddonManager().getAddonByName(e.getView().getTitle());
+      } else if (e.getView().title() != null) {
+        String titleStr = PlainTextComponentSerializer.plainText().serialize(e.getView().title());
+        DimensionsAddon addon = Dimensions.getAddonManager().getAddonByName(titleStr);
         if (addon != null) {
           if (e.getCurrentItem().isSimilar(updateAddonItemStack)) {
             e.getWhoClicked()
                 .sendMessage(
-                    ChatColor.GREEN
-                        + addon.getName()
-                        + " v"
-                        + addon.getVersion()
-                        + " will be updated after a restart");
+                    Component.text(
+                        addon.getName()
+                            + " v"
+                            + addon.getVersion()
+                            + " will be updated after a restart",
+                        NamedTextColor.GREEN));
           } else if (e.getCurrentItem().isSimilar(unloadAddonItemStack)) {
             Dimensions.getAddonManager().unload(addon);
             e.getWhoClicked()
                 .sendMessage(
-                    ChatColor.GREEN
-                        + addon.getName()
-                        + " v"
-                        + addon.getVersion()
-                        + " has been unloaded");
+                    Component.text(
+                        addon.getName() + " v" + addon.getVersion() + " has been unloaded",
+                        NamedTextColor.GREEN));
             e.getWhoClicked().openInventory(installedAddonsGUI);
           } else if (e.getSlot() == 0) e.getWhoClicked().openInventory(installedAddonsGUI);
 

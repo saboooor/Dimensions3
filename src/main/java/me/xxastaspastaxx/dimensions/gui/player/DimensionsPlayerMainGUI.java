@@ -7,8 +7,9 @@ import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import me.xxastaspastaxx.dimensions.gui.CreatePortalGUI;
 import me.xxastaspastaxx.dimensions.gui.DimensionsGUIType;
 import me.xxastaspastaxx.dimensions.gui.DimensionsGUIUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +27,7 @@ public class DimensionsPlayerMainGUI extends CreatePortalGUI {
 
   @Override
   public Inventory createInventory() {
-    Inventory inv = Bukkit.createInventory(p, 54, ChatColor.RED + "Dimensions");
+    Inventory inv = Bukkit.createInventory(p, 54, Component.text("Dimensions", NamedTextColor.RED));
 
     for (int i = 0; i < 9; i++) {
       inv.setItem(45 + i, DimensionsGUIUtils.BLACK_GLASS);
@@ -34,12 +35,17 @@ public class DimensionsPlayerMainGUI extends CreatePortalGUI {
 
     // Navigation
     inv.setItem(
-        48, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, ChatColor.GRAY + "Previous page"));
+        48,
+        DimensionsGUIUtils.createItem(
+            Material.BIRCH_BOAT, Component.text("Previous page", NamedTextColor.GRAY)));
     inv.setItem(
         49,
-        DimensionsGUIUtils.createItem(Material.RED_STAINED_GLASS_PANE, ChatColor.RED + "Close"));
+        DimensionsGUIUtils.createItem(
+            Material.RED_STAINED_GLASS_PANE, Component.text("Close", NamedTextColor.RED)));
     inv.setItem(
-        50, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, ChatColor.GRAY + "Next page"));
+        50,
+        DimensionsGUIUtils.createItem(
+            Material.BIRCH_BOAT, Component.text("Next page", NamedTextColor.GRAY)));
 
     return inv;
   }
@@ -55,7 +61,8 @@ public class DimensionsPlayerMainGUI extends CreatePortalGUI {
         Bukkit.createInventory(
             p,
             inventory.getSize(),
-            ChatColor.GOLD + "Portals. Page " + (page + 1) + "/" + (maxPage + 1));
+            Component.text(
+                "Portals. Page " + (page + 1) + "/" + (maxPage + 1), NamedTextColor.GOLD));
     inventory.setContents(contents);
 
     for (int i = 0; i < MAX_ITEMS_PER_PAGE; i++) {

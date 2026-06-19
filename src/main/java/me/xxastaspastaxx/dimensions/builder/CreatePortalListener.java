@@ -42,18 +42,21 @@ public class CreatePortalListener implements Listener {
   	if (e.getItem()!=null && e.getItem().isSimilar(a.getSelection().item)) {
   		BlockSelection selection = a.getSelection();
 
-  		if (e.getAction()==Action.LEFT_CLICK_BLOCK) {
-  			selection.setOne(e.getClickedBlock());
-  			e.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "] "Selected point 1");
-  			selection.updateItem(e.getItem());
-  			e.setCancelled(true);
-  		} else if (e.getAction()==Action.RIGHT_CLICK_BLOCK) {
-  			selection.setTwo(e.getClickedBlock());
-  			e.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "] "Selected point 2");
-  			selection.updateItem(e.getItem());
-  			e.setCancelled(true);
-  		}
-  	}
+        if (e.getAction()==Action.LEFT_CLICK_BLOCK) {
+            selection.setOne(e.getClickedBlock());
+            e.getPlayer().sendMessage(Component.text("[", NamedTextColor.GRAY)
+                .append(Component.text("BuildableMobs", NamedTextColor.RED))
+                .append(Component.text("] Selected point 1", NamedTextColor.GRAY)));
+            selection.updateItem(e.getItem());
+            e.setCancelled(true);
+        } else if (e.getAction()==Action.RIGHT_CLICK_BLOCK) {
+            selection.setTwo(e.getClickedBlock());
+            e.getPlayer().sendMessage(Component.text("[", NamedTextColor.GRAY)
+                .append(Component.text("BuildableMobs", NamedTextColor.RED))
+                .append(Component.text("] Selected point 2", NamedTextColor.GRAY)));
+            selection.updateItem(e.getItem());
+            e.setCancelled(true);
+        }	}
   }*/
 
 }

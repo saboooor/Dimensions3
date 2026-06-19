@@ -1,7 +1,9 @@
 package me.xxastaspastaxx.dimensions.gui;
 
+import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.builder.CreatePortalInstance;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -58,7 +60,7 @@ public abstract class CreatePortalGUI {
     return inventory.getItem(i);
   }
 
-  public void updateItem(int index, String title, String[] lore, int toggleGlow) {
+  public void updateItem(int index, Component title, List<Component> lore, int toggleGlow) {
     DimensionsGUIUtils.updateItem(inventory, index, title, lore, toggleGlow);
   }
 }

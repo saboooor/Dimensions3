@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -90,8 +91,10 @@ public class DimensionsCommandManager implements CommandExecutor, TabCompleter {
           && !sender.hasPermission(command.getPermission())) {
         sender.sendMessage(
             DimensionsSettings.getPrefix()
-                + ChatColor.DARK_RED
-                + "You do not have permission to execute this command");
+                .append(
+                    Component.text(
+                        "You do not have permission to execute this command",
+                        NamedTextColor.DARK_RED)));
         return true;
       }
       try {

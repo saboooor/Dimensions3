@@ -2,7 +2,8 @@ package me.xxastaspastaxx.dimensions.commands;
 
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
 public class ReloadCommand extends DimensionsCommand {
@@ -22,13 +23,17 @@ public class ReloadCommand extends DimensionsCommand {
 
     try {
       Dimensions.getInstance().reload();
-      sender.sendMessage(DimensionsSettings.getPrefix() + ChatColor.GREEN + "Reload complete");
+      sender.sendMessage(
+          DimensionsSettings.getPrefix()
+              .append(Component.text("Reload complete", NamedTextColor.GREEN)));
     } catch (Exception e) {
       sender.sendMessage(
           DimensionsSettings.getPrefix()
-              + ChatColor.RED
-              + "There was a problem while trying to reload Dimensions. Please check console for"
-              + " more information");
+              .append(
+                  Component.text(
+                      "There was a problem while trying to reload Dimensions. Please check console"
+                          + " for more information",
+                      NamedTextColor.RED)));
       e.printStackTrace();
     }
   }

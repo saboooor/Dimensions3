@@ -1,9 +1,7 @@
 package me.xxastaspastaxx.dimensions.gui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
@@ -18,32 +16,33 @@ public class DimensionsGUIUtils {
 
   private static ItemStack createBlackGlass() {
     if (BLACK_GLASS != null) return BLACK_GLASS;
-    return createItem(Material.BLACK_STAINED_GLASS_PANE, ChatColor.GRAY.toString());
+    return createItem(Material.BLACK_STAINED_GLASS_PANE, Component.text(" "));
   }
 
-  private static Enchantment DECOR_ENCHANT =
-      Enchantment.getByName("DAMAGE_ALL") == null
-          ? Enchantment.getByName("SMITE")
-          : Enchantment.getByName("DAMAGE_ALL");
+  private static Enchantment DECOR_ENCHANT = Enchantment.SMITE;
 
   // Create ItemStack
-  public static ItemStack createItem(Material material, String title) {
+  public static ItemStack createItem(Material material, Component title) {
     return createItem(material, 1, title);
   }
 
-  public static ItemStack createItem(Material material, int amount, String title) {
-    return createItem(material, amount, title, new String[0]);
+  public static ItemStack createItem(Material material, int amount, Component title) {
+    return createItem(material, amount, title, java.util.List.of());
   }
 
-  public static ItemStack createItem(Material material, String title, String[] lore) {
+  public static ItemStack createItem(
+      Material material, Component title, java.util.List<Component> lore) {
     return createItem(material, 1, title, lore);
   }
 
-  public static ItemStack createItem(Material material, int amount, String title, String[] lore) {
+  public static ItemStack createItem(
+      Material material, int amount, Component title, java.util.List<Component> lore) {
     ItemStack item = new ItemStack(material, amount);
     ItemMeta meta = item.getItemMeta();
-    meta.setDisplayName(title);
-    meta.setLore(new ArrayList<String>(Arrays.asList(lore)));
+    if (title != null) meta.displayName(title);
+    if (lore != null && !lore.isEmpty()) {
+      meta.lore(lore);
+    }
     item.setItemMeta(meta);
 
     return item;
@@ -51,44 +50,17 @@ public class DimensionsGUIUtils {
 
   // Update ItemStack
   public static void updateItem(
-      Inventory inventory, int index, String title, String[] lore, int toggleEnchant) {
+      Inventory inventory,
+      int index,
+      Component title,
+      java.util.List<Component> lore,
+      int toggleEnchant) {
     ItemStack item = inventory.getItem(index);
-
-    if (toggleEnchant == 1) {
-      item.addUnsafeEnchantment(DECOR_ENCHANT, 1);
-    } else if (toggleEnchant == -1) {
-      item.removeEnchantment(DECOR_ENCHANT);
-    }
-
-    ItemMeta meta = item.getItemMeta();
-    if (title != null) meta.setDisplayName(title);
-    if (lore != null) meta.setLore(new ArrayList<String>(Arrays.asList(lore)));
-    if (toggleEnchant == 1) {
-      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-    }
-    item.setItemMeta(meta);
-  }
-
-  public static void updateItem(ItemStack item, String title, String[] lore, int toggleEnchant) {
-
-    if (toggleEnchant == 1) {
-      item.addUnsafeEnchantment(DECOR_ENCHANT, 1);
-    } else if (toggleEnchant == -1) {
-      item.removeEnchantment(DECOR_ENCHANT);
-    }
-
-    ItemMeta meta = item.getItemMeta();
-    if (title != null) meta.setDisplayName(title);
-    if (lore != null) meta.setLore(new ArrayList<String>(Arrays.asList(lore)));
-    if (toggleEnchant == 1) {
-      meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-    }
-    item.setItemMeta(meta);
+    updateItem(item, title, lore, toggleEnchant);
   }
 
   public static void updateItem(
-      ItemStack item, String title, ArrayList<String> lore, int toggleEnchant) {
-
+      ItemStack item, Component title, java.util.List<Component> lore, int toggleEnchant) {
     if (toggleEnchant == 1) {
       item.addUnsafeEnchantment(DECOR_ENCHANT, 1);
     } else if (toggleEnchant == -1) {
@@ -96,8 +68,10 @@ public class DimensionsGUIUtils {
     }
 
     ItemMeta meta = item.getItemMeta();
-    if (title != null) meta.setDisplayName(title);
-    if (lore != null) meta.setLore(lore);
+    if (title != null) meta.displayName(title);
+    if (lore != null && !lore.isEmpty()) {
+      meta.lore(lore);
+    }
     if (toggleEnchant == 1) {
       meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
     }
@@ -106,6 +80,6 @@ public class DimensionsGUIUtils {
 
   public static ItemStack createPortalItem(CustomPortal customPortal) {
     return createItem(
-        customPortal.getOutsideMaterial(), ChatColor.WHITE + customPortal.getDisplayName());
+        customPortal.getOutsideMaterial(), Component.text(customPortal.getDisplayName()));
   }
 }

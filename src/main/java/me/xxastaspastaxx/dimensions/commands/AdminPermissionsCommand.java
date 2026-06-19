@@ -5,7 +5,9 @@ import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 
 public class AdminPermissionsCommand extends DimensionsCommand {
@@ -25,7 +27,10 @@ public class AdminPermissionsCommand extends DimensionsCommand {
   @Override
   public void execute(CommandSender sender, String[] args) {
 
-    String head = DimensionsSettings.getPrefix() + "Commands list:";
+    TextComponent.Builder head =
+        Component.text()
+            .append(DimensionsSettings.getPrefix())
+            .append(Component.text("Commands list:"));
     int page = 0;
     if (args.length > 1 && DimensionsUtils.isInt(args[1]) && !args[1].equals("0"))
       page = Integer.parseInt(args[1]) - 1;
@@ -37,29 +42,23 @@ public class AdminPermissionsCommand extends DimensionsCommand {
                 commandsPerPage * (1 + page));
         i++) {
       DimensionsCommand cmd = (DimensionsCommand) commandList.toArray()[i];
-      head +=
-          "\n/dim "
-              + cmd.getCommand()
-              + " "
-              + cmd.getArgs()
-              + " "
-              + ChatColor.RED
-              + "-"
-              + ChatColor.GRAY
-              + " "
-              + cmd.getPermission();
+      head.append(Component.newline())
+          .append(Component.text("/dim " + cmd.getCommand() + " " + cmd.getArgs() + " "))
+          .append(Component.text("-", NamedTextColor.RED))
+          .append(Component.text(" " + cmd.getPermission(), NamedTextColor.GRAY));
     }
     if (Math.min(commandList.size() - (1 + page) * commandsPerPage, commandsPerPage * (2 + page))
             > 0
         || page != 0)
-      head +=
-          "\n\n**Page "
-              + (page + 1)
-              + "/"
-              + ((int) Math.ceil(commandList.size() / commandsPerPage))
-              + "**";
+      head.append(
+          Component.text(
+              "\n\n**Page "
+                  + (page + 1)
+                  + "/"
+                  + ((int) Math.ceil(commandList.size() / commandsPerPage))
+                  + "**"));
 
-    sender.sendMessage(head);
+    sender.sendMessage(head.build());
   }
 
   @Override

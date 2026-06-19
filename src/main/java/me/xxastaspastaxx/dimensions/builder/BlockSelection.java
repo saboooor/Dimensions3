@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -24,16 +25,18 @@ public class BlockSelection {
 
   public void updateItem(ItemStack held) {
     ItemMeta meta = item.getItemMeta();
-    meta.setLore(
+    meta.lore(
         Arrays.asList(
-            new String[] {
-              ChatColor.GRAY
-                  + "Selection 1: "
-                  + (one == null ? "none" : one.getX() + ", " + one.getY() + ", " + one.getZ()),
-              ChatColor.GRAY
-                  + "Selection 2: "
-                  + (two == null ? "none" : two.getX() + ", " + two.getY() + ", " + two.getZ())
-            }));
+            Component.text("Selection 1: ", NamedTextColor.GRAY)
+                .append(
+                    Component.text(
+                        one == null ? "none" : one.getX() + ", " + one.getY() + ", " + one.getZ())),
+            Component.text("Selection 2: ", NamedTextColor.GRAY)
+                .append(
+                    Component.text(
+                        two == null
+                            ? "none"
+                            : two.getX() + ", " + two.getY() + ", " + two.getZ()))));
     if (held != null) held.setItemMeta(meta);
     item.setItemMeta(meta);
   }

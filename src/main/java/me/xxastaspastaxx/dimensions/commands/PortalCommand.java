@@ -7,7 +7,8 @@ import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,7 +32,9 @@ public class PortalCommand extends DimensionsCommand {
       if (!(sender instanceof Player)) {
         sender.sendMessage(
             DimensionsSettings.getPrefix()
-                + "This command without arguments can only be used from players.");
+                .append(
+                    Component.text(
+                        "This command without arguments can only be used from players.")));
         return;
       }
       List<Block> los = ((Player) sender).getLineOfSight(null, 5);
@@ -44,61 +47,57 @@ public class PortalCommand extends DimensionsCommand {
           CustomPortal portal = compl.getCustomPortal();
           sender.sendMessage(
               DimensionsSettings.getPrefix()
-                  + portal.getDisplayName()
-                  + ":"
-                  + ChatColor.GRAY
-                  + " Is built from "
-                  + ChatColor.RED
-                  + portal.getOutsideMaterial()
-                  + ChatColor.GRAY
-                  + ", is ignited using "
-                  + ChatColor.RED
-                  + portal.getLighterMaterial()
-                  + ChatColor.GRAY
-                  + " and this specific portal goes to "
-                  + ChatColor.RED
-                  + (compl.getLinkedPortal() == null
-                      ? portal.getWorld().getName()
-                      : compl.getLinkedPortal().getWorld().getName())
-                  + ChatColor.GRAY
-                  + ".");
+                  .append(Component.text(portal.getDisplayName()))
+                  .append(Component.text(":"))
+                  .append(Component.text(" Is built from ", NamedTextColor.GRAY))
+                  .append(
+                      Component.text(portal.getOutsideMaterial().toString(), NamedTextColor.RED))
+                  .append(Component.text(", is ignited using ", NamedTextColor.GRAY))
+                  .append(
+                      Component.text(portal.getLighterMaterial().toString(), NamedTextColor.RED))
+                  .append(Component.text(" and this specific portal goes to ", NamedTextColor.GRAY))
+                  .append(
+                      Component.text(
+                          (compl.getLinkedPortal() == null
+                              ? portal.getWorld().getName()
+                              : compl.getLinkedPortal().getWorld().getName()),
+                          NamedTextColor.RED))
+                  .append(Component.text(".", NamedTextColor.GRAY)));
           return;
         }
       }
 
       sender.sendMessage(
-          DimensionsSettings.getPrefix() + "Could not find a portal where you look at.");
+          DimensionsSettings.getPrefix()
+              .append(Component.text("Could not find a portal where you look at.")));
     } else if (args.length == 2) {
       CustomPortal portal = Dimensions.getCustomPortalManager().getCustomPortal(args[1]);
       if (portal != null) {
         sender.sendMessage(
             DimensionsSettings.getPrefix()
-                + portal.getDisplayName()
-                + ":"
-                + ChatColor.GRAY
-                + " Is built from "
-                + ChatColor.RED
-                + portal.getOutsideMaterial()
-                + ChatColor.GRAY
-                + ", is ignited using "
-                + ChatColor.RED
-                + portal.getLighterMaterial()
-                + ChatColor.GRAY
-                + " and goes to "
-                + ChatColor.RED
-                + portal.getWorld().getName()
-                + ChatColor.GRAY
-                + ".");
+                .append(Component.text(portal.getDisplayName()))
+                .append(Component.text(":"))
+                .append(Component.text(" Is built from ", NamedTextColor.GRAY))
+                .append(Component.text(portal.getOutsideMaterial().toString(), NamedTextColor.RED))
+                .append(Component.text(", is ignited using ", NamedTextColor.GRAY))
+                .append(Component.text(portal.getLighterMaterial().toString(), NamedTextColor.RED))
+                .append(Component.text(" and goes to ", NamedTextColor.GRAY))
+                .append(Component.text(portal.getWorld().getName(), NamedTextColor.RED))
+                .append(Component.text(".", NamedTextColor.GRAY)));
       } else {
-        sender.sendMessage(DimensionsSettings.getPrefix() + "Could not find specified portal.");
+        sender.sendMessage(
+            DimensionsSettings.getPrefix()
+                .append(Component.text("Could not find specified portal.")));
       }
     } else {
       sender.sendMessage(
           DimensionsSettings.getPrefix()
-              + "Missing argument. Please use /dim "
-              + this.getCommand()
-              + " "
-              + this.getArgs());
+              .append(
+                  Component.text(
+                      "Missing argument. Please use /dim "
+                          + this.getCommand()
+                          + " "
+                          + this.getArgs())));
     }
   }
 
