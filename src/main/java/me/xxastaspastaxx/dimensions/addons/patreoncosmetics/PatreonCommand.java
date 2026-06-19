@@ -3,7 +3,10 @@ package me.xxastaspastaxx.dimensions.addons.patreoncosmetics;
 import java.util.ArrayList;
 import java.util.List;
 import me.xxastaspastaxx.dimensions.commands.DimensionsCommand;
+import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -33,28 +36,40 @@ public class PatreonCommand extends DimensionsCommand {
     if (args.length >= 2) {
       Player p2;
       if ((p2 = Bukkit.getPlayer(args[1])) != null) {
-        p.sendMessage("&7[&cDimensions&7] " + getStatusString(p2));
+        p.sendMessage(DimensionsSettings.getPrefix() + getStatusString(p2));
       } else {
-        p.sendMessage("&7[&cDimensions&7] &cCould not find player " + args[1]);
+        p.sendMessage(DimensionsSettings.getPrefix() + ChatColor.RED + "Could not find player " + args[1]);
       }
     } else {
-      p.sendMessage("&7[&cDimensions&7] " + getStatusString(p));
+      p.sendMessage(DimensionsSettings.getPrefix() + getStatusString(p));
     }
   }
 
   public String getStatusString(Player p) {
-    String res = "&7Player: &a" + p.getName() + " &7\nUUID: &a" + p.getUniqueId().toString() + "\n";
-    res +=
-        "&7Supporter: "
-            + (main.getUsers().containsKey(p.getUniqueId()) ? "&atrue" : "&cfalse")
+    String res = ChatColor.GRAY
+            + "Player: "
+            + ChatColor.GREEN
+            + p.getName()
+            + "\n"
+            + ChatColor.GRAY
+            + "UUID: "
+            + ChatColor.GREEN
+            + p.getUniqueId().toString()
             + "\n";
-    res += "&7Effects:\n";
+    res +=
+        ChatColor.GRAY
+            + "Supporter: "
+            + (main.getUsers().containsKey(p.getUniqueId())
+                ? ChatColor.GREEN + "true"
+                : ChatColor.RED + "false")
+            + "\n";
+    res += ChatColor.GRAY + "Effects:\n";
     if (main.getUsers().containsKey(p.getUniqueId())) {
       for (String s : main.getUsers().get(p.getUniqueId()).keySet()) {
-        res += "  &a" + s + ": " + main.getUsers().get(p.getUniqueId()).get(s) + "\n";
+        res += "  " + ChatColor.GREEN + s + ": " + main.getUsers().get(p.getUniqueId()).get(s) + "\n";
       }
     } else {
-      res += "  &cNo active effects";
+      res += "  " + ChatColor.RED + "No active effects";
     }
     return res;
   }

@@ -18,7 +18,10 @@ import java.util.Scanner;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortalLoader;
+import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -64,12 +67,13 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
     if (sender instanceof Player) {
       ((Player) sender).openInventory(mainInventory);
     } else {
-      String msg = "&7[&cDimensions&7] Portals list:";
+      String msg = DimensionsSettings.getPrefix() + "Portals list:";
       for (CustomPortal portal : Dimensions.getCustomPortalManager().getCustomPortals()) {
         msg +=
             "\n["
-                + (portal.isEnabled() ? "&aEnabled" : "&cDisabled")
-                + "&7] "
+                + (portal.isEnabled() ? ChatColor.GREEN + "Enabled" : ChatColor.RED + "Disabled")
+                + ChatColor.GRAY
+                + "] "
                 + portal.getPortalId();
       }
 
@@ -79,30 +83,32 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
 
   private void setupMenu() {
 
-    mainInventory = Bukkit.createInventory(null, 9, "&cDimensions");
+    mainInventory = Bukkit.createInventory(null, 9, ChatColor.RED + "Dimensions");
 
     ItemStack decor = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
     ItemMeta decorMeta = decor.getItemMeta();
-    decorMeta.setDisplayName("&6");
+    decorMeta.setDisplayName(ChatColor.GOLD.toString());
     decor.setItemMeta(decorMeta);
 
     for (int i = 0; i < 9; i++) mainInventory.setItem(i, decor);
 
     ItemStack myPortals = new ItemStack(Material.PAPER);
     ItemMeta myPortalsMeta = myPortals.getItemMeta();
-    myPortalsMeta.setDisplayName("&6My Portals");
-    myPortalsMeta.setLore(Arrays.asList(new String[] {"&7Click to view your portals"}));
+    myPortalsMeta.setDisplayName(ChatColor.GOLD + "My Portals");
+    myPortalsMeta.setLore(
+        Arrays.asList(new String[] {ChatColor.GRAY + "Click to view your portals"}));
     myPortals.setItemMeta(myPortalsMeta);
 
     mainInventory.setItem(3, myPortals);
 
     ItemStack browsePortals = new ItemStack(Material.CHEST);
     ItemMeta browsePortalsMeta = browsePortals.getItemMeta();
-    browsePortalsMeta.setDisplayName("&bBrowse portals online");
+    browsePortalsMeta.setDisplayName(ChatColor.AQUA + "Browse portals online");
     browsePortalsMeta.setLore(
         Arrays.asList(
             new String[] {
-              "&7Click to browse portals online", "&7Use &nShift+Click&7 to forcfully load portals"
+              ChatColor.GRAY + "Click to browse portals online",
+              ChatColor.GRAY + "Use " + ChatColor.UNDERLINE + "Shift+Click" + ChatColor.GRAY + " to forcfully load portals"
             }));
     browsePortals.setItemMeta(browsePortalsMeta);
 
@@ -116,43 +122,54 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
         Bukkit.createInventory(
             null,
             54,
-            "My portals | Page &4" + (page + 1) + "&c/" + ((int) Math.ceil(portals.size() / 45f)));
+            "My portals | Page "
+                + ChatColor.DARK_RED
+                + (page + 1)
+                + ChatColor.RED
+                + "/"
+                + ((int) Math.ceil(portals.size() / 45f)));
 
     for (int i = page * 45; i < (page + 1) * 45; i++) {
       if (i >= portals.size()) break;
       CustomPortal portal = portals.get(i);
       ItemStack portalItem = new ItemStack(portal.getOutsideMaterial());
       ItemMeta itemMeta = portalItem.getItemMeta();
-      itemMeta.setDisplayName("&6" + portal.getPortalId());
+      itemMeta.setDisplayName(ChatColor.GOLD + portal.getPortalId());
       itemMeta.setLore(
           Arrays.asList(
-              new String[] {"&6&l" + portal.getDisplayName(), "&7Click for more details"}));
+              new String[] {
+                ChatColor.GOLD + ChatColor.BOLD.toString() + portal.getDisplayName(),
+                ChatColor.GRAY + "Click for more details"
+              }));
       portalItem.setItemMeta(itemMeta);
       inv.addItem(portalItem);
     }
 
     ItemStack decor = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
     ItemMeta decorMeta = decor.getItemMeta();
-    decorMeta.setDisplayName("&6");
+    decorMeta.setDisplayName(ChatColor.GOLD.toString());
     decor.setItemMeta(decorMeta);
 
     for (int i = 46; i <= 52; i++) inv.setItem(i, decor);
 
     ItemStack goBack = new ItemStack(page == 0 ? Material.BARRIER : Material.ARROW);
     ItemMeta goBackMeta = goBack.getItemMeta();
-    goBackMeta.setDisplayName("&6Previous page");
-    goBackMeta.setLore(Arrays.asList(new String[] {"&7Go to page " + ((int) Math.max(1, page))}));
+    goBackMeta.setDisplayName(ChatColor.GOLD + "Previous page");
+    goBackMeta.setLore(
+        Arrays.asList(new String[] {ChatColor.GRAY + "Go to page " + ((int) Math.max(1, page))}));
     goBack.setItemMeta(goBackMeta);
     inv.setItem(45, goBack);
 
     ItemStack goMprosta =
         new ItemStack((page + 1) * 45 >= portals.size() ? Material.BARRIER : Material.ARROW);
     ItemMeta goMprostaMeta = goBack.getItemMeta();
-    goMprostaMeta.setDisplayName("&6Next page");
+    goMprostaMeta.setDisplayName(ChatColor.GOLD + "Next page");
     goMprostaMeta.setLore(
         Arrays.asList(
             new String[] {
-              "&7Go to page " + ((int) Math.min(Math.ceil(portals.size() / 45f), page + 2))
+              ChatColor.GRAY
+                  + "Go to page "
+                  + ((int) Math.min(Math.ceil(portals.size() / 45f), page + 2))
             }));
     goMprosta.setItemMeta(goMprostaMeta);
     inv.setItem(53, goMprosta);
@@ -167,9 +184,11 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
         Bukkit.createInventory(
             null,
             54,
-            "Browse portals | Page &4"
+            "Browse portals | Page "
+                + ChatColor.DARK_RED
                 + (page + 1)
-                + "&c/"
+                + ChatColor.RED
+                + "/"
                 + ((int) Math.ceil(cachedPortals.size() / 45f)));
 
     if (forceUpdate || System.currentTimeMillis() - lastUpdate >= 108000000) {
@@ -204,26 +223,29 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
 
     ItemStack decor = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
     ItemMeta decorMeta = decor.getItemMeta();
-    decorMeta.setDisplayName("&6");
+    decorMeta.setDisplayName(ChatColor.GOLD.toString());
     decor.setItemMeta(decorMeta);
 
     for (int i = 46; i <= 52; i++) inv.setItem(i, decor);
 
     ItemStack goBack = new ItemStack(page == 0 ? Material.BARRIER : Material.ARROW);
     ItemMeta goBackMeta = goBack.getItemMeta();
-    goBackMeta.setDisplayName("&6Previous page");
-    goBackMeta.setLore(Arrays.asList(new String[] {"&7Go to page " + ((int) Math.max(1, page))}));
+    goBackMeta.setDisplayName(ChatColor.GOLD + "Previous page");
+    goBackMeta.setLore(
+        Arrays.asList(new String[] {ChatColor.GRAY + "Go to page " + ((int) Math.max(1, page))}));
     goBack.setItemMeta(goBackMeta);
     inv.setItem(45, goBack);
 
     ItemStack goMprosta =
         new ItemStack((page + 1) * 45 >= cachedPortals.size() ? Material.BARRIER : Material.ARROW);
     ItemMeta goMprostaMeta = goBack.getItemMeta();
-    goMprostaMeta.setDisplayName("&6Next page");
+    goMprostaMeta.setDisplayName(ChatColor.GOLD + "Next page");
     goMprostaMeta.setLore(
         Arrays.asList(
             new String[] {
-              "&7Go to page " + ((int) Math.min(Math.ceil(cachedPortals.size() / 45f), page + 2))
+              ChatColor.GRAY
+                  + "Go to page "
+                  + ((int) Math.min(Math.ceil(cachedPortals.size() / 45f), page + 2))
             }));
     goMprosta.setItemMeta(goMprostaMeta);
     inv.setItem(53, goMprosta);
@@ -256,7 +278,9 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
           updateBrowseInventory(p, 0, e.isShiftClick());
         } else {
           p.sendMessage(
-              "&7[&cDimensions&7] &cYou do not have the &ndimensions.forceupdatebrowser&c"
+              DimensionsSettings.getPrefix() 
+                  + ChatColor.RED + "You do not have the "
+                  + ChatColor.UNDERLINE + "dimensions.forceupdatebrowser"
                   + " permission to do perform that action");
         }
       ;
@@ -265,9 +289,10 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
       e.setCancelled(true);
       if (e.getClickedInventory() != e.getInventory()) return;
       String name = item.getItemMeta().getDisplayName();
-      if (name.equalsIgnoreCase("&6")) {
+      if (name.equalsIgnoreCase(ChatColor.GOLD.toString())) {
         return;
-      } else if (name.contentEquals("&6Previous page") || name.contentEquals("&6Next page")) {
+      } else if (name.contentEquals(ChatColor.GOLD + "Previous page")
+          || name.contentEquals(ChatColor.GOLD + "Next page")) {
         updatePortalsMenu(
             p, Integer.parseInt(item.getItemMeta().getLore().get(0).substring(13)) - 1);
         return;
@@ -277,33 +302,44 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
                 .getCustomPortal(item.getItemMeta().getDisplayName().substring(2));
         if (portal != null) {
           p.sendMessage(
-              "&7[&cDimensions&7] "
-                  + portal.getDisplayName()
-                  + ":&7 Is built from &c"
-                  + portal.getOutsideMaterial()
-                  + "&7, is ignited using &c"
-                  + portal.getLighterMaterial()
-                  + "&7 and goes to &c"
-                  + portal.getWorld().getName()
-                  + "&7.");
+              DimensionsSettings.getPrefix()
+                + portal.getDisplayName()
+                + ":"
+                + ChatColor.GRAY
+                + " Is built from "
+                + ChatColor.RED
+                + portal.getOutsideMaterial()
+                + ChatColor.GRAY
+                + ", is ignited using "
+                + ChatColor.RED
+                + portal.getLighterMaterial()
+                + ChatColor.GRAY
+                + " and goes to "
+                + ChatColor.RED
+                + portal.getWorld().getName()
+                + ChatColor.GRAY
+                + ".");
         } else {
-          p.sendMessage("&7[&cDimensions&7] There was a problem, please try reloading the plugin.");
+          p.sendMessage(
+              DimensionsSettings.getPrefix()
+                  + "There was a problem, please try reloading the plugin.");
         }
       }
     } else if (browseInventory.containsKey(p) && e.getInventory().equals(browseInventory.get(p))) {
       e.setCancelled(true);
       if (e.getClickedInventory() != e.getInventory()) return;
       String name = item.getItemMeta().getDisplayName();
-      if (name.equalsIgnoreCase("&6")) {
+      if (name.equalsIgnoreCase(ChatColor.GOLD.toString())) {
         return;
-      } else if (name.contentEquals("&6Previous page") || name.contentEquals("&6Next page")) {
+      } else if (name.contentEquals(ChatColor.GOLD + "Previous page")
+          || name.contentEquals(ChatColor.GOLD + "Next page")) {
         updateBrowseInventory(
             p, Integer.parseInt(item.getItemMeta().getLore().get(0).substring(13)) - 1, false);
         return;
       } else {
         CachedPortal cached =
             cachedPortals.stream()
-                .filter(portal -> name.equals("&6" + portal.getFile()))
+                .filter(portal -> name.equals(ChatColor.GOLD + portal.getFile()))
                 .findAny()
                 .orElseGet(null);
         if (cached != null)
@@ -311,16 +347,21 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
             try {
               if (cached.download(p)) {
                 p.sendMessage(
-                    "&7[&cDimensions&7] &aThe portal has been succesfully downloaded, please use"
-                        + " &n/dim reload&a to apply changes.");
+                    DimensionsSettings.getPrefix()
+                        + ChatColor.GREEN + "The portal has been succesfully downloaded, please"
+                        + " use "
+                        + ChatColor.UNDERLINE + "/dim reload"
+                        + ChatColor.GREEN + " to apply changes.");
               }
             } catch (IOException e1) {
               p.sendMessage(
-                  "&7[&cDimensions&7] &cThere was an issue while trying to download the file.");
+                  DimensionsSettings.getPrefix()
+                      + ChatColor.RED + "There was an issue while trying to download the file.");
               e1.printStackTrace();
             }
           } else {
-            p.sendMessage("&7[&cDimensions&7] &aLink to portal: " + cached.getLink());
+            p.sendMessage(
+                DimensionsSettings.getPrefix() + ChatColor.GREEN + "Link to portal: " + cached.getLink());
           }
       }
     }
@@ -364,17 +405,17 @@ final class CachedPortal {
   public ItemStack getItemStack() {
     ItemStack item = new ItemStack(block);
     ItemMeta meta = item.getItemMeta();
-    meta.setDisplayName("&6" + file);
+    meta.setDisplayName(ChatColor.GOLD + file);
     meta.setLore(
         Arrays.asList(
             new String[] {
-              "&6by &n" + creator,
-              "&6&n" + likes + "&6 likes",
+              ChatColor.GOLD + "by " + ChatColor.UNDERLINE + creator,
+              ChatColor.GOLD + ChatColor.UNDERLINE.toString() + likes + ChatColor.GOLD + " likes",
               "",
-              "&6Click to get link to portal",
-              "&6Shift+Click to download portal",
+              ChatColor.GOLD + "Click to get link to portal",
+              ChatColor.GOLD + "Shift+Click to download portal",
               "",
-              "&6&oportal id: " + id
+              ChatColor.GOLD + ChatColor.ITALIC.toString() + "portal id: " + id
             }));
     item.setItemMeta(meta);
     return item;
@@ -388,7 +429,8 @@ final class CachedPortal {
 
     File f = new File(CustomPortalLoader.DIRECTORY_PATH + "/" + file + ".yml");
     if (f.exists()) {
-      p.sendMessage("&7[&cDimensions&7] A portal with the same name already exists.");
+      p.sendMessage(
+          DimensionsSettings.getPrefix() + "A portal with the same name already exists.");
       return false;
     }
 

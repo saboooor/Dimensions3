@@ -40,7 +40,8 @@ public class CreatePortalManager {
 
       //			MobStructure structure = BuildableMobs.getManager().getStructureById(id);
       //			if (structure==null) {
-      //				p.sendMessage("&7[&cBuidableMobs&7] &cThe id of the structure you entered is invalid");
+      //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.RED + "The id of the structure you entered
+      // is invalid");
       //				return;
       //			}
       //			CreatePortalInstance instance = new CreatePortalInstance(p, structure);

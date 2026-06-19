@@ -24,7 +24,9 @@ public class InfoCommand extends DimensionsCommand {
       Dimensions.getCreatePortalManager().handle((Player) sender);
     } else {
       sender.sendMessage(
-          "&7[&cDimensions&7] Version " + Dimensions.getInstance().getDescription().getVersion());
+          DimensionsSettings.getPrefix()
+              + "Version "
+              + Dimensions.getInstance().getDescription().getVersion());
     }
   }
 }

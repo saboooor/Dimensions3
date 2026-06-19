@@ -3,6 +3,9 @@ package me.xxastaspastaxx.dimensions.commands;
 import java.util.ArrayList;
 import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -87,7 +90,8 @@ public class DimensionsCommandManager implements CommandExecutor, TabCompleter {
       if (!command.getPermission().contentEquals("none")
           && !sender.hasPermission(command.getPermission())) {
         sender.sendMessage(
-            "&7[&cDimensions&7] &4You do not have permission to execute this command");
+            DimensionsSettings.getPrefix()
+              + ChatColor.DARK_RED + "You do not have permission to execute this command");
         return true;
       }
       try {

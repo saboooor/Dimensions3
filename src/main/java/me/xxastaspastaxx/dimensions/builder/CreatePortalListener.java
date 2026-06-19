@@ -44,12 +44,12 @@ public class CreatePortalListener implements Listener {
 
   		if (e.getAction()==Action.LEFT_CLICK_BLOCK) {
   			selection.setOne(e.getClickedBlock());
-  			e.getPlayer().sendMessage("&7[&cBuildableMobs&7] Selected point 1");
+  			e.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "] "Selected point 1");
   			selection.updateItem(e.getItem());
   			e.setCancelled(true);
   		} else if (e.getAction()==Action.RIGHT_CLICK_BLOCK) {
   			selection.setTwo(e.getClickedBlock());
-  			e.getPlayer().sendMessage("&7[&cBuildableMobs&7] Selected point 2");
+  			e.getPlayer().sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "] "Selected point 2");
   			selection.updateItem(e.getItem());
   			e.setCancelled(true);
   		}

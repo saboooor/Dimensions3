@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
+import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class AdminPermissionsCommand extends DimensionsCommand {
@@ -23,7 +25,7 @@ public class AdminPermissionsCommand extends DimensionsCommand {
   @Override
   public void execute(CommandSender sender, String[] args) {
 
-    String head = "&7[&cDimensions&7] Commands list:";
+    String head = DimensionsSettings.getPrefix() + "Commands list:";
     int page = 0;
     if (args.length > 1 && DimensionsUtils.isInt(args[1]) && !args[1].equals("0"))
       page = Integer.parseInt(args[1]) - 1;
@@ -35,7 +37,7 @@ public class AdminPermissionsCommand extends DimensionsCommand {
                 commandsPerPage * (1 + page));
         i++) {
       DimensionsCommand cmd = (DimensionsCommand) commandList.toArray()[i];
-      head += "\n/dim " + cmd.getCommand() + " " + cmd.getArgs() + " &c-&7 " + cmd.getPermission();
+      head += "\n/dim " + cmd.getCommand() + " " + cmd.getArgs() + " " + ChatColor.RED + "-" + ChatColor.GRAY + " " + cmd.getPermission();
     }
     if (Math.min(commandList.size() - (1 + page) * commandsPerPage, commandsPerPage * (2 + page))
             > 0

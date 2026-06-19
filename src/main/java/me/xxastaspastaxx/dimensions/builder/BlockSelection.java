@@ -1,10 +1,10 @@
 package me.xxastaspastaxx.dimensions.builder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import net.kyori.adventure.text.Component;
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -24,16 +24,16 @@ public class BlockSelection {
 
   public void updateItem(ItemStack held) {
     ItemMeta meta = item.getItemMeta();
-    meta.lore(
-        List.of(
-            Component.text(
-                "&7Selection 1: "
-                    + (one == null ? "none" : one.getX() + ", " + one.getY() + ", " + one.getZ())),
-            Component.text(
-                "&7Selection 2: "
-                    + (two == null
-                        ? "none"
-                        : two.getX() + ", " + two.getY() + ", " + two.getZ()))));
+    meta.setLore(
+        Arrays.asList(new String[]
+          {
+            ChatColor.GRAY
+                + "Selection 1: "
+                + (one == null ? "none" : one.getX() + ", " + one.getY() + ", " + one.getZ()),
+            ChatColor.GRAY
+                + "Selection 2: "
+                + (two == null ? "none" : two.getX() + ", " + two.getY() + ", " + two.getZ())
+          }));
     if (held != null) held.setItemMeta(meta);
     item.setItemMeta(meta);
   }

@@ -2,6 +2,7 @@ package me.xxastaspastaxx.dimensions.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class WorldsCommand extends DimensionsCommand {
@@ -18,9 +19,9 @@ public class WorldsCommand extends DimensionsCommand {
 
   @Override
   public void execute(CommandSender sender, String[] args) {
-    sender.sendMessage("&7Available worlds: ");
+    sender.sendMessage(ChatColor.GRAY + "Available worlds: ");
     for (World world : Bukkit.getWorlds()) {
-      sender.sendMessage("&7- &c" + world.getName());
+      sender.sendMessage(ChatColor.GRAY + "- " + ChatColor.RED + world.getName());
     }
   }
 }

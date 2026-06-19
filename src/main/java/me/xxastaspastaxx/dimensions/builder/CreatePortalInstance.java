@@ -77,23 +77,25 @@ public class CreatePortalInstance {
   public void save() {
     //
     //		if (updatingStructure==null) {
-    //			p.sendMessage("&7[&cBuildableMobs&7] &7Saving structure file...");
+    //			p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.GREEN + "Saving structure file...");
     //			try {
-    //				p.sendMessage("&7[&cBuildableMobs&7] &aSuccesfully saved
-    // &n"+BuildableMobs.getManager().create(options.structureName.replace(" ", "").toLowerCase(),
+    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.GREEN + "Succesfully saved " + 
+    // ChatColor.UNDERLINE + BuildableMobs.getManager().create(options.structureName.replace(" ", "").toLowerCase(),
     // this));
     //			} catch (Exception e) {
-    //				p.sendMessage("&7[&cBuildableMobs&7] &cThere was an error trying to save the file. Please
+    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.RED + "There was an error trying to save
+    // the file. Please
     // check console for more information.");
     //				e.printStackTrace();
     //			}
     //		} else {
-    //			p.sendMessage("&7[&cBuildableMobs&7] &7Updating structure file...");
+    //			p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.YELLOW + "Updating structure file...");
     //			try {
-    //				p.sendMessage("&7[&cBuildableMobs&7] &aSuccesfully updated
-    // &n"+BuildableMobs.getManager().updateActions(updatingStructure.getId(), this));
+    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.GREEN + "Succesfully updated " + 
+    // ChatColor.UNDERLINE + BuildableMobs.getManager().updateActions(updatingStructure.getId(), this));
     //			} catch (Exception e) {
-    //				p.sendMessage("&7[&cBuildableMobs&7] &cThere was an error trying to update the file.
+    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.RED + "There was an error trying to update
+    // the file.
     // Please check console for more information.");
     //				e.printStackTrace();
     //			}

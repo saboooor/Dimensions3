@@ -8,6 +8,7 @@ import me.xxastaspastaxx.dimensions.gui.CreatePortalGUI;
 import me.xxastaspastaxx.dimensions.gui.DimensionsGUIType;
 import me.xxastaspastaxx.dimensions.gui.DimensionsGUIUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -34,11 +35,13 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
     inv.setItem(53, DimensionsGUIUtils.BLACK_GLASS);
 
     // Navigation
-    inv.setItem(51, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, "&7Previous page"));
-    inv.setItem(52, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, "&7Next page"));
+    inv.setItem(
+        51, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, ChatColor.GRAY + "Previous page"));
+    inv.setItem(
+        52, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, ChatColor.GRAY + "Next page"));
 
     ItemStack closeItemStack =
-        DimensionsGUIUtils.createItem(Material.GREEN_STAINED_GLASS_PANE, "&aClose");
+        DimensionsGUIUtils.createItem(Material.GREEN_STAINED_GLASS_PANE, ChatColor.GREEN + "Close");
     inv.setItem(45, closeItemStack);
     inv.setItem(46, closeItemStack);
     inv.setItem(47, closeItemStack);
@@ -56,7 +59,9 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
     ItemStack[] contents = inventory.getContents();
     inventory =
         Bukkit.createInventory(
-            p, inventory.getSize(), "&f" + instance.selectedPortal.getDisplayName());
+            p,
+            inventory.getSize(),
+            ChatColor.WHITE + instance.selectedPortal.getDisplayName());
     inventory.setContents(contents);
 
     for (int i = 0; i < MAX_ITEMS_PER_PAGE; i++) {
@@ -72,8 +77,8 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
     ItemStack portalBlock =
         DimensionsGUIUtils.createItem(
             instance.selectedPortal.getOutsideMaterial(),
-            "&f" + instance.selectedPortal.getOutsideMaterial().name(),
-            new String[] {"&7Build using this block."});
+            ChatColor.WHITE + instance.selectedPortal.getOutsideMaterial().name(),
+            new String[] {ChatColor.GRAY + "Build using this block."});
     for (int i = 0; i < 4; i++) {
       inventory.setItem(i, portalBlock);
       inventory.setItem(36 + i, portalBlock);
@@ -88,18 +93,18 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
           29,
           DimensionsGUIUtils.createItem(
               Material.BARRIER,
-              "&f{{customItem}}",
+              ChatColor.WHITE + "{{customItem}}",
               new String[] {
-                "&7This should have been replaced by the responsible addon",
-                "&7Please make sure everything is setup correctly"
+                ChatColor.GRAY + "This should have been replaced by the responsible addon",
+                ChatColor.GRAY + "Please make sure everything is setup correctly"
               }));
     } else {
       inventory.setItem(
           29,
           DimensionsGUIUtils.createItem(
               instance.selectedPortal.getLighterMaterial(),
-              "&f" + instance.selectedPortal.getLighterMaterial().name(),
-              new String[] {"&7Ignite using this item."}));
+              ChatColor.WHITE + instance.selectedPortal.getLighterMaterial().name(),
+              new String[] {ChatColor.GRAY + "Ignite using this item."}));
     }
 
     inventory.getItem(51).setType(page == 0 ? Material.MINECART : Material.CHEST_MINECART);

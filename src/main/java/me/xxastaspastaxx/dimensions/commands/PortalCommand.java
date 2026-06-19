@@ -6,7 +6,10 @@ import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
+import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+
 import org.bukkit.block.Block;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -28,7 +31,8 @@ public class PortalCommand extends DimensionsCommand {
     if (args.length == 1) {
       if (!(sender instanceof Player)) {
         sender.sendMessage(
-            "&7[&cDimensions&7] This command without arguments can only be used from players.");
+            DimensionsSettings.getPrefix()
+                + "This command without arguments can only be used from players.");
         return;
       }
       List<Block> los = ((Player) sender).getLineOfSight(null, 5);
@@ -40,41 +44,59 @@ public class PortalCommand extends DimensionsCommand {
         if (compl != null) {
           CustomPortal portal = compl.getCustomPortal();
           sender.sendMessage(
-              "&7[&cDimensions&7] "
+              DimensionsSettings.getPrefix()
                   + portal.getDisplayName()
-                  + ":&7 Is built from &c"
+                  + ":"
+                  + ChatColor.GRAY
+                  + " Is built from "
+                  + ChatColor.RED
                   + portal.getOutsideMaterial()
-                  + "&7, is ignited using &c"
+                  + ChatColor.GRAY
+                  + ", is ignited using "
+                  + ChatColor.RED
                   + portal.getLighterMaterial()
-                  + "&7 and this specific portal goes to &c"
+                  + ChatColor.GRAY
+                  + " and this specific portal goes to "
+                  + ChatColor.RED
                   + (compl.getLinkedPortal() == null
                       ? portal.getWorld().getName()
                       : compl.getLinkedPortal().getWorld().getName())
-                  + "&7.");
+                  + ChatColor.GRAY
+                  + ".");
           return;
         }
       }
 
-      sender.sendMessage("&7[&cDimensions&7] Could not find a portal where you look at.");
+      sender.sendMessage(
+          DimensionsSettings.getPrefix() + "Could not find a portal where you look at.");
     } else if (args.length == 2) {
       CustomPortal portal = Dimensions.getCustomPortalManager().getCustomPortal(args[1]);
       if (portal != null) {
         sender.sendMessage(
-            "&7[&cDimensions&7] "
+            DimensionsSettings.getPrefix()
                 + portal.getDisplayName()
-                + ":&7 Is built from &c"
+                + ":"
+                + ChatColor.GRAY
+                + " Is built from "
+                + ChatColor.RED
                 + portal.getOutsideMaterial()
-                + "&7, is ignited using &c"
+                + ChatColor.GRAY
+                + ", is ignited using "
+                + ChatColor.RED
                 + portal.getLighterMaterial()
-                + "&7 and goes to &c"
+                + ChatColor.GRAY
+                + " and goes to "
+                + ChatColor.RED
                 + portal.getWorld().getName()
-                + "&7.");
+                + ChatColor.GRAY
+                + ".");
       } else {
-        sender.sendMessage("&7[&cDimensions&7] Could not find specified portal.");
+        sender.sendMessage(DimensionsSettings.getPrefix() + "Could not find specified portal.");
       }
     } else {
       sender.sendMessage(
-          "&7[&cDimensions&7] Missing argument. Please use /dim "
+          DimensionsSettings.getPrefix()
+              + "Missing argument. Please use /dim "
               + this.getCommand()
               + " "
               + this.getArgs());

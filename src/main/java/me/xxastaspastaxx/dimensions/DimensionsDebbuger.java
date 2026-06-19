@@ -45,11 +45,11 @@ public class DimensionsDebbuger {
     if (DimensionsSettings.debugLevel >= level)
       Bukkit.getConsoleSender()
           .sendMessage(
-              "&7[&cDimensions&7] &r"
-                  + String.join(
-                      ", ",
-                      Arrays.asList(str).stream()
-                          .map((s) -> s == null ? "null" : s.toString())
-                          .collect(Collectors.toList())));
+              DimensionsSettings.getPrefix()
+                + String.join(
+                    ", ",
+                    Arrays.asList(str).stream()
+                        .map((s) -> s == null ? "null" : s.toString())
+                        .collect(Collectors.toList())));
   }
 }

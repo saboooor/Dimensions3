@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortalDestroyCause;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -85,6 +86,8 @@ public class DimensionsSettings {
 
   /** Check for entities inside the portal every set ticks */
   public static long portalInsideDelay = 1;
+
+  public static String prefix = "&7[&cDimensions&7] &r";
 
   /** List of configuration per world for easier access + override */
   private static HashMap<String, WorldConfiguration> worldConfigurations =
@@ -166,6 +169,10 @@ public class DimensionsSettings {
                 config.getDouble("Worlds." + string + ".Size", world.getWorldBorder().getSize())));
       }
     }
+  }
+
+  public static String getPrefix() {
+    return ChatColor.translateAlternateColorCodes('&', DimensionsSettings.prefix);
   }
 
   /** Get the ./plugins/Dimensions/config.yml instance of FileConfiguration */

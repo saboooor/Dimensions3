@@ -3,6 +3,7 @@ package me.xxastaspastaxx.dimensions.gui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
@@ -17,7 +18,7 @@ public class DimensionsGUIUtils {
 
   private static ItemStack createBlackGlass() {
     if (BLACK_GLASS != null) return BLACK_GLASS;
-    return createItem(Material.BLACK_STAINED_GLASS_PANE, "&7");
+    return createItem(Material.BLACK_STAINED_GLASS_PANE, ChatColor.GRAY.toString());
   }
 
   private static Enchantment DECOR_ENCHANT =
@@ -104,6 +105,6 @@ public class DimensionsGUIUtils {
   }
 
   public static ItemStack createPortalItem(CustomPortal customPortal) {
-    return createItem(customPortal.getOutsideMaterial(), "�f" + customPortal.getDisplayName());
+    return createItem(customPortal.getOutsideMaterial(), ChatColor.WHITE + customPortal.getDisplayName());
   }
 }

@@ -8,6 +8,7 @@ import me.xxastaspastaxx.dimensions.gui.CreatePortalGUI;
 import me.xxastaspastaxx.dimensions.gui.DimensionsGUIType;
 import me.xxastaspastaxx.dimensions.gui.DimensionsGUIUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -25,16 +26,20 @@ public class DimensionsPlayerMainGUI extends CreatePortalGUI {
 
   @Override
   public Inventory createInventory() {
-    Inventory inv = Bukkit.createInventory(p, 54, "&cDimensions");
+    Inventory inv = Bukkit.createInventory(p, 54, ChatColor.RED + "Dimensions");
 
     for (int i = 0; i < 9; i++) {
       inv.setItem(45 + i, DimensionsGUIUtils.BLACK_GLASS);
     }
 
     // Navigation
-    inv.setItem(48, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, "&7Previous page"));
-    inv.setItem(49, DimensionsGUIUtils.createItem(Material.RED_STAINED_GLASS_PANE, "&cClose"));
-    inv.setItem(50, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, "&7Next page"));
+    inv.setItem(
+        48, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, ChatColor.GRAY + "Previous page"));
+    inv.setItem(
+        49,
+        DimensionsGUIUtils.createItem(Material.RED_STAINED_GLASS_PANE, ChatColor.RED + "Close"));
+    inv.setItem(
+        50, DimensionsGUIUtils.createItem(Material.BIRCH_BOAT, ChatColor.GRAY + "Next page"));
 
     return inv;
   }
@@ -48,7 +53,9 @@ public class DimensionsPlayerMainGUI extends CreatePortalGUI {
     ItemStack[] contents = inventory.getContents();
     inventory =
         Bukkit.createInventory(
-            p, inventory.getSize(), "&6Portals. Page " + (page + 1) + "/" + (maxPage + 1));
+            p,
+            inventory.getSize(),
+            ChatColor.GOLD + "Portals. Page " + (page + 1) + "/" + (maxPage + 1));
     inventory.setContents(contents);
 
     for (int i = 0; i < MAX_ITEMS_PER_PAGE; i++) {

@@ -6,7 +6,10 @@ import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortalDestroyCause;
+import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class ClearCommand extends DimensionsCommand {
@@ -37,10 +40,15 @@ public class ClearCommand extends DimensionsCommand {
               .removePortal(complete, CustomPortalDestroyCause.PLUGIN, null);
         }
       }
-      sender.sendMessage("&7[&cDimensions&7] &aRemoved &c" + args[1] + "&a portals");
+      sender.sendMessage(
+          DimensionsSettings.getPrefix()
+              + ChatColor.GREEN + "Removed "
+              + ChatColor.RED + args[1]
+              + ChatColor.GREEN + " portals");
     } else {
       sender.sendMessage(
-          "&7[&cDimensions&7] Missing argument. Please use /dim "
+          DimensionsSettings.getPrefix()
+              + "Missing argument. Please use /dim "
               + this.getCommand()
               + " "
               + this.getArgs());
