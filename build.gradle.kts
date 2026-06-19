@@ -8,7 +8,7 @@ version = "4.0.0"
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
     withSourcesJar()
 }
@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.2-rc-2.build.9-alpha")
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
     compileOnly("com.github.retrooper:packetevents-spigot:2.12.0")
 }
 

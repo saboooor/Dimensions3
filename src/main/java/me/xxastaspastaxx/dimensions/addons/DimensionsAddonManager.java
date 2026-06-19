@@ -85,7 +85,7 @@ public class DimensionsAddonManager {
 
   /*public DimensionsAddon downloadAndExportAddon(String jarName, String updateJarURL) {
       try {
-      	URLConnection urlConn = new URL(updateJarURL).openConnection();
+      	URLConnection urlConn = URI.create(updateJarURL).toURL().openConnection();
       	urlConn.addRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
 
       	File file = new File(ADDONS_PATH+jarName);

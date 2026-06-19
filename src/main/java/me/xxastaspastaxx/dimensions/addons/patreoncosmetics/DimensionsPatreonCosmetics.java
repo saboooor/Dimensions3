@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -186,7 +187,7 @@ public class DimensionsPatreonCosmetics implements Listener {
               @Override
               public void run() {
                 try {
-                  URL url = new URL("https://astaspasta.alwaysdata.net/linkPatreon.php");
+                  URL url = URI.create("https://astaspasta.alwaysdata.net/linkPatreon.php").toURL();
                   URLConnection con = url.openConnection();
 
                   HttpURLConnection http = (HttpURLConnection) con;
@@ -219,10 +220,7 @@ public class DimensionsPatreonCosmetics implements Listener {
                   BufferedReader in =
                       new BufferedReader(
                           new InputStreamReader(
-                              new URL(
-                                      "https://astaspasta.alwaysdata.net/api/userData.php?ingameCosmetics="
-                                          + uuid)
-                                  .openStream(),
+                              URI.create("https://astaspasta.alwaysdata.net/api/userData.php?ingameCosmetics=" + uuid).toURL().openStream(),
                               "UTF-8"));
 
                   Gson gson = new Gson();

@@ -67,8 +67,8 @@ public class DimensionsSettings {
    */
   public static boolean enableNetherPortalEffect = true;
 
-  // public static boolean enableMobsTeleportation = true; TODO per portla
-  // public static boolean enableEntitiesTeleportation = true; TODO per portla
+  // public static boolean enableMobsTeleportation = true; TODO per portal
+  // public static boolean enableEntitiesTeleportation = true; TODO per portal
   /** Allow item consumption on portal ignite */
   public static boolean consumeItems = true;
 

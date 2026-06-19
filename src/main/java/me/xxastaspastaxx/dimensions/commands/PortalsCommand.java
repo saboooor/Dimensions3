@@ -6,7 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -260,7 +260,7 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
 
   public static String readStringFromURL(String requestURL) throws IOException {
     try (Scanner scanner =
-        new Scanner(new URL(requestURL).openStream(), StandardCharsets.UTF_8.toString())) {
+        new Scanner(URI.create(requestURL).toURL().openStream(), StandardCharsets.UTF_8.toString())) {
       scanner.useDelimiter("\\A");
       return scanner.hasNext() ? scanner.next() : "";
     }
