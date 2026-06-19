@@ -59,9 +59,7 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
     ItemStack[] contents = inventory.getContents();
     inventory =
         Bukkit.createInventory(
-            p,
-            inventory.getSize(),
-            ChatColor.WHITE + instance.selectedPortal.getDisplayName());
+            p, inventory.getSize(), ChatColor.WHITE + instance.selectedPortal.getDisplayName());
     inventory.setContents(contents);
 
     for (int i = 0; i < MAX_ITEMS_PER_PAGE; i++) {

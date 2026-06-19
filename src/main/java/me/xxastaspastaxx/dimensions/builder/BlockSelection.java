@@ -25,15 +25,15 @@ public class BlockSelection {
   public void updateItem(ItemStack held) {
     ItemMeta meta = item.getItemMeta();
     meta.setLore(
-        Arrays.asList(new String[]
-          {
-            ChatColor.GRAY
-                + "Selection 1: "
-                + (one == null ? "none" : one.getX() + ", " + one.getY() + ", " + one.getZ()),
-            ChatColor.GRAY
-                + "Selection 2: "
-                + (two == null ? "none" : two.getX() + ", " + two.getY() + ", " + two.getZ())
-          }));
+        Arrays.asList(
+            new String[] {
+              ChatColor.GRAY
+                  + "Selection 1: "
+                  + (one == null ? "none" : one.getX() + ", " + one.getY() + ", " + one.getZ()),
+              ChatColor.GRAY
+                  + "Selection 2: "
+                  + (two == null ? "none" : two.getX() + ", " + two.getY() + ", " + two.getZ())
+            }));
     if (held != null) held.setItemMeta(meta);
     item.setItemMeta(meta);
   }

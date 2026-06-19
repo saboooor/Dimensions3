@@ -19,7 +19,6 @@ import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortalLoader;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -108,7 +107,12 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
         Arrays.asList(
             new String[] {
               ChatColor.GRAY + "Click to browse portals online",
-              ChatColor.GRAY + "Use " + ChatColor.UNDERLINE + "Shift+Click" + ChatColor.GRAY + " to forcfully load portals"
+              ChatColor.GRAY
+                  + "Use "
+                  + ChatColor.UNDERLINE
+                  + "Shift+Click"
+                  + ChatColor.GRAY
+                  + " to forcfully load portals"
             }));
     browsePortals.setItemMeta(browsePortalsMeta);
 
@@ -278,9 +282,11 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
           updateBrowseInventory(p, 0, e.isShiftClick());
         } else {
           p.sendMessage(
-              DimensionsSettings.getPrefix() 
-                  + ChatColor.RED + "You do not have the "
-                  + ChatColor.UNDERLINE + "dimensions.forceupdatebrowser"
+              DimensionsSettings.getPrefix()
+                  + ChatColor.RED
+                  + "You do not have the "
+                  + ChatColor.UNDERLINE
+                  + "dimensions.forceupdatebrowser"
                   + " permission to do perform that action");
         }
       ;
@@ -303,22 +309,22 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
         if (portal != null) {
           p.sendMessage(
               DimensionsSettings.getPrefix()
-                + portal.getDisplayName()
-                + ":"
-                + ChatColor.GRAY
-                + " Is built from "
-                + ChatColor.RED
-                + portal.getOutsideMaterial()
-                + ChatColor.GRAY
-                + ", is ignited using "
-                + ChatColor.RED
-                + portal.getLighterMaterial()
-                + ChatColor.GRAY
-                + " and goes to "
-                + ChatColor.RED
-                + portal.getWorld().getName()
-                + ChatColor.GRAY
-                + ".");
+                  + portal.getDisplayName()
+                  + ":"
+                  + ChatColor.GRAY
+                  + " Is built from "
+                  + ChatColor.RED
+                  + portal.getOutsideMaterial()
+                  + ChatColor.GRAY
+                  + ", is ignited using "
+                  + ChatColor.RED
+                  + portal.getLighterMaterial()
+                  + ChatColor.GRAY
+                  + " and goes to "
+                  + ChatColor.RED
+                  + portal.getWorld().getName()
+                  + ChatColor.GRAY
+                  + ".");
         } else {
           p.sendMessage(
               DimensionsSettings.getPrefix()
@@ -348,20 +354,27 @@ public class PortalsCommand extends DimensionsCommand implements Listener {
               if (cached.download(p)) {
                 p.sendMessage(
                     DimensionsSettings.getPrefix()
-                        + ChatColor.GREEN + "The portal has been succesfully downloaded, please"
+                        + ChatColor.GREEN
+                        + "The portal has been succesfully downloaded, please"
                         + " use "
-                        + ChatColor.UNDERLINE + "/dim reload"
-                        + ChatColor.GREEN + " to apply changes.");
+                        + ChatColor.UNDERLINE
+                        + "/dim reload"
+                        + ChatColor.GREEN
+                        + " to apply changes.");
               }
             } catch (IOException e1) {
               p.sendMessage(
                   DimensionsSettings.getPrefix()
-                      + ChatColor.RED + "There was an issue while trying to download the file.");
+                      + ChatColor.RED
+                      + "There was an issue while trying to download the file.");
               e1.printStackTrace();
             }
           } else {
             p.sendMessage(
-                DimensionsSettings.getPrefix() + ChatColor.GREEN + "Link to portal: " + cached.getLink());
+                DimensionsSettings.getPrefix()
+                    + ChatColor.GREEN
+                    + "Link to portal: "
+                    + cached.getLink());
           }
       }
     }
@@ -429,8 +442,7 @@ final class CachedPortal {
 
     File f = new File(CustomPortalLoader.DIRECTORY_PATH + "/" + file + ".yml");
     if (f.exists()) {
-      p.sendMessage(
-          DimensionsSettings.getPrefix() + "A portal with the same name already exists.");
+      p.sendMessage(DimensionsSettings.getPrefix() + "A portal with the same name already exists.");
       return false;
     }
 

@@ -2,7 +2,6 @@ package me.xxastaspastaxx.dimensions.commands;
 
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -27,8 +26,9 @@ public class ReloadCommand extends DimensionsCommand {
     } catch (Exception e) {
       sender.sendMessage(
           DimensionsSettings.getPrefix()
-            + ChatColor.RED
-              + "There was a problem while trying to reload Dimensions. Please check console for more information");
+              + ChatColor.RED
+              + "There was a problem while trying to reload Dimensions. Please check console for"
+              + " more information");
       e.printStackTrace();
     }
   }

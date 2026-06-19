@@ -77,24 +77,32 @@ public class CreatePortalInstance {
   public void save() {
     //
     //		if (updatingStructure==null) {
-    //			p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.GREEN + "Saving structure file...");
+    //			p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+
+    // ChatColor.GREEN + "Saving structure file...");
     //			try {
-    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.GREEN + "Succesfully saved " + 
-    // ChatColor.UNDERLINE + BuildableMobs.getManager().create(options.structureName.replace(" ", "").toLowerCase(),
+    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY +
+    // "]+ ChatColor.GREEN + "Succesfully saved " +
+    // ChatColor.UNDERLINE + BuildableMobs.getManager().create(options.structureName.replace(" ",
+    // "").toLowerCase(),
     // this));
     //			} catch (Exception e) {
-    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.RED + "There was an error trying to save
+    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY +
+    // "]+ ChatColor.RED + "There was an error trying to save
     // the file. Please
     // check console for more information.");
     //				e.printStackTrace();
     //			}
     //		} else {
-    //			p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.YELLOW + "Updating structure file...");
+    //			p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+
+    // ChatColor.YELLOW + "Updating structure file...");
     //			try {
-    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.GREEN + "Succesfully updated " + 
-    // ChatColor.UNDERLINE + BuildableMobs.getManager().updateActions(updatingStructure.getId(), this));
+    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY +
+    // "]+ ChatColor.GREEN + "Succesfully updated " +
+    // ChatColor.UNDERLINE + BuildableMobs.getManager().updateActions(updatingStructure.getId(),
+    // this));
     //			} catch (Exception e) {
-    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+ ChatColor.RED + "There was an error trying to update
+    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY +
+    // "]+ ChatColor.RED + "There was an error trying to update
     // the file.
     // Please check console for more information.");
     //				e.printStackTrace();

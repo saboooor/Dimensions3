@@ -7,7 +7,6 @@ import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortalDestroyCause;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -42,9 +41,12 @@ public class ClearCommand extends DimensionsCommand {
       }
       sender.sendMessage(
           DimensionsSettings.getPrefix()
-              + ChatColor.GREEN + "Removed "
-              + ChatColor.RED + args[1]
-              + ChatColor.GREEN + " portals");
+              + ChatColor.GREEN
+              + "Removed "
+              + ChatColor.RED
+              + args[1]
+              + ChatColor.GREEN
+              + " portals");
     } else {
       sender.sendMessage(
           DimensionsSettings.getPrefix()

@@ -1,8 +1,8 @@
 package me.xxastaspastaxx.dimensions.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 public class WorldsCommand extends DimensionsCommand {

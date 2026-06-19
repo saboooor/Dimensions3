@@ -150,11 +150,7 @@ public class AddonCommand extends DimensionsCommand implements Listener {
       } else if (e.getClickedInventory().equals(installedAddonsGUI)) {
         DimensionsAddon addon =
             Dimensions.getAddonManager()
-                .getAddonByName(
-                    e.getCurrentItem()
-                        .getItemMeta()
-                        .getDisplayName()
-                        );
+                .getAddonByName(e.getCurrentItem().getItemMeta().getDisplayName());
         if (addon == null) {
           e.getWhoClicked()
               .sendMessage(ChatColor.RED + "There was a problem while trying to access the addon");

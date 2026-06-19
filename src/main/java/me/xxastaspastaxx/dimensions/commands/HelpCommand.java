@@ -37,7 +37,17 @@ public class HelpCommand extends DimensionsCommand {
                 commandsPerPage * (1 + page));
         i++) {
       DimensionsCommand cmd = (DimensionsCommand) commandList.toArray()[i];
-      head += "\n/dim " + cmd.getCommand() + " " + cmd.getArgs() + " " + ChatColor.RED + "-" + ChatColor.GRAY + " " + cmd.getDescription();
+      head +=
+          "\n/dim "
+              + cmd.getCommand()
+              + " "
+              + cmd.getArgs()
+              + " "
+              + ChatColor.RED
+              + "-"
+              + ChatColor.GRAY
+              + " "
+              + cmd.getDescription();
     }
     if (Math.min(commandList.size() - (1 + page) * commandsPerPage, commandsPerPage * (2 + page))
             > 0

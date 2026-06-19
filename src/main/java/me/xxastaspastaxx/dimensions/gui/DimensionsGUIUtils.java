@@ -105,6 +105,7 @@ public class DimensionsGUIUtils {
   }
 
   public static ItemStack createPortalItem(CustomPortal customPortal) {
-    return createItem(customPortal.getOutsideMaterial(), ChatColor.WHITE + customPortal.getDisplayName());
+    return createItem(
+        customPortal.getOutsideMaterial(), ChatColor.WHITE + customPortal.getDisplayName());
   }
 }

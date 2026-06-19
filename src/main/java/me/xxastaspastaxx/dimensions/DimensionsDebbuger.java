@@ -46,10 +46,10 @@ public class DimensionsDebbuger {
       Bukkit.getConsoleSender()
           .sendMessage(
               DimensionsSettings.getPrefix()
-                + String.join(
-                    ", ",
-                    Arrays.asList(str).stream()
-                        .map((s) -> s == null ? "null" : s.toString())
-                        .collect(Collectors.toList())));
+                  + String.join(
+                      ", ",
+                      Arrays.asList(str).stream()
+                          .map((s) -> s == null ? "null" : s.toString())
+                          .collect(Collectors.toList())));
   }
 }

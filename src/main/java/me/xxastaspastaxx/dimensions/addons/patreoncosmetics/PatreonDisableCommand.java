@@ -2,7 +2,6 @@ package me.xxastaspastaxx.dimensions.addons.patreoncosmetics;
 
 import me.xxastaspastaxx.dimensions.commands.DimensionsCommand;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
