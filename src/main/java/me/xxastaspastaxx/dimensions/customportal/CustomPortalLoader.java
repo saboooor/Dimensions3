@@ -141,10 +141,10 @@ public class CustomPortalLoader {
 
       Material insideMaterial =
           Material.matchMaterial(portalConfig.getString("Portal.InsideMaterial", "NETHER_PORTAL"));
-      Component insideText =
-          portalConfig.getString("Portal.InsideText") == null
+      Component insideSprite =
+          portalConfig.getString("Portal.InsideSprite") == null
               ? null
-              : MiniMessage.miniMessage().deserialize(portalConfig.getString("Portal.InsideText"));
+              : MiniMessage.miniMessage().deserialize(portalConfig.getString("Portal.InsideSprite"));
 
       //			BlockData[] insideBlockData = new BlockData[] {getInsideBlockData(false,
       // tempBlockData),getInsideBlockData(true, tempBlockData)};
@@ -224,7 +224,7 @@ public class CustomPortalLoader {
               outsideMaterial,
               outsideBlockDir,
               insideMaterial,
-              insideText,
+              insideSprite,
               lighterMaterial,
               particlesColor,
               breakEffect,

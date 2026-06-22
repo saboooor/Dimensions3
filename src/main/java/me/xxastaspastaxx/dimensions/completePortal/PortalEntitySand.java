@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 public class PortalEntitySand extends PortalEntity {
 
   private int fallingBlockId;
+  private boolean isFallback;
 
   private WrapperPlayServerSpawnEntity spawnPacket;
   private WrapperPlayServerEntityTeleport teleportPacket;
@@ -33,10 +34,12 @@ public class PortalEntitySand extends PortalEntity {
    *
    * @param location the location to summon the entity
    * @param combinedID the combinedID of the texture
+   * @param isFallback required for players with older versions that don't support display entities
    */
-  public PortalEntitySand(Location location, int combinedID) {
+  public PortalEntitySand(Location location, int combinedID, boolean isFallback) {
     super(location);
     fallingBlockId = (int) (Math.random() * Integer.MAX_VALUE);
+    this.isFallback = isFallback;
 
     spawnPacket =
         new WrapperPlayServerSpawnEntity(
@@ -69,8 +72,14 @@ public class PortalEntitySand extends PortalEntity {
     destroyPacket = new WrapperPlayServerDestroyEntities(fallingBlockId);
   }
 
+  // Check if the player's version is unsupported (older than 1.21.9) and the entity is a fallback
+  private boolean playerSupportsSprites(Player p) {
+    return isFallback && p.getProtocolVersion() > 773;
+  }
+
   /** Send the spawn packets to the player */
   public void summon(Player p) {
+    if (playerSupportsSprites(p)) return;
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, spawnPacket);
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, teleportPacket);
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, metaPacket);
@@ -78,6 +87,7 @@ public class PortalEntitySand extends PortalEntity {
 
   /** Send the destroy packets to the player */
   public void destroy(Player p) {
+    if (playerSupportsSprites(p)) return;
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, destroyPacket);
 
     p.sendBlockChange(getLocation(), getLocation().getBlock().getBlockData());
@@ -86,6 +96,7 @@ public class PortalEntitySand extends PortalEntity {
   /** Send the destroy packets to all players */
   public void destroyBroadcast() {
     for (Player p : Bukkit.getOnlinePlayers()) {
+      if (playerSupportsSprites(p)) return;
       PacketEvents.getAPI().getPlayerManager().sendPacket(p, destroyPacket);
       p.sendBlockChange(getLocation(), getLocation().getBlock().getBlockData());
     }

@@ -32,7 +32,7 @@ public class CustomPortal {
   private Material outsideMaterial;
   private AxisOrFace outsideBlockDir;
   private Material insideMaterial;
-  private Component insideText;
+  private Component insideSprite;
   private int[] combinedID;
   private BlockData[] insideBlockData;
   private Material lighterMaterial;
@@ -76,7 +76,7 @@ public class CustomPortal {
    * @param outsideMaterial
    * @param outsideBlockDir
    * @param insideMaterial
-   * @param insideText
+   * @param insideSprite
    * @param lighterMaterial
    * @param particlesColor
    * @param breakSound
@@ -103,7 +103,7 @@ public class CustomPortal {
       Material outsideMaterial,
       AxisOrFace outsideBlockDir,
       Material insideMaterial,
-      Component insideText,
+      Component insideSprite,
       Material lighterMaterial,
       Color particlesColor,
       Sound breakSound,
@@ -128,7 +128,7 @@ public class CustomPortal {
     this.outsideMaterial = outsideMaterial;
     this.outsideBlockDir = outsideBlockDir;
     this.insideMaterial = insideMaterial;
-    this.insideText = insideText;
+    this.insideSprite = insideSprite;
     this.lighterMaterial = lighterMaterial;
     this.particlesColor = particlesColor;
     this.breakSound = breakSound;
@@ -183,8 +183,8 @@ public class CustomPortal {
     return insideMaterial;
   }
 
-  public Component getInsideText() {
-    return insideText;
+  public Component getInsideSprite() {
+    return insideSprite;
   }
 
   /**

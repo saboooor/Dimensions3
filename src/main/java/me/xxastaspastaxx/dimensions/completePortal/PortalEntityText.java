@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 import me.xxastaspastaxx.dimensions.utils;
 import net.kyori.adventure.text.Component;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -35,10 +36,10 @@ public class PortalEntityText extends PortalEntity {
    * block display
    *
    * @param location the location to summon the entity
-   * @param insideText the text component representing the texture of the block display (using a
+   * @param insideSprite the text component representing the texture of the block display (using a
    *     sprite)
    */
-  public PortalEntityText(Location location, Component insideText) {
+  public PortalEntityText(Location location, Component insideSprite) {
     super(location);
     portalEntityId = (int) (Math.random() * Integer.MAX_VALUE);
 
@@ -57,7 +58,7 @@ public class PortalEntityText extends PortalEntity {
 
     List<EntityData<?>> metadataList = new ArrayList<>();
     // index 23 is the index of the "Text" entity data of the text display entity
-    metadataList.add(new EntityData<>(23, EntityDataTypes.ADV_COMPONENT, insideText));
+    metadataList.add(new EntityData<>(23, EntityDataTypes.ADV_COMPONENT, insideSprite));
     // index 25 is the index of the "Background Color" entity data of the text display entity, set
     // it to 0 to make the background invisible
     metadataList.add(new EntityData<>(25, EntityDataTypes.INT, 0));
@@ -79,14 +80,21 @@ public class PortalEntityText extends PortalEntity {
     destroyPacket = new WrapperPlayServerDestroyEntities(portalEntityId);
   }
 
+  // Check if the player's version is unsupported (older than 1.21.9) and the entity is a fallback
+  private boolean playerDoesntSupportSprites(Player p) {
+    return p.getProtocolVersion() < 773;
+  }
+
   /** Send the spawn packets to the player */
   public void summon(Player p) {
+    if (playerDoesntSupportSprites(p)) return;
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, spawnPacket);
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, metaPacket);
   }
 
   /** Send the destroy packets to the player */
   public void destroy(Player p) {
+    if (playerDoesntSupportSprites(p)) return;
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, destroyPacket);
 
     p.sendBlockChange(getLocation(), getLocation().getBlock().getBlockData());
@@ -95,6 +103,7 @@ public class PortalEntityText extends PortalEntity {
   /** Send the destroy packets to all players */
   public void destroyBroadcast() {
     for (Player p : Bukkit.getOnlinePlayers()) {
+      if (playerDoesntSupportSprites(p)) return;
       PacketEvents.getAPI().getPlayerManager().sendPacket(p, destroyPacket);
       p.sendBlockChange(getLocation(), getLocation().getBlock().getBlockData());
     }

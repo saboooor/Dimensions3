@@ -84,30 +84,37 @@ public class CompletePortal {
       for (double side = zAxis ? min.getZ() : min.getX();
           side <= (zAxis ? max.getZ() : max.getX());
           side++) {
-        PortalEntity entity;
-        if (customPortal.getInsideMaterial() != null) {
-          if (customPortal.getInsideMaterial().isSolid()
-              || customPortal.getInsideMaterial() == Material.NETHER_PORTAL) {
-            entity =
-                new PortalEntitySand(
-                    new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
-                    customPortal.getCombinedID(zAxis));
-          } else {
-            entity =
-                new PortalEntitySolid(
-                    new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
-                    customPortal.getInsideBlockData(zAxis));
-          }
-        } else if (customPortal.getInsideText() != null) {
-          entity =
+        PortalEntity textEntity;
+        if (customPortal.getInsideSprite() != null) {
+          textEntity =
               new PortalEntityText(
                   new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
-                  customPortal.getInsideText());
+                  customPortal.getInsideSprite());
         } else {
           continue;
         }
+        spawnedEntities.add(textEntity);
 
-        spawnedEntities.add(entity);
+        PortalEntity fallbackEntity;
+        if (customPortal.getInsideMaterial() != null) {
+          if (customPortal.getInsideMaterial().isSolid()
+              || customPortal.getInsideMaterial() == Material.NETHER_PORTAL) {
+            fallbackEntity =
+                new PortalEntitySand(
+                    new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
+                    customPortal.getCombinedID(zAxis),
+                    customPortal.getInsideSprite() != null);
+          } else {
+            fallbackEntity =
+                new PortalEntitySolid(
+                    new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
+                    customPortal.getInsideBlockData(zAxis),
+                    customPortal.getInsideSprite() != null);
+          }
+        } else {
+          continue;
+        }
+        spawnedEntities.add(fallbackEntity);
       }
     }
   }

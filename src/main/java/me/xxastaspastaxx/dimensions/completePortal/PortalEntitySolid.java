@@ -12,25 +12,35 @@ import org.bukkit.entity.Player;
 public class PortalEntitySolid extends PortalEntity {
 
   private BlockData blockdata;
+  private boolean isFallback;
 
   /**
    * Construct PortalEntity with the blockData to place
    *
    * @param location the location of the block
    * @param blockData the block data to place
+   * @param isFallback whether the entity is a fallback for older clients
    */
-  public PortalEntitySolid(Location location, BlockData blockData) {
+  public PortalEntitySolid(Location location, BlockData blockData, boolean isFallback) {
     super(location);
     this.blockdata = blockData;
+    this.isFallback = isFallback;
+  }
+
+  // Check if the player's version is unsupported (older than 1.21.9) and the entity is a fallback
+  private boolean playerSupportsSprites(Player p) {
+    return isFallback && p.getProtocolVersion() > 773;
   }
 
   /** Send block change (block data) to the player */
   public void summon(Player p) {
+    if (playerSupportsSprites(p)) return;
     p.sendBlockChange(getLocation(), blockdata);
   }
 
   /** Send block change (air) to the player */
   public void destroy(Player p) {
+    if (playerSupportsSprites(p)) return;
     p.sendBlockChange(getLocation(), Material.AIR.createBlockData());
   }
 
@@ -38,6 +48,9 @@ public class PortalEntitySolid extends PortalEntity {
   public void destroyBroadcast() {
     getLocation().getBlock().setType(Material.AIR);
     Bukkit.getOnlinePlayers()
-        .forEach(p -> p.sendBlockChange(getLocation(), Material.AIR.createBlockData()));
+        .forEach(p -> {
+          if (playerSupportsSprites(p)) return;
+          p.sendBlockChange(getLocation(), Material.AIR.createBlockData());
+        });
   }
 }
