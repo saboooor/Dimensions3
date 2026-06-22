@@ -22,73 +22,102 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class DimensionsSettings {
 
   /** Config version for version control */
+  @Comment("Config version for version control")
   private static final double configVersion = 3.3;
 
   /** Enable patreon cosmetics for your server */
+  @Comment("Enable patreon cosmetics for your server")
   public static boolean enablePatreonCosmetics = true;
 
   /** Enable to show players the available portals */
+  @Comment("Enable to show players the available portals")
   public static boolean showPortalsToPlayers = true;
 
   /** Search radius for nearby portals */
+  @Comment("Search radius for nearby portals")
   public static int searchRadius = 128;
 
   /** Only search for portals that are facing the same axis as the one used */
+  @Comment("Only search for portals that are facing the same axis as the one used")
   public static boolean searchSameAxis = false;
 
   /** Only search for portals that are the same size as the one used */
+  @Comment("Only search for portals that are the same size as the one used")
   public static boolean searchSameSize = false;
 
   /**
    * Search first for a portal facing the same axis and has the same size as the one used and then
    * search for any portal
    */
+  @Comment({
+    "Search first for a portal facing the same axis and has the same size as the one used and then"
+        + " search for any portal"
+  })
   public static boolean searchFirstClonePortal = true;
 
   /** Ignore portals that are already linked to another portal */
+  @Comment("Ignore portals that are already linked to another portal")
   public static boolean ignoreLinkedPortals = false;
 
   /** Radius to search for a safe place to build a portal */
+  @Comment("Radius to search for a safe place to build a portal")
   public static int safeSpotSearchRadius = 16;
 
   /**
    * Allow in order to not serach for safeSpotSearchRadius blocks in height but for the whole world
    * height
    */
+  @Comment({
+    "Allow in order to not search for safeSpotSearchRadius blocks in height but for the whole"
+        + " world",
+    "height"
+  })
   public static boolean safeSpotSearchAllY = true;
 
   /** The world that portals will teleport to when they dont know where to lead */
+  @Comment("The world that portals will teleport to when they dont know where to lead")
   public static World fallbackWorld = null;
 
   /** The level of the debug messages in the console */
+  @Comment("The level of the debug messages in the console")
   public static int debugLevel = 2;
 
   /**
    * Enable if a fake block is being placed at the feet of the player to play the nether portal
    * effect
    */
+  @Comment({
+    "Enable if a fake block is being placed at the feet of the player to play the nether portal",
+    "effect"
+  })
   public static boolean enableNetherPortalEffect = true;
 
   // public static boolean enableMobsTeleportation = true; TODO per portal
   // public static boolean enableEntitiesTeleportation = true; TODO per portal
   /** Allow item consumption on portal ignite */
+  @Comment("Allow item consumption on portal ignite")
   public static boolean consumeItems = true;
 
   /** Enable entities teleporting using portals */
+  @Comment("Enable entities teleporting using portals")
   public static boolean enableEntitiesTeleport = false;
 
   /** Check for entities inside the portal every set ticks */
+  @Comment("Check for entities inside the portal every set ticks")
   public static long updateEveryTick = 7;
 
   /** List of allowed event checks so admins can control cpu usage */
+  @Comment("List of allowed event checks so admins can control cpu usage")
   public static List<String> listenToEvents =
       Arrays.asList(CustomPortalDestroyCause.values()).stream()
           .map(s -> s.name())
           .collect(Collectors.toList());
 
   /** Check for entities inside the portal every set ticks */
+  @Comment("Check for entities inside the portal every set ticks")
   public static long portalInsideDelay = 1;
 
+  @Comment("The prefix used in plugin messages")
   public static String prefix = "<gray>[<red>Dimensions<gray>] <reset>";
 
   /** List of configuration per world for easier access + override */
@@ -117,16 +146,35 @@ public class DimensionsSettings {
     try {
       config = main.getConfig();
 
+      config
+          .options()
+          .setHeader(
+              Arrays.asList(
+                  "Dimensions Configuration", "For support and updates, visit the plugin page."));
+
       Field[] fields = this.getClass().getDeclaredFields();
 
       if (config.getDouble("configVersion", 0.0) != configVersion) {
         // UpdateFromPrev
         config.set("configVersion", configVersion);
       }
+      try {
+        Field fVersion = this.getClass().getDeclaredField("configVersion");
+        if (fVersion.isAnnotationPresent(Comment.class)) {
+          config.setComments(
+              "configVersion", Arrays.asList(fVersion.getAnnotation(Comment.class).value()));
+        }
+      } catch (NoSuchFieldException e) {
+        e.printStackTrace();
+      }
 
       for (Field field : fields) {
         if (ignoredSettings.contains(field.getName())) continue;
         config.addDefault(field.getName(), field.get(this.getClass()));
+        if (field.isAnnotationPresent(Comment.class)) {
+          config.setComments(
+              field.getName(), Arrays.asList(field.getAnnotation(Comment.class).value()));
+        }
       }
 
       config.options().copyDefaults(true);
@@ -162,6 +210,15 @@ public class DimensionsSettings {
   public static void setDefaultWorld() {
     fallbackWorld = Bukkit.getWorlds().get(0);
     config.addDefault("fallbackWorld", fallbackWorld.getName());
+    try {
+      Field field = DimensionsSettings.class.getDeclaredField("fallbackWorld");
+      if (field.isAnnotationPresent(Comment.class)) {
+        config.setComments(
+            "fallbackWorld", Arrays.asList(field.getAnnotation(Comment.class).value()));
+      }
+    } catch (NoSuchFieldException e) {
+      e.printStackTrace();
+    }
     config.options().copyDefaults(true);
     main.saveConfig();
     fallbackWorld = Bukkit.getWorld(config.getString("fallbackWorld"));

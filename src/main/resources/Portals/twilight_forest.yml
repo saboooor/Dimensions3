@@ -1,0 +1,69 @@
+# Example portal configuration for an Twilight Forest-like portal. You can create a new portal based on this or modify it as needed
+# For this to work, the horizontal portal addon should be installed.
+
+# Custom Portal Configuration File
+# Configure frame materials, inside materials, particle effects, and more.
+
+# Config version for version control
+configVersion: 4.0.0
+# Enable or disable this custom portal
+Enable: false
+# The display name of the custom portal
+DisplayName: twilight_forest
+Portal:
+  Frame:
+    # The block material used for the portal frame
+    Material: grass_block
+    # The block face direction or orientation restrictions for the frame
+    Face: all
+  # The block material inside the portal when ignited
+  InsideMaterial: purple_stained_glass
+  # Optional MiniMessage-formatted sprite component for the portal inside
+  InsideSprite: <sprite:"minecraft:blocks":block/nether_portal>
+  # The item material used to ignite the portal (e.g. FLINT_AND_STEEL)
+  LighterMaterial: diamond
+  # The color of portal particles (format: R;G;B)
+  ParticlesColor: 92;196;253
+  # The minimum width of the portal frame (including frame blocks)
+  MinimumWidth: 4
+  # The minimum height of the portal frame (including frame blocks)
+  MinimumHeight: 4
+  # The maximum width of the portal frame (including frame blocks)
+  MaximumWidth: 14
+  # The maximum height of the portal frame (including frame blocks)
+  MaximumHeight: 15
+Options:
+  # Whether to enable particle effects for this portal
+  EnableParticles: true
+  # List of worlds from which players are allowed to use this portal (use 'all' for all worlds)
+  AllowedWorlds: []
+  # The teleport delay in seconds when standing inside the portal
+  TeleportDelay: 4
+  ExitPortal:
+    # Whether to automatically build an exit portal in the destination world
+    Enable: true
+    # The fixed width of the generated exit portal (-1 to match incoming portal width)
+    FixedWidth: -1
+    # The fixed height of the generated exit portal (-1 to match incoming portal height)
+    FixedHeight: -1
+World:
+  # The destination world name that players teleport to
+  Name: twilight_forest
+Entities:
+  # List of entity transformations when they pass through the portal (format: SOURCE_ENTITY->TARGET_ENTITY)
+  Transformation: []
+  Spawning:
+    # The delay range in ticks between entity spawns from the portal (format: min-max or single value)
+    Delay: 0
+    # List of entities that can spawn from the portal and their weight/chance (format: ENTITY;WEIGHT)
+    List: []
+Addon:
+  LightAPI:
+    Level: 10
+  Unbreakable:
+  - PLAYER_INSIDE
+  - ENTITY
+  - DISPENSER
+  - PISTON
+  - BLOCK_PHYSICS
+  HorizontalPortal: "true"

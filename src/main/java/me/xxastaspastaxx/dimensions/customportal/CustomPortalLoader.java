@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import me.xxastaspastaxx.dimensions.AxisOrFace;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
@@ -29,7 +31,7 @@ public class CustomPortalLoader {
 
   public static final String DIRECTORY_PATH = "./plugins/Dimensions/Portals";
   public static final File PORTALS_DIRECTORY = new File(DIRECTORY_PATH);
-  public static final String CONFIG_VERSION = "3.0.1";
+  public static final String CONFIG_VERSION = "4.0.0";
 
   private static Class<?> craftBlockDataClass;
   private static Method getStateMethod;
@@ -97,7 +99,18 @@ public class CustomPortalLoader {
     ArrayList<CustomPortal> res = new ArrayList<CustomPortal>();
 
     File portalFolder = new File(DIRECTORY_PATH);
-    if (!portalFolder.exists()) portalFolder.mkdir();
+    if (!portalFolder.exists()) {
+      portalFolder.mkdir();
+    }
+
+    File[] files = PORTALS_DIRECTORY.listFiles();
+    if (files == null || files.length == 0) {
+      Dimensions main = Dimensions.getInstance();
+      if (main != null) {
+        main.saveResource("Portals/aether.yml", false);
+        main.saveResource("Portals/twilight_forest.yml", false);
+      }
+    }
 
     PortalGeometry.instance = PortalGeometry.nullGeometry();
 
@@ -108,7 +121,10 @@ public class CustomPortalLoader {
       YamlConfiguration portalConfig = YamlConfiguration.loadConfiguration(f);
 
       String fVersion = portalConfig.getString("configVersion", "pre3");
-      if (!fVersion.equals(CONFIG_VERSION)) {
+      boolean commentsUpdated = updateComments(portalConfig);
+      boolean versionMismatch = !fVersion.equals(CONFIG_VERSION);
+
+      if (versionMismatch) {
 
         if (portalConfig.contains("Options.BuildExitPortal")) {
           portalConfig.set(
@@ -123,7 +139,9 @@ public class CustomPortalLoader {
         portalConfig.set("Options.ExitPortal.FixedHeight", -1);
 
         portalConfig.set("configVersion", CONFIG_VERSION);
+      }
 
+      if (versionMismatch || commentsUpdated) {
         try {
           portalConfig.save(f);
         } catch (IOException e) {
@@ -313,5 +331,102 @@ public class CustomPortalLoader {
     }
 
     return blockData;
+  }
+
+  private boolean updateComments(YamlConfiguration config) {
+    boolean modified = false;
+    HashMap<String, List<String>> commentsMap = new HashMap<>();
+    commentsMap.put("configVersion", Arrays.asList("Config version for version control"));
+    commentsMap.put("Enable", Arrays.asList("Enable or disable this custom portal"));
+    commentsMap.put("DisplayName", Arrays.asList("The display name of the custom portal"));
+    commentsMap.put(
+        "Portal.Frame.Material", Arrays.asList("The block material used for the portal frame"));
+    commentsMap.put(
+        "Portal.Frame.Face",
+        Arrays.asList("The block face direction or orientation restrictions for the frame"));
+    commentsMap.put(
+        "Portal.InsideMaterial",
+        Arrays.asList("The block material inside the portal when ignited"));
+    commentsMap.put(
+        "Portal.InsideSprite",
+        Arrays.asList("Optional MiniMessage-formatted sprite component for the portal inside"));
+    commentsMap.put(
+        "Portal.LighterMaterial",
+        Arrays.asList("The item material used to ignite the portal (e.g. FLINT_AND_STEEL)"));
+    commentsMap.put(
+        "Portal.ParticlesColor", Arrays.asList("The color of portal particles (format: R;G;B)"));
+    commentsMap.put("Portal.BreakEffect", Arrays.asList("The sound played when the portal breaks"));
+    commentsMap.put(
+        "Portal.MinimumHeight",
+        Arrays.asList("The minimum height of the portal frame (including frame blocks)"));
+    commentsMap.put(
+        "Portal.MaximumHeight",
+        Arrays.asList("The maximum height of the portal frame (including frame blocks)"));
+    commentsMap.put(
+        "Portal.MaximumWidth",
+        Arrays.asList("The maximum width of the portal frame (including frame blocks)"));
+    commentsMap.put(
+        "Portal.MinimumWidth",
+        Arrays.asList("The minimum width of the portal frame (including frame blocks)"));
+    commentsMap.put(
+        "World.Name", Arrays.asList("The destination world name that players teleport to"));
+    commentsMap.put(
+        "Options.AllowedWorlds",
+        Arrays.asList(
+            "List of worlds from which players are allowed to use this portal (use 'all' for all"
+                + " worlds)"));
+    commentsMap.put(
+        "Options.ExitPortal.Enable",
+        Arrays.asList("Whether to automatically build an exit portal in the destination world"));
+    commentsMap.put(
+        "Options.ExitPortal.FixedWidth",
+        Arrays.asList(
+            "The fixed width of the generated exit portal (-1 to match incoming portal width)"));
+    commentsMap.put(
+        "Options.ExitPortal.FixedHeight",
+        Arrays.asList(
+            "The fixed height of the generated exit portal (-1 to match incoming portal height)"));
+    commentsMap.put(
+        "Options.TeleportDelay",
+        Arrays.asList("The teleport delay in seconds when standing inside the portal"));
+    commentsMap.put(
+        "Options.EnableParticles",
+        Arrays.asList("Whether to enable particle effects for this portal"));
+    commentsMap.put(
+        "Entities.Transformation",
+        Arrays.asList(
+            "List of entity transformations when they pass through the portal (format:"
+                + " SOURCE_ENTITY->TARGET_ENTITY)"));
+    commentsMap.put(
+        "Entities.Spawning.Delay",
+        Arrays.asList(
+            "The delay range in ticks between entity spawns from the portal (format: min-max or"
+                + " single value)"));
+    commentsMap.put(
+        "Entities.Spawning.List",
+        Arrays.asList(
+            "List of entities that can spawn from the portal and their weight/chance (format:"
+                + " ENTITY;WEIGHT)"));
+
+    List<String> header =
+        Arrays.asList(
+            "Custom Portal Configuration File",
+            "Configure frame materials, inside materials, particle effects, and more.");
+    if (!header.equals(config.options().getHeader())) {
+      config.options().setHeader(header);
+      modified = true;
+    }
+
+    for (Map.Entry<String, List<String>> entry : commentsMap.entrySet()) {
+      String path = entry.getKey();
+      if (config.contains(path)) {
+        List<String> currentComments = config.getComments(path);
+        if (!entry.getValue().equals(currentComments)) {
+          config.setComments(path, entry.getValue());
+          modified = true;
+        }
+      }
+    }
+    return modified;
   }
 }
