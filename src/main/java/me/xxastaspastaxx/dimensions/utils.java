@@ -1,9 +1,9 @@
 package me.xxastaspastaxx.dimensions;
 
 public class utils {
-  private static final byte TEXT_DISPLAY_FLAG_SHADOW = 0x01;
-  private static final byte TEXT_DISPLAY_FLAG_SEE_THROUGH = 0x02;
-  private static final byte TEXT_DISPLAY_FLAG_DEFAULT_BACKGROUND = 0x04;
+  // private static final byte TEXT_DISPLAY_FLAG_SHADOW = 0x01;
+  // private static final byte TEXT_DISPLAY_FLAG_SEE_THROUGH = 0x02;
+  // private static final byte TEXT_DISPLAY_FLAG_DEFAULT_BACKGROUND = 0x04;
   private static final byte TEXT_DISPLAY_FLAG_ALIGN_LEFT = 0x08;
   private static final byte TEXT_DISPLAY_FLAG_ALIGN_RIGHT = 0x10;
 

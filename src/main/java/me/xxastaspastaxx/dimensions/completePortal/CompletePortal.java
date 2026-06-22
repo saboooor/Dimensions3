@@ -85,9 +85,9 @@ public class CompletePortal {
           side <= (zAxis ? max.getZ() : max.getX());
           side++) {
         PortalEntity entity;
-        if (customPortal.getInsideMaterialBlock() != null) {
-          if (customPortal.getInsideMaterialBlock().isSolid()
-              || customPortal.getInsideMaterialBlock() == Material.NETHER_PORTAL) {
+        if (customPortal.getInsideMaterial() != null) {
+          if (customPortal.getInsideMaterial().isSolid()
+              || customPortal.getInsideMaterial() == Material.NETHER_PORTAL) {
             entity =
                 new PortalEntitySand(
                     new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
@@ -98,11 +98,11 @@ public class CompletePortal {
                     new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
                     customPortal.getInsideBlockData(zAxis));
           }
-        } else if (customPortal.getInsideMaterialText() != null) {
+        } else if (customPortal.getInsideText() != null) {
           entity =
               new PortalEntityText(
                   new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
-                  customPortal.getInsideMaterialText());
+                  customPortal.getInsideText());
         } else {
           continue;
         }

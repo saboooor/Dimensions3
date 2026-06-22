@@ -139,22 +139,12 @@ public class CustomPortalLoader {
       AxisOrFace outsideBlockDir =
           new AxisOrFace(portalConfig.getString("Portal.Frame.Face", "all"));
 
-      String insideMaterialType =
-          portalConfig.getString("Portal.InsideMaterialType", "falling_block");
-
-      Material insideMaterialBlock =
-          insideMaterialType.equals("falling_block")
-              ? Material.matchMaterial(
-                  portalConfig.getString("Portal.InsideMaterial", "NETHER_PORTAL"))
-              : null;
-      Component insideMaterialText =
-          insideMaterialType.equals("text_display")
-              ? MiniMessage.miniMessage()
-                  .deserialize(
-                      portalConfig.getString(
-                          "Portal.InsideMaterial",
-                          "<sprite:\"minecraft:blocks\":block/nether_portal>"))
-              : null;
+      Material insideMaterial =
+          Material.matchMaterial(portalConfig.getString("Portal.InsideMaterial", "NETHER_PORTAL"));
+      Component insideText =
+          portalConfig.getString("Portal.InsideText") == null
+              ? null
+              : MiniMessage.miniMessage().deserialize(portalConfig.getString("Portal.InsideText"));
 
       //			BlockData[] insideBlockData = new BlockData[] {getInsideBlockData(false,
       // tempBlockData),getInsideBlockData(true, tempBlockData)};
@@ -233,9 +223,8 @@ public class CustomPortalLoader {
               enabled,
               outsideMaterial,
               outsideBlockDir,
-              insideMaterialBlock,
-              insideMaterialText,
-              insideMaterialType,
+              insideMaterial,
+              insideText,
               lighterMaterial,
               particlesColor,
               breakEffect,
@@ -254,8 +243,7 @@ public class CustomPortalLoader {
               spawningDelay[0],
               spawningDelay[1],
               entitySpawning);
-      if (insideMaterialBlock != null)
-        portal.setInsideBlockData(insideMaterialBlock.createBlockData());
+      if (insideMaterial != null) portal.setInsideBlockData(insideMaterial.createBlockData());
       for (DimensionsAddon addon : Dimensions.getAddonManager().getAddons()) {
         addon.registerPortal(portalConfig, portal);
       }
@@ -269,14 +257,14 @@ public class CustomPortalLoader {
    * Creates combinedID for the block data inside the portal
    *
    * @param insideBlockData
-   * @param insideMaterialBlock
+   * @param insideMaterial
    * @return
    */
-  public static int[] createCombinedID(BlockData[] insideBlockData, Material insideMaterialBlock) {
+  public static int[] createCombinedID(BlockData[] insideBlockData, Material insideMaterial) {
     int combinedId[] = new int[2];
-    if (insideMaterialBlock.isSolid()
-        || insideMaterialBlock == Material.NETHER_PORTAL
-        || insideMaterialBlock == Material.END_GATEWAY) {
+    if (insideMaterial.isSolid()
+        || insideMaterial == Material.NETHER_PORTAL
+        || insideMaterial == Material.END_GATEWAY) {
       if (getStateMethod != null && getCombinedIdMethod != null)
         try {
           Object nmsBlockData = getStateMethod.invoke(insideBlockData[0]);

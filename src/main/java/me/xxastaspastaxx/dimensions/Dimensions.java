@@ -96,9 +96,9 @@ public class Dimensions extends JavaPlugin {
             () -> {
               Map<String, Map<String, Integer>> map = new HashMap<>();
               for (CustomPortal portal : getCustomPortalManager().getCustomPortals()) {
-                if (portal.getInsideMaterialBlock() != null) {
+                if (portal.getInsideMaterial() != null) {
                   Map<String, Integer> entry = new HashMap<>();
-                  entry.put(portal.getInsideMaterialBlock().toString(), 1);
+                  entry.put(portal.getInsideMaterial().toString(), 1);
                   map.put(portal.getOutsideMaterial().toString(), entry);
                 }
               }

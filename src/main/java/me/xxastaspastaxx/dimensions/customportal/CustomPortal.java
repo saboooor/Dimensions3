@@ -31,9 +31,8 @@ public class CustomPortal {
 
   private Material outsideMaterial;
   private AxisOrFace outsideBlockDir;
-  private Material insideMaterialBlock;
-  private Component insideMaterialText;
-  private String insideMaterialType;
+  private Material insideMaterial;
+  private Component insideText;
   private int[] combinedID;
   private BlockData[] insideBlockData;
   private Material lighterMaterial;
@@ -77,6 +76,7 @@ public class CustomPortal {
    * @param outsideMaterial
    * @param outsideBlockDir
    * @param insideMaterial
+   * @param insideText
    * @param lighterMaterial
    * @param particlesColor
    * @param breakSound
@@ -102,9 +102,8 @@ public class CustomPortal {
       boolean enabled,
       Material outsideMaterial,
       AxisOrFace outsideBlockDir,
-      Material insideMaterialBlock,
-      Component insideMaterialText,
-      String insideMaterialType,
+      Material insideMaterial,
+      Component insideText,
       Material lighterMaterial,
       Color particlesColor,
       Sound breakSound,
@@ -128,9 +127,8 @@ public class CustomPortal {
     this.enabled = enabled;
     this.outsideMaterial = outsideMaterial;
     this.outsideBlockDir = outsideBlockDir;
-    this.insideMaterialBlock = insideMaterialBlock;
-    this.insideMaterialText = insideMaterialText;
-    this.insideMaterialType = insideMaterialType;
+    this.insideMaterial = insideMaterial;
+    this.insideText = insideText;
     this.lighterMaterial = lighterMaterial;
     this.particlesColor = particlesColor;
     this.breakSound = breakSound;
@@ -181,21 +179,12 @@ public class CustomPortal {
     return outsideBlockDir;
   }
 
-  public Material getInsideMaterialBlock() {
-    return insideMaterialBlock;
+  public Material getInsideMaterial() {
+    return insideMaterial;
   }
 
-  public Component getInsideMaterialText() {
-    return insideMaterialText;
-  }
-
-  /**
-   * Get the inside material type possible values: "falling_block", "text_display"
-   *
-   * @return
-   */
-  public String getInsideMaterialType() {
-    return insideMaterialType;
+  public Component getInsideText() {
+    return insideText;
   }
 
   /**

@@ -26,7 +26,7 @@ public class InfoCommand extends DimensionsCommand {
       sender.sendMessage(
           DimensionsSettings.getPrefix()
               + "Version "
-              + Dimensions.getInstance().getDescription().getVersion());
+              + Dimensions.getInstance().getPluginMeta().getVersion());
     }
   }
 }

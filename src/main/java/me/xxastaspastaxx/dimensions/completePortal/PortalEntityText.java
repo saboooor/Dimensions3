@@ -35,10 +35,10 @@ public class PortalEntityText extends PortalEntity {
    * block display
    *
    * @param location the location to summon the entity
-   * @param insideMaterialText the text component representing the texture of the block display
-   *     (using a sprite)
+   * @param insideText the text component representing the texture of the block display (using a
+   *     sprite)
    */
-  public PortalEntityText(Location location, Component insideMaterialText) {
+  public PortalEntityText(Location location, Component insideText) {
     super(location);
     portalEntityId = (int) (Math.random() * Integer.MAX_VALUE);
 
@@ -47,8 +47,7 @@ public class PortalEntityText extends PortalEntity {
             portalEntityId,
             Optional.of(UUID.randomUUID()),
             EntityTypes.TEXT_DISPLAY,
-            new Vector3d(
-                location.getBlockX() + 0.37, location.getBlockY() - 0.25, location.getBlockZ()),
+            new Vector3d(location.getBlockX(), location.getBlockY(), location.getBlockZ()),
             0f, // pitch
             0f, // yaw
             0f, // headYaw
@@ -58,7 +57,7 @@ public class PortalEntityText extends PortalEntity {
 
     List<EntityData<?>> metadataList = new ArrayList<>();
     // index 23 is the index of the "Text" entity data of the text display entity
-    metadataList.add(new EntityData<>(23, EntityDataTypes.ADV_COMPONENT, insideMaterialText));
+    metadataList.add(new EntityData<>(23, EntityDataTypes.ADV_COMPONENT, insideText));
     // index 25 is the index of the "Background Color" entity data of the text display entity, set
     // it to 0 to make the background invisible
     metadataList.add(new EntityData<>(25, EntityDataTypes.INT, 0));
@@ -66,9 +65,14 @@ public class PortalEntityText extends PortalEntity {
     // 15728880 to make it fullbright on both sky and block light
     // blockLight << 4 | skyLight << 20
     metadataList.add(new EntityData<>(16, EntityDataTypes.INT, utils.packBrightness(15, 15)));
-    // index 12 is the index of the "Scale" entity data of the display entity, set it to
+    // index 12 is the index of the "Scale" entity data of the display entity, set it to 5 to make
+    // it the size of a block
     metadataList.add(
         new EntityData<>(12, EntityDataTypes.VECTOR3F, new Vector3f(5.0f, 5.0f, 5.0f)));
+    // index 11 is the index of the "Translation" entity data of the display entity, text displays
+    // need a bit of translation to be centered on the block
+    metadataList.add(
+        new EntityData<>(11, EntityDataTypes.VECTOR3F, new Vector3f(-0.125f, 0.0f, 0.75f)));
 
     metaPacket = new WrapperPlayServerEntityMetadata(portalEntityId, metadataList);
 

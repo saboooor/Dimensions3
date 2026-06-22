@@ -126,7 +126,7 @@ public class DimensionsUtils {
   }
 
   public static void cloneEntity(Entity en, Entity newEn) {
-    newEn.setCustomName(en.getCustomName());
+    newEn.customName(en.name());
     newEn.setCustomNameVisible(en.isCustomNameVisible());
     newEn.setFallDistance(en.getFallDistance());
     newEn.setFireTicks(en.getFireTicks());
