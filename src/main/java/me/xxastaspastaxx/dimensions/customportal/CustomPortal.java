@@ -9,6 +9,7 @@ import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPlayerGUIAction;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.completePortal.PortalGeometry;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -30,7 +31,9 @@ public class CustomPortal {
 
   private Material outsideMaterial;
   private AxisOrFace outsideBlockDir;
-  private Material insideMaterial;
+  private Material insideMaterialBlock;
+  private Component insideMaterialText;
+  private String insideMaterialType;
   private int[] combinedID;
   private BlockData[] insideBlockData;
   private Material lighterMaterial;
@@ -99,7 +102,9 @@ public class CustomPortal {
       boolean enabled,
       Material outsideMaterial,
       AxisOrFace outsideBlockDir,
-      Material insideMaterial,
+      Material insideMaterialBlock,
+      Component insideMaterialText,
+      String insideMaterialType,
       Material lighterMaterial,
       Color particlesColor,
       Sound breakSound,
@@ -123,7 +128,9 @@ public class CustomPortal {
     this.enabled = enabled;
     this.outsideMaterial = outsideMaterial;
     this.outsideBlockDir = outsideBlockDir;
-    this.insideMaterial = insideMaterial;
+    this.insideMaterialBlock = insideMaterialBlock;
+    this.insideMaterialText = insideMaterialText;
+    this.insideMaterialType = insideMaterialType;
     this.lighterMaterial = lighterMaterial;
     this.particlesColor = particlesColor;
     this.breakSound = breakSound;
@@ -174,8 +181,21 @@ public class CustomPortal {
     return outsideBlockDir;
   }
 
-  public Material getInsideMaterial() {
-    return insideMaterial;
+  public Material getInsideMaterialBlock() {
+    return insideMaterialBlock;
+  }
+
+  public Component getInsideMaterialText() {
+    return insideMaterialText;
+  }
+
+  /**
+   * Get the inside material type possible values: "falling_block", "text_display"
+   *
+   * @return
+   */
+  public String getInsideMaterialType() {
+    return insideMaterialType;
   }
 
   /**
@@ -193,7 +213,7 @@ public class CustomPortal {
    * @param zAxis true to get the blockData for the Z axis
    */
   public BlockData getInsideBlockData(boolean zAxis) {
-    return insideBlockData[zAxis ? 1 : 0];
+    return insideBlockData != null ? insideBlockData[zAxis ? 1 : 0] : null;
   }
 
   public Material getLighterMaterial() {

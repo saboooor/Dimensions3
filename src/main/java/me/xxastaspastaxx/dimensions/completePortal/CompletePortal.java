@@ -85,17 +85,26 @@ public class CompletePortal {
           side <= (zAxis ? max.getZ() : max.getX());
           side++) {
         PortalEntity entity;
-        if (customPortal.getInsideMaterial().isSolid()
-            || customPortal.getInsideMaterial() == Material.NETHER_PORTAL) {
+        if (customPortal.getInsideMaterialBlock() != null) {
+          if (customPortal.getInsideMaterialBlock().isSolid()
+              || customPortal.getInsideMaterialBlock() == Material.NETHER_PORTAL) {
+            entity =
+                new PortalEntitySand(
+                    new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
+                    customPortal.getCombinedID(zAxis));
+          } else {
+            entity =
+                new PortalEntitySolid(
+                    new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
+                    customPortal.getInsideBlockData(zAxis));
+          }
+        } else if (customPortal.getInsideMaterialText() != null) {
           entity =
-              new PortalEntitySand(
+              new PortalEntityText(
                   new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
-                  customPortal.getCombinedID(zAxis));
+                  customPortal.getInsideMaterialText());
         } else {
-          entity =
-              new PortalEntitySolid(
-                  new Location(world, zAxis ? min.getX() : side, y, !zAxis ? min.getZ() : side),
-                  customPortal.getInsideBlockData(zAxis));
+          continue;
         }
 
         spawnedEntities.add(entity);
@@ -758,7 +767,13 @@ public class CompletePortal {
             : Particle.valueOf("BLOCK_CRACK");
     for (PortalEntity en : spawnedEntities) {
       world.spawnParticle(
-          blockCrackParticle, en.getLocation(), 10, customPortal.getInsideBlockData(false));
+          blockCrackParticle,
+          en.getLocation(),
+          10,
+          // fallback to outside material if the inside material is made of text
+          customPortal.getInsideBlockData(false) == null
+              ? customPortal.getOutsideMaterial().createBlockData()
+              : customPortal.getInsideBlockData(false));
       if (p == null) en.destroyBroadcast();
       else en.destroy(p);
     }

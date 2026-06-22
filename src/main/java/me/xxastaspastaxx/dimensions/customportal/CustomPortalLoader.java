@@ -10,6 +10,8 @@ import me.xxastaspastaxx.dimensions.AxisOrFace;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.completePortal.PortalGeometry;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Axis;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -136,8 +138,23 @@ public class CustomPortalLoader {
           Material.matchMaterial(portalConfig.getString("Portal.Frame.Material", "COBBLESTONE"));
       AxisOrFace outsideBlockDir =
           new AxisOrFace(portalConfig.getString("Portal.Frame.Face", "all"));
-      Material insideMaterial =
-          Material.matchMaterial(portalConfig.getString("Portal.InsideMaterial", "NEHTER_PORTAL"));
+
+      String insideMaterialType =
+          portalConfig.getString("Portal.InsideMaterialType", "falling_block");
+
+      Material insideMaterialBlock =
+          insideMaterialType.equals("falling_block")
+              ? Material.matchMaterial(
+                  portalConfig.getString("Portal.InsideMaterial", "NETHER_PORTAL"))
+              : null;
+      Component insideMaterialText =
+          insideMaterialType.equals("text_display")
+              ? MiniMessage.miniMessage()
+                  .deserialize(
+                      portalConfig.getString(
+                          "Portal.InsideMaterial",
+                          "<sprite:\"minecraft:blocks\":block/nether_portal>"))
+              : null;
 
       //			BlockData[] insideBlockData = new BlockData[] {getInsideBlockData(false,
       // tempBlockData),getInsideBlockData(true, tempBlockData)};
@@ -216,7 +233,9 @@ public class CustomPortalLoader {
               enabled,
               outsideMaterial,
               outsideBlockDir,
-              insideMaterial,
+              insideMaterialBlock,
+              insideMaterialText,
+              insideMaterialType,
               lighterMaterial,
               particlesColor,
               breakEffect,
@@ -235,7 +254,8 @@ public class CustomPortalLoader {
               spawningDelay[0],
               spawningDelay[1],
               entitySpawning);
-      portal.setInsideBlockData(insideMaterial.createBlockData());
+      if (insideMaterialBlock != null)
+        portal.setInsideBlockData(insideMaterialBlock.createBlockData());
       for (DimensionsAddon addon : Dimensions.getAddonManager().getAddons()) {
         addon.registerPortal(portalConfig, portal);
       }
@@ -249,14 +269,14 @@ public class CustomPortalLoader {
    * Creates combinedID for the block data inside the portal
    *
    * @param insideBlockData
-   * @param insideMaterial
+   * @param insideMaterialBlock
    * @return
    */
-  public static int[] createCombinedID(BlockData[] insideBlockData, Material insideMaterial) {
+  public static int[] createCombinedID(BlockData[] insideBlockData, Material insideMaterialBlock) {
     int combinedId[] = new int[2];
-    if (insideMaterial.isSolid()
-        || insideMaterial == Material.NETHER_PORTAL
-        || insideMaterial == Material.END_GATEWAY) {
+    if (insideMaterialBlock.isSolid()
+        || insideMaterialBlock == Material.NETHER_PORTAL
+        || insideMaterialBlock == Material.END_GATEWAY) {
       if (getStateMethod != null && getCombinedIdMethod != null)
         try {
           Object nmsBlockData = getStateMethod.invoke(insideBlockData[0]);
