@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDe
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityTeleport;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity;
+import io.github.retrooper.packetevents.util.viaversion.ViaVersionUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +75,7 @@ public class PortalEntitySand extends PortalEntity {
 
   // Check if the player's version is unsupported (older than 1.21.9) and the entity is a fallback
   private boolean playerSupportsSprites(Player p) {
-    return isFallback && p.getProtocolVersion() > 773;
+    return isFallback && ViaVersionUtil.getProtocolVersion(p) >= 773;
   }
 
   /** Send the spawn packets to the player */

@@ -144,7 +144,8 @@ public class CustomPortalLoader {
       Component insideSprite =
           portalConfig.getString("Portal.InsideSprite") == null
               ? null
-              : MiniMessage.miniMessage().deserialize(portalConfig.getString("Portal.InsideSprite"));
+              : MiniMessage.miniMessage()
+                  .deserialize(portalConfig.getString("Portal.InsideSprite"));
 
       //			BlockData[] insideBlockData = new BlockData[] {getInsideBlockData(false,
       // tempBlockData),getInsideBlockData(true, tempBlockData)};
