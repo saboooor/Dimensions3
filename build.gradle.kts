@@ -51,6 +51,14 @@ allprojects {
             url = uri("https://mvn.lumine.io/repository/maven-public/")
         }
         maven {
+            name = "oraxen"
+            url = uri("https://repo.oraxen.com/releases/")
+        }
+        maven {
+            name = "iridiumdevelopment"
+            url = uri("https://nexus.iridiumdevelopment.net/repository/maven-releases/")
+        }
+        maven {
             name = "placeholderapi"
             url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
         }

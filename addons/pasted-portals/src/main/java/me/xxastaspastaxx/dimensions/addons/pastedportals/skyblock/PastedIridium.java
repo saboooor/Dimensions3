@@ -3,7 +3,6 @@ package me.xxastaspastaxx.dimensions.addons.pastedportals.skyblock;
 import com.iridium.iridiumskyblock.api.IridiumSkyblockAPI;
 import com.iridium.iridiumskyblock.api.IslandCreateEvent;
 import com.iridium.iridiumskyblock.api.IslandDeleteEvent;
-import com.iridium.iridiumskyblock.api.IslandRegenEvent;
 import com.iridium.iridiumskyblock.database.Island;
 import java.util.ArrayList;
 import me.xxastaspastaxx.dimensions.Dimensions;
@@ -43,12 +42,6 @@ public class PastedIridium implements Listener {
     onIslandCreate(e.getIslandName());
   }
 
-  @EventHandler
-  public void onIslandRegen(IslandRegenEvent e) {
-    onIslandDelete(e.getIsland());
-    onIslandCreate(e.getIsland().getName());
-  }
-
   public void onIslandCreate(String islandName) {
     Bukkit.getScheduler()
         .runTaskLaterAsynchronously(
@@ -59,8 +52,8 @@ public class PastedIridium implements Listener {
               public void run() {
                 Island island = IridiumSkyblockAPI.getInstance().getIslandByName(islandName).get();
 
-                Location min = island.getPos1(world);
-                Location max = island.getPos2(world);
+                Location min = island.getMaximumPosition1(world);
+                Location max = island.getMaximumPosition2(world);
 
                 for (int x = (int) Math.max(max.getBlockX(), min.getBlockX());
                     x >= (int) Math.min(min.getBlockX(), max.getBlockX());
@@ -121,7 +114,11 @@ public class PastedIridium implements Listener {
         (ArrayList<CompletePortal>)
             Dimensions.getCompletePortalManager()
                 .getNearestPortals(
-                    island.getHome(), (int) island.getPos1(world).distance(island.getPos2(world)))
+                    island.getHome(),
+                    (int)
+                        island
+                            .getMaximumPosition1(world)
+                            .distance(island.getMaximumPosition2(world)))
                 .clone();
     for (CompletePortal complete : toRemove) {
       Dimensions.getCompletePortalManager()

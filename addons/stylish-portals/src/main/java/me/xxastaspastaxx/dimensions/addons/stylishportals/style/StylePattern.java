@@ -20,18 +20,21 @@ public class StylePattern {
 
   public boolean isPortalBlock(Block block) {
     for (BlockData blockData : blocks) {
-      if (blockData instanceof FakeBlockData) {
-        return ((FakeBlockData) blockData).isAllowedMaterial(block.getType());
+      FakeBlockData fake = FakeBlockData.getFake(blockData);
+      if (fake != null) {
+        return fake.isAllowedMaterial(block.getType());
       } else if (matches(blockData, block.getBlockData())) return true;
     }
     return false;
   }
 
   private boolean matches(BlockData blockData, BlockData blockData2) {
-    if (blockData instanceof FakeBlockData) {
-      return ((FakeBlockData) blockData).isAllowedMaterial(blockData2.getMaterial());
-    } else if (blockData2 instanceof FakeBlockData) {
-      return ((FakeBlockData) blockData2).isAllowedMaterial(blockData.getMaterial());
+    FakeBlockData fake1 = FakeBlockData.getFake(blockData);
+    FakeBlockData fake2 = FakeBlockData.getFake(blockData2);
+    if (fake1 != null) {
+      return fake1.isAllowedMaterial(blockData2.getMaterial());
+    } else if (fake2 != null) {
+      return fake2.isAllowedMaterial(blockData.getMaterial());
     }
     if (blockData.getMaterial() != blockData2.getMaterial()) return false;
     return blockData.matches(blockData2)
@@ -88,7 +91,7 @@ public class StylePattern {
 
   private void setBlock(Block block, BlockData blockData2, boolean zAxis) {
     block.setType(blockData2.getMaterial());
-    if (blockData2 instanceof FakeBlockData) return;
+    if (FakeBlockData.getFake(blockData2) != null) return;
     if (zAxis) {
       block.setBlockData(
           Bukkit.getServer()

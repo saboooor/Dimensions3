@@ -1,4 +1,9 @@
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 rootProject.name = "dimensions"
+
 include("patreoncosmetics")
 project(":patreoncosmetics").projectDir = file("addons/patreoncosmetics")
 
@@ -35,8 +40,6 @@ include("daylight")
 project(":daylight").projectDir = file("addons/daylight")
 include("hub-world")
 project(":hub-world").projectDir = file("addons/hub-world")
-include("ignite-by-event")
-project(":ignite-by-event").projectDir = file("addons/ignite-by-event")
 include("ignite-by-event-2")
 project(":ignite-by-event-2").projectDir = file("addons/ignite-by-event-2")
 include("limited-uses")

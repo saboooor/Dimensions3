@@ -1,6 +1,7 @@
 package me.xxastaspastaxx.dimensions.addons.stylishportals.style.customblocks;
 
 import com.jojodmo.customitems.api.CustomItemsAPI;
+import me.xxastaspastaxx.dimensions.addons.customlighter.framemanager.FrameManager;
 import org.bukkit.block.Block;
 
 public class CustomItemsFrameManager extends FrameManager {

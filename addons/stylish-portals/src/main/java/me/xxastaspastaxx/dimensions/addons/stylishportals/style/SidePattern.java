@@ -16,7 +16,7 @@ public class SidePattern {
       ArrayList<BlockData> list = new ArrayList<BlockData>();
       for (String materialName : str.split("\\\\")) {
         if (materialName.toLowerCase().contains("placeholderblock"))
-          list.add(new FakeBlockData(materialName.toLowerCase()));
+          list.add(FakeBlockData.create(materialName.toLowerCase()));
         else list.add(Bukkit.getServer().createBlockData(materialName));
       }
       patterns.add(new StylePattern(list));

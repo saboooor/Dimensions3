@@ -3,6 +3,7 @@ package me.xxastaspastaxx.dimensions.addons.stylishportals.style.customblocks;
 import io.th0rgal.oraxen.compatibilities.provided.lightapi.WrappedLightAPI;
 import io.th0rgal.oraxen.mechanics.provided.gameplay.noteblock.NoteBlockMechanic;
 import io.th0rgal.oraxen.mechanics.provided.gameplay.noteblock.NoteBlockMechanicFactory;
+import me.xxastaspastaxx.dimensions.addons.customlighter.framemanager.FrameManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.NoteBlock;

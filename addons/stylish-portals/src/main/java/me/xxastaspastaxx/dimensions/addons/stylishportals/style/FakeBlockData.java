@@ -1,18 +1,17 @@
 package me.xxastaspastaxx.dimensions.addons.stylishportals.style;
 
+import io.th0rgal.oraxen.mechanics.provided.gameplay.noteblock.NoteBlockMechanic;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import me.xxastaspastaxx.dimensions.DimensionsDebbuger;
-import me.xxastaspastaxx.dimensions.addons.stylishportals.style.customblocks.NoteBlockMechanic;
-import org.bukkit.Location;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.SoundGroup;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockSupport;
 import org.bukkit.block.data.BlockData;
 
-public class FakeBlockData implements BlockData {
+public class FakeBlockData implements InvocationHandler {
 
   ArrayList<String> allowedMaterial = new ArrayList<String>();
 
@@ -20,7 +19,32 @@ public class FakeBlockData implements BlockData {
 
   private TypeOfFakeBlockData typeOfFakeBlockData = TypeOfFakeBlockData.VANILLA;
 
-  public FakeBlockData(String materialName) {
+  public static BlockData create(String materialName) {
+    FakeBlockData fake = new FakeBlockData(materialName);
+    return (BlockData)
+        Proxy.newProxyInstance(
+            FakeBlockData.class.getClassLoader(), new Class<?>[] {BlockData.class}, fake);
+  }
+
+  public static BlockData create(String materialName, int customVariation) {
+    FakeBlockData fake = new FakeBlockData(materialName, customVariation);
+    return (BlockData)
+        Proxy.newProxyInstance(
+            FakeBlockData.class.getClassLoader(), new Class<?>[] {BlockData.class}, fake);
+  }
+
+  public static FakeBlockData getFake(BlockData data) {
+    if (data == null) return null;
+    if (Proxy.isProxyClass(data.getClass())) {
+      InvocationHandler handler = Proxy.getInvocationHandler(data);
+      if (handler instanceof FakeBlockData) {
+        return (FakeBlockData) handler;
+      }
+    }
+    return null;
+  }
+
+  private FakeBlockData(String materialName) {
     typeOfFakeBlockData = TypeOfFakeBlockData.VANILLA;
     DimensionsDebbuger.DEBUG.print(materialName);
     materialName = materialName.substring(materialName.indexOf("placeholderblock") + 16);
@@ -39,7 +63,7 @@ public class FakeBlockData implements BlockData {
   }
 
   // oraxen
-  public FakeBlockData(String plugin, int customVariation) {
+  private FakeBlockData(String materialName, int customVariation) {
     typeOfFakeBlockData = TypeOfFakeBlockData.ORAXEN;
     DimensionsDebbuger.DEBUG.print(customVariation);
     materialName = materialName.substring(materialName.indexOf("placeholderblock") + 16);
@@ -65,7 +89,6 @@ public class FakeBlockData implements BlockData {
     return false;
   }
 
-  @Override
   public Material getMaterial() {
     return Arrays.asList(Material.values()).stream()
         .filter(m -> m.isBlock() && isAllowedMaterial(m))
@@ -74,56 +97,19 @@ public class FakeBlockData implements BlockData {
   }
 
   @Override
-  public String getAsString() {
-    return null;
-  }
-
-  @Override
-  public String getAsString(boolean hideUnspecified) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public BlockData merge(BlockData data) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public boolean matches(BlockData data) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public BlockData clone() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public SoundGroup getSoundGroup() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public boolean isSupported(Block block) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public boolean isSupported(Location location) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public boolean isFaceSturdy(BlockFace face, BlockSupport support) {
-    // TODO Auto-generated method stub
-    return false;
+  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    if (method.getName().equals("getMaterial")) {
+      return getMaterial();
+    }
+    if (method.getName().equals("equals")) {
+      return proxy == args[0];
+    }
+    if (method.getName().equals("hashCode")) {
+      return System.identityHashCode(proxy);
+    }
+    // Default fallback to delegate block data (so any other method calls won't crash)
+    BlockData delegate = Bukkit.getServer().createBlockData(Material.STONE);
+    return method.invoke(delegate, args);
   }
 }
 
