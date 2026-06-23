@@ -16,5 +16,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("PatreonCosmeticsAddon.jar")
+    archiveFileName.set("PatreonCosmeticsAddon-4.0.0.jar")
 }

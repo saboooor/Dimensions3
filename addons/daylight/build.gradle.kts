@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("DayLightAddon.jar")
+    archiveFileName.set("DayLightAddon-4.0.0.jar")
 }

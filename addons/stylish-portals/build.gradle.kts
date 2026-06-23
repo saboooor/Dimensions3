@@ -14,5 +14,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("StylishPortals.jar")
+    archiveFileName.set("StylishPortals-4.0.0.jar")
 }

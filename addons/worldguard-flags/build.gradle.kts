@@ -22,5 +22,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("WorldGuardFlags.jar")
+    archiveFileName.set("WorldGuardFlags-4.0.0.jar")
 }

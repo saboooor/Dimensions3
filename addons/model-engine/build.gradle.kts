@@ -10,5 +10,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("ModelEngineAddon.jar")
+    archiveFileName.set("ModelEngineAddon-4.0.0.jar")
 }

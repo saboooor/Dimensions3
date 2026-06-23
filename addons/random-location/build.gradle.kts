@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("RandomLocation.jar")
+    archiveFileName.set("RandomLocation-4.0.0.jar")
 }

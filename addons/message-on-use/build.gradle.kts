@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("MessageOnUse.jar")
+    archiveFileName.set("MessageOnUse-4.0.0.jar")
 }

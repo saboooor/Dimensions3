@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("IgniteByEVENT2.jar")
+    archiveFileName.set("IgniteByEVENT2-4.0.0.jar")
 }

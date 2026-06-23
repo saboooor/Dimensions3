@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("TestAddonh.jar")
+    archiveFileName.set("TestAddonh-4.0.0.jar")
 }

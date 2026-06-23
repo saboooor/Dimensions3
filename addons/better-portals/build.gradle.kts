@@ -10,5 +10,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("BetterPortals.jar")
+    archiveFileName.set("BetterPortals-4.0.0.jar")
 }

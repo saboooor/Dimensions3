@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("CustomWorlds.jar")
+    archiveFileName.set("CustomWorlds-4.0.0.jar")
 }

@@ -16,5 +16,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("ForceLink.jar")
+    archiveFileName.set("ForceLink-4.0.0.jar")
 }

@@ -16,5 +16,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("ExampleAddon.jar")
+    archiveFileName.set("ExampleAddon-4.0.0.jar")
 }

@@ -12,5 +12,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("PastedPortals.jar")
+    archiveFileName.set("PastedPortals-4.0.0.jar")
 }

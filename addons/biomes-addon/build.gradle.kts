@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("BiomesAddon.jar")
+    archiveFileName.set("BiomesAddon-4.0.0.jar")
 }

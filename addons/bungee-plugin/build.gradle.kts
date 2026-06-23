@@ -7,5 +7,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("BungeePlugin.jar")
+    archiveFileName.set("BungeePlugin-4.0.0.jar")
 }

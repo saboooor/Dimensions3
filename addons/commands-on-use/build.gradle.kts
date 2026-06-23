@@ -9,5 +9,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("CommandsOnUse.jar")
+    archiveFileName.set("CommandsOnUse-4.0.0.jar")
 }

@@ -9,5 +9,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("ChargeOnUse.jar")
+    archiveFileName.set("ChargeOnUse-4.0.0.jar")
 }

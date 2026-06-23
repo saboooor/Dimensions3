@@ -13,5 +13,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("CustomLighter.jar")
+    archiveFileName.set("CustomLighter-4.0.0.jar")
 }

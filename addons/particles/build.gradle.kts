@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("Particles.jar")
+    archiveFileName.set("Particles-4.0.0.jar")
 }

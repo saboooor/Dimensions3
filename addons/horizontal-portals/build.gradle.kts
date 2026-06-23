@@ -16,5 +16,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("HorizontalPortals.jar")
+    archiveFileName.set("HorizontalPortals-4.0.0.jar")
 }

@@ -7,5 +7,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("VelocityPlugin.jar")
+    archiveFileName.set("VelocityPlugin-4.0.0.jar")
 }

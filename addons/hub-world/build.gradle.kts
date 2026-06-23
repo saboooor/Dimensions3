@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("HubWorld.jar")
+    archiveFileName.set("HubWorld-4.0.0.jar")
 }

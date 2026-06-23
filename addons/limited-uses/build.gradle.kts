@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("LimitedUses.jar")
+    archiveFileName.set("LimitedUses-4.0.0.jar")
 }

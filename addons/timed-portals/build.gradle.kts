@@ -9,5 +9,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("TimedPortals.jar")
+    archiveFileName.set("TimedPortals-4.0.0.jar")
 }

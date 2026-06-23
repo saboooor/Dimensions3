@@ -98,3 +98,24 @@ tasks.withType<JavaCompile> {
 tasks.jar {
     archiveFileName.set("dimensions-${project.version}.jar")
 }
+
+val collectAddons = tasks.register<Copy>("collectAddons") {
+    group = "build"
+    description = "Collects all addon jar files into a single directory"
+    
+    subprojects.forEach { subproject ->
+        dependsOn(subproject.tasks.matching { it.name == "jar" })
+    }
+    
+    from(subprojects.map { subproject ->
+        subproject.layout.buildDirectory.dir("libs")
+    })
+    
+    into(layout.buildDirectory.dir("addons"))
+    include("*.jar")
+}
+
+tasks.assemble {
+    dependsOn(collectAddons)
+}
+

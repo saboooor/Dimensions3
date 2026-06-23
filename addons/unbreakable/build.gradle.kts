@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("Unbreakable.jar")
+    archiveFileName.set("Unbreakable-4.0.0.jar")
 }

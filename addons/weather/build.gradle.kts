@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("Weather.jar")
+    archiveFileName.set("Weather-4.0.0.jar")
 }
