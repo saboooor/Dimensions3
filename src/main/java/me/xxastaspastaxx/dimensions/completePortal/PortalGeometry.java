@@ -233,7 +233,6 @@ public class PortalGeometry {
    * @param corner true to include the corners of the portal
    */
   public boolean isInside(Location location, boolean outside, boolean corner) {
-    // TODO remove?
     location = location.getBlock().getLocation();
 
     Vector min = outside ? this.min : this.insideMin;
@@ -302,20 +301,22 @@ public class PortalGeometry {
 
           // build platform
           if (y == newLocation.getY()
-              && !((side == (zAxis ? newLocation.getZ() : newLocation.getX())) || side == maxSide)
-              && !block.getRelative(BlockFace.DOWN).getType().isSolid()) {
-            block
-                .getRelative(!zAxis ? BlockFace.NORTH : BlockFace.WEST)
-                .setBlockData(
-                    customPortal
-                        .getAxisOrFace()
-                        .getNewData(customPortal.getOutsideMaterial().createBlockData()));
-            block
-                .getRelative(!zAxis ? BlockFace.SOUTH : BlockFace.EAST)
-                .setBlockData(
-                    customPortal
-                        .getAxisOrFace()
-                        .getNewData(customPortal.getOutsideMaterial().createBlockData()));
+              && !((side == (zAxis ? newLocation.getZ() : newLocation.getX()))
+                  || side == maxSide)) {
+            Block platformBlock1 = block.getRelative(!zAxis ? BlockFace.NORTH : BlockFace.WEST);
+            if (!platformBlock1.getType().isSolid()) {
+              platformBlock1.setBlockData(
+                  customPortal
+                      .getAxisOrFace()
+                      .getNewData(customPortal.getOutsideMaterial().createBlockData()));
+            }
+            Block platformBlock2 = block.getRelative(!zAxis ? BlockFace.SOUTH : BlockFace.EAST);
+            if (!platformBlock2.getType().isSolid()) {
+              platformBlock2.setBlockData(
+                  customPortal
+                      .getAxisOrFace()
+                      .getNewData(customPortal.getOutsideMaterial().createBlockData()));
+            }
           }
         } else {
           block.setType(Material.AIR);

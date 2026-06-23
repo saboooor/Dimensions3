@@ -12,6 +12,7 @@ import me.xxastaspastaxx.dimensions.AxisOrFace;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.completePortal.PortalGeometry;
+import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Axis;
@@ -219,6 +220,10 @@ public class CustomPortalLoader {
       int teleportDelay = portalConfig.getInt("Options.TeleportDelay", 4);
       boolean enableParticles = portalConfig.getBoolean("Options.EnableParticles", true);
       int lightLevel = portalConfig.getInt("Options.LightLevel", 0);
+      boolean enableEntitiesTeleport =
+          portalConfig.getBoolean(
+              "Options.EnableEntitiesTeleport", DimensionsSettings.enableEntitiesTeleport);
+      boolean enableMobsTeleport = portalConfig.getBoolean("Options.EnableMobsTeleport", true);
 
       HashMap<EntityType, EntityType> entityTransformation = new HashMap<EntityType, EntityType>();
       for (String entity : portalConfig.getStringList("Entities.Transformation")) {
@@ -267,6 +272,8 @@ public class CustomPortalLoader {
               teleportDelay,
               enableParticles,
               lightLevel,
+              enableEntitiesTeleport,
+              enableMobsTeleport,
               entityTransformation,
               spawningDelay[0],
               spawningDelay[1],
@@ -404,6 +411,12 @@ public class CustomPortalLoader {
     commentsMap.put(
         "Options.LightLevel",
         Arrays.asList("The light level emitted by the portal (0 to disable)"));
+    commentsMap.put(
+        "Options.EnableEntitiesTeleport",
+        Arrays.asList("Whether to enable non-player entity teleportation for this portal"));
+    commentsMap.put(
+        "Options.EnableMobsTeleport",
+        Arrays.asList("Whether to enable mob teleportation for this portal"));
     commentsMap.put(
         "Entities.Transformation",
         Arrays.asList(

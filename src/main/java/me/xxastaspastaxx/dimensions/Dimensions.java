@@ -130,6 +130,7 @@ public class Dimensions extends JavaPlugin {
     addonsManager.unloadAll();
     completePortalManager.save();
     HandlerList.unregisterAll(this);
+    Bukkit.getScheduler().cancelTasks(this);
 
     new DimensionsSettings(this);
     DimensionsSettings.setDefaultWorld();

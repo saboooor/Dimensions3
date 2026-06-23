@@ -89,7 +89,6 @@ public class HorizontalPortalGeometry extends PortalGeometry {
   }
 
   public boolean isInside(Location location, boolean outside, boolean corner) {
-    // TODO remove?
     location = location.getBlock().getLocation();
 
     Vector min = outside ? getMin() : getInsideMin();

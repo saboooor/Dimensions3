@@ -195,8 +195,7 @@ public class DimensionsBungee extends DimensionsAddon implements PluginMessageLi
     out.writeUTF(portal.getPortalId()); // portal name
     out.writeUTF(link + ""); // Overwrite destination server
     out.writeUTF(
-        (new BungeeLocation("fill", complete.getWorld().getName(), v.getCenter()))
-            .toString()); // send used location to return TODO
+        (new BungeeLocation("fill", complete.getWorld().getName(), v.getCenter())).toString());
 
     // We send the portal geometry data
     out.writeUTF(v.getMin().toString());

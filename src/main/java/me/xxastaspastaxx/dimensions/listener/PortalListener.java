@@ -88,7 +88,17 @@ public class PortalListener implements Listener {
               }
             });
 
-    if (DimensionsSettings.enableEntitiesTeleport) {
+    boolean anyPortalEntitiesTeleport = DimensionsSettings.enableEntitiesTeleport;
+    if (!anyPortalEntitiesTeleport) {
+      for (CustomPortal portal : Dimensions.getCustomPortalManager().getCustomPortals()) {
+        if (portal.isEnableEntitiesTeleport()) {
+          anyPortalEntitiesTeleport = true;
+          break;
+        }
+      }
+    }
+
+    if (anyPortalEntitiesTeleport) {
       Bukkit.getScheduler()
           .scheduleSyncRepeatingTask(
               pl,

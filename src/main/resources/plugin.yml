@@ -5,7 +5,7 @@ description: Allow players to easily build portals to another world
 api-version: 1.21
 version: 4.0.0
 depend: [packetevents]
-softdepend: [BetterPortals, Vault, WorldEdit, WorldGuard, BentoBox, IridiumSkyblock, SuperiorSkyblock2, Oraxen, ItemsAdder, CustomItems, ModelEngine, LightAPI]
+softdepend: [BetterPortals, Vault, WorldEdit, WorldGuard, BentoBox, IridiumSkyblock, SuperiorSkyblock2, Oraxen, ItemsAdder, CustomItems, ModelEngine]
 commands:
    dimensions:
       description: Main command

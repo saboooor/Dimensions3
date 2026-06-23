@@ -26,6 +26,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 public class DimensionsHorizontalPortals extends DimensionsAddon implements Listener {
@@ -111,7 +112,6 @@ public class DimensionsHorizontalPortals extends DimensionsAddon implements List
     PortalGeometry portalGeometry = complete.getPortalGeometry();
     byte width = portalGeometry.getPortalWidth();
 
-    // TODO find best location
     Location newLocation = complete.getDestinationLocation(null, null);
     World destinationWorld = newLocation.getWorld();
     Location checkLocation = getSafeLocation(customPortal, newLocation, destinationWorld, width);
@@ -176,12 +176,29 @@ public class DimensionsHorizontalPortals extends DimensionsAddon implements List
           checkLocation.setX(newLocation.getX() + x);
 
           if (destinationWorld.getWorldBorder().isInside(checkLocation)) {
-            // TODO check location
-            if (canBuildPortal(customPortal, checkLocation, destinationWorld, width, true))
-              return checkLocation;
-            if (backupLocation == null
-                && canBuildPortal(customPortal, checkLocation, destinationWorld, width, false))
-              backupLocation = checkLocation.clone();
+            BoundingBox candidateBox =
+                new BoundingBox(
+                    checkLocation.getX(),
+                    checkLocation.getY(),
+                    checkLocation.getZ(),
+                    checkLocation.getX() + width,
+                    checkLocation.getY(),
+                    checkLocation.getZ() + width);
+            boolean overlaps = false;
+            for (CompletePortal complete :
+                Dimensions.getCompletePortalManager().getCompletePortals(destinationWorld)) {
+              if (complete.getPortalGeometry().getBoundingBox().overlaps(candidateBox)) {
+                overlaps = true;
+                break;
+              }
+            }
+            if (!overlaps) {
+              if (canBuildPortal(customPortal, checkLocation, destinationWorld, width, true))
+                return checkLocation;
+              if (backupLocation == null
+                  && canBuildPortal(customPortal, checkLocation, destinationWorld, width, false))
+                backupLocation = checkLocation.clone();
+            }
           }
 
           switch (dir) {

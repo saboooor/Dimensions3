@@ -21,11 +21,11 @@ import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.type.Light;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 /** Class containing the info of a built portal */
@@ -222,6 +222,7 @@ public class CompletePortal {
   /** Check for nearby entities to teleport */
   public void updatePortal() {
     if (!isActive() || brokenPortal) return;
+    if (!customPortal.isEnableEntitiesTeleport()) return;
 
     savedEntities.addAll(
         world.getNearbyEntities(
@@ -229,7 +230,13 @@ public class CompletePortal {
             new Predicate<Entity>() {
               @Override
               public boolean test(Entity t) {
-                return !savedEntities.contains(t) && !(t instanceof Player) && !hold.contains(t);
+                if (savedEntities.contains(t) || t instanceof Player || hold.contains(t)) {
+                  return false;
+                }
+                if (t instanceof org.bukkit.entity.Mob && !customPortal.isEnableMobsTeleport()) {
+                  return false;
+                }
+                return true;
               }
             }));
 
@@ -474,7 +481,6 @@ public class CompletePortal {
       DimensionsDebbuger.DEBUG.print(
           "Exit portal info: zAxis: " + zAxis + ", width: " + width + ", height: " + height);
 
-      // TODO find best location
       Location checkLocation = getSafeLocation(newLocation, zAxis, destinationWorld, height, width);
       DimensionsDebbuger.DEBUG.print("SafeLocation found: " + checkLocation);
       if (checkLocation != null) newLocation = checkLocation;
@@ -576,10 +582,23 @@ public class CompletePortal {
             checkLocation.setX(newLocation.getX() + x);
 
             if (destinationWorld.getWorldBorder().isInside(checkLocation)) {
-
-              // TODO check location
-              if (Dimensions.getCompletePortalManager().getCompletePortal(checkLocation, true, true)
-                  == null) {
+              BoundingBox candidateBox =
+                  new BoundingBox(
+                      checkLocation.getX(),
+                      checkLocation.getY(),
+                      checkLocation.getZ(),
+                      zAxis ? checkLocation.getX() : checkLocation.getX() + width,
+                      checkLocation.getY() + height,
+                      zAxis ? checkLocation.getZ() + width : checkLocation.getZ());
+              boolean overlaps = false;
+              for (CompletePortal complete :
+                  Dimensions.getCompletePortalManager().getCompletePortals(destinationWorld)) {
+                if (complete.getPortalGeometry().getBoundingBox().overlaps(candidateBox)) {
+                  overlaps = true;
+                  break;
+                }
+              }
+              if (!overlaps) {
                 if (canBuildPortal(checkLocation, zAxis, destinationWorld, height, width, true))
                   return checkLocation;
                 if (backupLocation == null
@@ -687,14 +706,7 @@ public class CompletePortal {
       if (DimensionsSettings.enablePortalLighting && customPortal.getLightLevel() > 0) {
         int level = customPortal.getLightLevel();
         for (PortalEntity en : spawnedEntities) {
-          Location loc = en.getLocation();
-          Block block = loc.getBlock();
-          if (DimensionsUtils.isAir(block)) {
-            block.setType(Material.LIGHT);
-            Light lightData = (Light) block.getBlockData();
-            lightData.setLevel(level);
-            block.setBlockData(lightData);
-          }
+          DimensionsUtils.setLight(en.getLocation(), level);
         }
       }
 
@@ -790,11 +802,7 @@ public class CompletePortal {
 
       if (DimensionsSettings.enablePortalLighting && customPortal.getLightLevel() > 0) {
         for (PortalEntity en : spawnedEntities) {
-          Location loc = en.getLocation();
-          Block block = loc.getBlock();
-          if (block.getType() == Material.LIGHT) {
-            block.setType(Material.AIR);
-          }
+          DimensionsUtils.setLight(en.getLocation(), 0);
         }
       }
     }

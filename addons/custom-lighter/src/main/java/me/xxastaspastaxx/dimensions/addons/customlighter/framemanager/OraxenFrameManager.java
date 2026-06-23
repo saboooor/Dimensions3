@@ -1,8 +1,8 @@
 package me.xxastaspastaxx.dimensions.addons.customlighter.framemanager;
 
-import io.th0rgal.oraxen.compatibilities.provided.lightapi.WrappedLightAPI;
 import io.th0rgal.oraxen.mechanics.provided.gameplay.noteblock.NoteBlockMechanic;
 import io.th0rgal.oraxen.mechanics.provided.gameplay.noteblock.NoteBlockMechanicFactory;
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.NoteBlock;
@@ -50,7 +50,7 @@ public class OraxenFrameManager extends FrameManager {
     // noteBlockMechanic.getPlaceSound(), 1.0f, 0.8f);
 
     if (target != null && noteBlockMechanic.getLight() != -1) {
-      WrappedLightAPI.createBlockLight(target.getLocation(), noteBlockMechanic.getLight());
+      DimensionsUtils.setLight(target.getLocation(), noteBlockMechanic.getLight());
     }
   }
 }

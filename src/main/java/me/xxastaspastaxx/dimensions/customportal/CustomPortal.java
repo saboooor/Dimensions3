@@ -59,6 +59,8 @@ public class CustomPortal {
   private int teleportDelay;
   private boolean enableParticles;
   private int lightLevel;
+  private boolean enableEntitiesTeleport;
+  private boolean enableMobsTeleport;
 
   private HashMap<EntityType, EntityType> entityTransformationList;
   private int spawnDelayMin;
@@ -120,6 +122,8 @@ public class CustomPortal {
       int teleportDelay,
       boolean enableParticles,
       int lightLevel,
+      boolean enableEntitiesTeleport,
+      boolean enableMobsTeleport,
       HashMap<EntityType, EntityType> entityTransformationList,
       int spawnDelayMin,
       int spawnDelayMax,
@@ -155,6 +159,8 @@ public class CustomPortal {
     this.teleportDelay = teleportDelay;
     this.enableParticles = enableParticles;
     this.lightLevel = lightLevel;
+    this.enableEntitiesTeleport = enableEntitiesTeleport;
+    this.enableMobsTeleport = enableMobsTeleport;
     this.entityTransformationList = entityTransformationList;
     this.spawnDelayMin = spawnDelayMin;
     this.spawnDelayMax = spawnDelayMax;
@@ -274,6 +280,14 @@ public class CustomPortal {
 
   public boolean isEnableParticles() {
     return enableParticles;
+  }
+
+  public boolean isEnableEntitiesTeleport() {
+    return enableEntitiesTeleport;
+  }
+
+  public boolean isEnableMobsTeleport() {
+    return enableMobsTeleport;
   }
 
   public int getLightLevel() {

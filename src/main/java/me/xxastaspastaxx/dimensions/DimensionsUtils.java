@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
+import org.bukkit.block.data.type.Light;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
@@ -173,6 +174,28 @@ public class DimensionsUtils {
 
         newEnAt.setBaseValue(enAt.getBaseValue());
         enAt.getModifiers().forEach(m -> newEnAt.addModifier(m));
+      }
+    }
+  }
+
+  /**
+   * Set or remove a light block at the given location with the specified level.
+   *
+   * @param loc the location to place/remove light
+   * @param level the light level (0-15). If 0 or less, the light block is removed.
+   */
+  public static void setLight(Location loc, int level) {
+    Block block = loc.getBlock();
+    if (level <= 0) {
+      if (block.getType() == Material.LIGHT) {
+        block.setType(Material.AIR);
+      }
+    } else {
+      if (isAir(block)) {
+        block.setType(Material.LIGHT);
+        Light lightData = (Light) block.getBlockData();
+        lightData.setLevel(level);
+        block.setBlockData(lightData);
       }
     }
   }
