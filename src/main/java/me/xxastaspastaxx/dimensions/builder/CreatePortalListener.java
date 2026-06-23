@@ -33,30 +33,4 @@ public class CreatePortalListener implements Listener {
 
     e.setCancelled(manager.getInstance(e.getPlayer()).handleChatInput(e.getMessage()));
   }
-
-  /*@EventHandler(ignoreCancelled = true)
-  public void onInteract(PlayerInteractEvent e) {
-  	if (!manager.hasInstance(e.getPlayer())) return;
-
-  	CreatePortalInstance a = manager.getInstance(e.getPlayer());
-  	if (e.getItem()!=null && e.getItem().isSimilar(a.getSelection().item)) {
-  		BlockSelection selection = a.getSelection();
-
-        if (e.getAction()==Action.LEFT_CLICK_BLOCK) {
-            selection.setOne(e.getClickedBlock());
-            e.getPlayer().sendMessage(Component.text("[", NamedTextColor.GRAY)
-                .append(Component.text("BuildableMobs", NamedTextColor.RED))
-                .append(Component.text("] Selected point 1", NamedTextColor.GRAY)));
-            selection.updateItem(e.getItem());
-            e.setCancelled(true);
-        } else if (e.getAction()==Action.RIGHT_CLICK_BLOCK) {
-            selection.setTwo(e.getClickedBlock());
-            e.getPlayer().sendMessage(Component.text("[", NamedTextColor.GRAY)
-                .append(Component.text("BuildableMobs", NamedTextColor.RED))
-                .append(Component.text("] Selected point 2", NamedTextColor.GRAY)));
-            selection.updateItem(e.getItem());
-            e.setCancelled(true);
-        }	}
-  }*/
-
 }

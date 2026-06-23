@@ -33,27 +33,6 @@ public class CreatePortalManager {
     }
   }
 
-  public void handle(Player p, String id) {
-    if (map.containsKey(p)) {
-      map.get(p).open();
-    } else {
-
-      //			MobStructure structure = BuildableMobs.getManager().getStructureById(id);
-      //			if (structure==null) {
-      //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY +
-      // "]+ ChatColor.RED + "The id of the structure you entered
-      // is invalid");
-      //				return;
-      //			}
-      //			CreatePortalInstance instance = new CreatePortalInstance(p, structure);
-      //
-      //			instance.options.actions = structure.getActions();
-      //
-      //			instance.guiMap.get(DimensionsGUIType.ACTIONS).open();
-      //			map.put(p, instance);
-    }
-  }
-
   public boolean hasInstance(Player p) {
     return map.containsKey(p);
   }

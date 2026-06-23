@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
+import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
 import me.xxastaspastaxx.dimensions.addons.patreoncosmetics.cosmetics.CosmeticEffect;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.events.CustomPortalBreakEvent;
@@ -30,11 +32,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.Plugin;
 
-public class DimensionsPatreonCosmetics implements Listener {
+public class DimensionsPatreonCosmetics extends DimensionsAddon implements Listener {
 
-  private Plugin pl;
+  private Dimensions pl;
   private HashMap<CompletePortal, Integer> tasks = new HashMap<CompletePortal, Integer>();
   private HashMap<UUID, HashMap<String, CosmeticEffect>> users =
       new HashMap<UUID, HashMap<String, CosmeticEffect>>();
@@ -43,8 +44,19 @@ public class DimensionsPatreonCosmetics implements Listener {
   private UUID localUUID;
   private HashMap<String, CosmeticEffect> localCosmeticsMap;
 
-  public DimensionsPatreonCosmetics(Dimensions main) {
-    this.pl = main;
+  public DimensionsPatreonCosmetics() {
+    super("PatreonCosmetics", "1.0.0", "Cosmetics for Patreons", DimensionsAddonPriority.NORMAL);
+  }
+
+  @Override
+  public boolean onLoad(Dimensions pl) {
+    this.pl = pl;
+    return DimensionsSettings.enablePatreonCosmetics;
+  }
+
+  @Override
+  public void onEnable(Dimensions pl) {
+    this.pl = pl;
 
     for (Player p : Bukkit.getOnlinePlayers()) {
       verifyPlayer(p);
@@ -95,7 +107,8 @@ public class DimensionsPatreonCosmetics implements Listener {
     Bukkit.getServer().getPluginManager().registerEvents(this, pl);
   }
 
-  public void disable() {
+  @Override
+  public void onDisable() {
     tasks.values().stream().forEach(id -> Bukkit.getScheduler().cancelTask(id));
   }
 

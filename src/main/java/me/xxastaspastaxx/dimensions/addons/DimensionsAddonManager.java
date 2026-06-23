@@ -40,8 +40,6 @@ public class DimensionsAddonManager {
 
     ArrayList<URL> urls = new ArrayList<URL>();
     for (File file : dir.listFiles((file, name) -> name.endsWith(".jar"))) {
-      if (file.getName().equals("PatreonCosmeticsAddon.jar"))
-        continue; // Prevent error after embedding the addon into main Dimensions plugin
       try {
         urls.add(file.toURI().toURL());
       } catch (MalformedURLException e) {

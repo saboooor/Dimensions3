@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonManager;
-import me.xxastaspastaxx.dimensions.addons.patreoncosmetics.DimensionsPatreonCosmetics;
 import me.xxastaspastaxx.dimensions.builder.CreatePortalManager;
 import me.xxastaspastaxx.dimensions.commands.DimensionsCommandManager;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortalManager;
@@ -26,8 +25,6 @@ public class Dimensions extends JavaPlugin {
   private static CustomPortalManager customPortalManager;
   private static CreatePortalManager createPortalManager;
 
-  private static DimensionsPatreonCosmetics patreonCosmetics;
-
   public void onLoad() {
 
     instance = this;
@@ -44,9 +41,6 @@ public class Dimensions extends JavaPlugin {
 
     DimensionsDebbuger.DEBUG.print("Registering commands...");
     commandManager = new DimensionsCommandManager(this);
-
-    if (DimensionsSettings.enablePatreonCosmetics)
-      patreonCosmetics = new DimensionsPatreonCosmetics(this);
 
     DimensionsDebbuger.VERY_LOW.print("Enabling addons...");
     addonsManager.enableAddons();
@@ -133,7 +127,6 @@ public class Dimensions extends JavaPlugin {
   }
 
   public void reload() {
-    if (patreonCosmetics != null) patreonCosmetics.disable();
     addonsManager.unloadAll();
     completePortalManager.save();
     HandlerList.unregisterAll(this);
@@ -142,9 +135,6 @@ public class Dimensions extends JavaPlugin {
     DimensionsSettings.setDefaultWorld();
 
     commandManager = new DimensionsCommandManager(this);
-
-    if (DimensionsSettings.enablePatreonCosmetics)
-      patreonCosmetics = new DimensionsPatreonCosmetics(this);
 
     addonsManager.enableAddons();
 

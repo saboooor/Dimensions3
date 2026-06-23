@@ -13,16 +13,11 @@ public class CreatePortalInstance {
 
   private Player p;
 
-  // public CreateStructureAction selectedAction = null;
-  public CreatePortalOptions options = new CreatePortalOptions();
-
   public HashMap<DimensionsGUIType, CreatePortalGUI> guiMap =
       new HashMap<DimensionsGUIType, CreatePortalGUI>();
   private DimensionsGUIType currentGUI = DimensionsGUIType.PLAYER_MAIN;
 
   public CustomPortal selectedPortal = null;
-
-  // public MobStructure updatingStructure;
 
   public CreatePortalInstance(Player p, boolean player) {
     this.p = p;
@@ -30,42 +25,18 @@ public class CreatePortalInstance {
     if (player) {
       guiMap.put(DimensionsGUIType.PLAYER_MAIN, new DimensionsPlayerMainGUI(this));
       guiMap.put(DimensionsGUIType.PLAYER_PORTAL, new DimensionsPlayerPortalGUI(this));
-    } else {
-      //			guiMap.put(DimensionsGUIType.ADMIN_MAIN, new CreateStructureMainGUI(this));
     }
-
-    // Actions
-    //		guiMap.put(CreateStuctureGUIType.ACTIONS_ENTITY, new CreateStructureEntityGUI(this));
-    //		guiMap.put(CreateStuctureGUIType.ACTIONS_COMMAND, new CreateStructureCommandGUI(this));
-    //		guiMap.put(CreateStuctureGUIType.ACTIONS_EFFECT, new CreateStructureEffectsGUI(this));
-    //		guiMap.put(CreateStuctureGUIType.ACTIONS_DELAY, new CreateStructureDelayGUI(this));
-    //		guiMap.put(CreateStuctureGUIType.ACTIONS_DELETE, new CreateStructureDeleteGUI(this));
-
-    //		selection = new BlockSelection(guiMap.get(CreateStuctureGUIType.MAIN).getItem(15));
-    //		selection.updateItem(null);
 
     open();
   }
-
-  //	public CreateStructureInstance(Player p, MobStructure updatingStructure) {
-  //		this(p);
-  //		this.updatingStructure = updatingStructure;
-  //	}
 
   // Getters
   public Player getPlayer() {
     return p;
   }
 
-  //	public BlockSelection getSelection() {
-  //		return selection;
-  //	}
-
   // Methods
   public void open() {
-
-    // p.getInventory().remove(selection.item);
-    // selection.updateItem(null);
 
     guiMap.get(currentGUI).open();
   }
@@ -74,52 +45,7 @@ public class CreatePortalInstance {
     currentGUI = type;
   }
 
-  public void save() {
-    //
-    //		if (updatingStructure==null) {
-    //			p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+
-    // ChatColor.GREEN + "Saving structure file...");
-    //			try {
-    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY +
-    // "]+ ChatColor.GREEN + "Succesfully saved " +
-    // ChatColor.UNDERLINE + BuildableMobs.getManager().create(options.structureName.replace(" ",
-    // "").toLowerCase(),
-    // this));
-    //			} catch (Exception e) {
-    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY +
-    // "]+ ChatColor.RED + "There was an error trying to save
-    // the file. Please
-    // check console for more information.");
-    //				e.printStackTrace();
-    //			}
-    //		} else {
-    //			p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY + "]+
-    // ChatColor.YELLOW + "Updating structure file...");
-    //			try {
-    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY +
-    // "]+ ChatColor.GREEN + "Succesfully updated " +
-    // ChatColor.UNDERLINE + BuildableMobs.getManager().updateActions(updatingStructure.getId(),
-    // this));
-    //			} catch (Exception e) {
-    //				p.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "BuildableMobs" + ChatColor.GRAY +
-    // "]+ ChatColor.RED + "There was an error trying to update
-    // the file.
-    // Please check console for more information.");
-    //				e.printStackTrace();
-    //			}
-    //		}
-  }
-
-  public void spawnParticles() {
-    //		Block block = selection.getCenter();
-    //		if (block==null) return;
-    //		BuildableMobsUtils.highlightBlock(p,block);
-    ////		if (options.entitySpawnMode==0) {
-    ////			BuildableMobsUtils.highlightSpawnBlock(p,block, options.entitySpawnOffset);
-    ////			//p.spawnParticle(Particle.REDSTONE, offset.getX(), offset.getY()+0.5, offset.getZ(), 1,
-    // 0,0,0, new Particle.DustOptions(Color.BLUE,2f));
-    ////		}
-  }
+  public void spawnParticles() {}
 
   // TO-REMOVE
 
@@ -127,15 +53,6 @@ public class CreatePortalInstance {
     return guiMap.get(currentGUI).handleClick(inv, index, rightClick, shiftClick);
   }
 
-  //	public SummonedEntity createEntity() {
-  //		switch (options.entitySpawnMode) {
-  //			case 0:
-  //				return new VanillaSummonedEntity(options.entitySpawnType, options.entitySpawnOffset);
-  //			case 1:
-  //				return new CommandSummonedEntity(new ArrayList<String>());
-  //		}
-  //		return null;
-  //	}
   //
   public boolean handleChatInput(String string) {
     return guiMap.get(currentGUI).handleChatAsync(string);
