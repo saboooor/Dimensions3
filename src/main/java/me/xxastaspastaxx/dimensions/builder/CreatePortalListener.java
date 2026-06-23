@@ -22,6 +22,7 @@ public class CreatePortalListener implements Listener {
         || e.getClickedInventory() == null
         || e.getWhoClicked() == null
         || !(e.getWhoClicked() instanceof Player)) return;
+    if (!manager.hasInstance((Player) e.getWhoClicked())) return;
 
     if (manager.click(
         (Player) e.getWhoClicked(),
