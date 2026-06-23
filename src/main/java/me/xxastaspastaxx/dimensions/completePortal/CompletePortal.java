@@ -330,9 +330,11 @@ public class CompletePortal {
                     EntityType trasnformation = customPortal.getEntityTransformation(en.getType());
                     if (trasnformation == null) {
                       destination.pushToHold(en);
-                      en.teleport(teleportLocation);
-
-                      removeFromHold(en);
+                      en.teleportAsync(teleportLocation)
+                          .thenRun(
+                              () -> {
+                                removeFromHold(en);
+                              });
                     } else {
                       Entity newEn =
                           teleportLocation.getWorld().spawnEntity(teleportLocation, trasnformation);

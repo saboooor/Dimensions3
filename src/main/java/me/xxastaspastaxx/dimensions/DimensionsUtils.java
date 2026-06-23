@@ -150,6 +150,7 @@ public class DimensionsUtils {
     en.getPassengers().forEach(passenger -> newEn.addPassenger(passenger));
     en.getScoreboardTags().forEach(tag -> newEn.addScoreboardTag(tag));
     if (en.getVehicle() != null) en.getVehicle().addPassenger(newEn);
+    en.getPersistentDataContainer().copyTo(newEn.getPersistentDataContainer(), true);
 
     if (en instanceof LivingEntity && newEn instanceof LivingEntity) {
       LivingEntity newEn2 = (LivingEntity) newEn;
@@ -178,6 +179,22 @@ public class DimensionsUtils {
 
         newEnAt.setBaseValue(enAt.getBaseValue());
         enAt.getModifiers().forEach(m -> newEnAt.addModifier(m));
+      }
+
+      if (en2.getEquipment() != null && newEn2.getEquipment() != null) {
+        newEn2.getEquipment().setArmorContents(en2.getEquipment().getArmorContents());
+        newEn2.getEquipment().setItemInMainHand(en2.getEquipment().getItemInMainHand());
+        newEn2.getEquipment().setItemInOffHand(en2.getEquipment().getItemInOffHand());
+        newEn2.getEquipment().setHelmetDropChance(en2.getEquipment().getHelmetDropChance());
+        newEn2.getEquipment().setChestplateDropChance(en2.getEquipment().getChestplateDropChance());
+        newEn2.getEquipment().setLeggingsDropChance(en2.getEquipment().getLeggingsDropChance());
+        newEn2.getEquipment().setBootsDropChance(en2.getEquipment().getBootsDropChance());
+        newEn2
+            .getEquipment()
+            .setItemInMainHandDropChance(en2.getEquipment().getItemInMainHandDropChance());
+        newEn2
+            .getEquipment()
+            .setItemInOffHandDropChance(en2.getEquipment().getItemInOffHandDropChance());
       }
     }
   }
