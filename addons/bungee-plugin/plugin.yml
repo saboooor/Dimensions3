@@ -1,0 +1,4 @@
+name: DimensionsBungee
+main: me.xxastaspastaxx.dimensions.addons.bungeeplugin.DimensionsBungeePlugin
+version: 1.0.2
+author: astaspasta

@@ -1,0 +1,7 @@
+{
+	"id":"dimensionsvelocity",
+	"name":"Dimensions Velocity ",
+	"version":"1.0.3",
+	"authors":["astaspasta"],
+	"main":"me.xxastaspastaxx.dimensions.addons.velocityplugin.DimensionsVelocityPlugin"
+}

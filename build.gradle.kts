@@ -13,21 +13,7 @@ java {
     withSourcesJar()
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        name = "papermc"
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
-    maven {
-        name = "codemc-releases"
-        url = uri("https://repo.codemc.io/repository/maven-releases/")
-    }
-    maven {
-        name = "codemc-snapshots"
-        url = uri("https://repo.codemc.io/repository/maven-snapshots/")
-    }
-}
+// Repositories are configured globally in the allprojects block below
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
@@ -36,6 +22,56 @@ dependencies {
 
 allprojects {
     apply(plugin = "com.diffplug.spotless")
+    
+    repositories {
+        mavenCentral()
+        maven {
+            name = "papermc"
+            url = uri("https://repo.papermc.io/repository/maven-public/")
+        }
+        maven {
+            name = "jitpack"
+            url = uri("https://jitpack.io")
+        }
+        maven {
+            name = "enginehub"
+            url = uri("https://maven.enginehub.org/repo/")
+        }
+        maven {
+            name = "bg-software"
+            url = uri("https://repo.bg-software.com/repository/api/")
+        }
+        maven {
+            name = "codemc"
+            url = uri("https://repo.codemc.org/repository/maven-public/")
+        }
+
+        maven {
+            name = "lumine"
+            url = uri("https://mvn.lumine.io/repository/maven-public/")
+        }
+        maven {
+            name = "placeholderapi"
+            url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        }
+        maven {
+            name = "placeholderapi-releases"
+            url = uri("https://repo.extendedclip.com/releases/")
+        }
+        maven {
+            name = "helpchat"
+            url = uri("https://repo.helpch.at/releases")
+        }
+        maven {
+            name = "spigot"
+            url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+        }
+        maven {
+            name = "bungeecord"
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+        }
+    }
+
     configure<com.diffplug.gradle.spotless.SpotlessExtension> {
         java {
             trimTrailingWhitespace()
