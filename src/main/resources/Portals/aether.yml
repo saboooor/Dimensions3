@@ -34,6 +34,8 @@ Portal:
 Options:
   # Whether to enable particle effects for this portal
   EnableParticles: true
+  # The light level emitted by the portal (0 to disable)
+  LightLevel: 10
   # List of worlds from which players are allowed to use this portal (use 'all' for all worlds)
   AllowedWorlds: []
   # The teleport delay in seconds when standing inside the portal
@@ -57,8 +59,6 @@ Entities:
     # List of entities that can spawn from the portal and their weight/chance (format: ENTITY;WEIGHT)
     List: []
 Addon:
-  LightAPI:
-    Level: 10
   Unbreakable:
   - PLAYER_INSIDE
   - ENTITY

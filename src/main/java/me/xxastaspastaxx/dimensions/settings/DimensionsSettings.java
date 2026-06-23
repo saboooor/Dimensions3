@@ -25,6 +25,10 @@ public class DimensionsSettings {
   @Comment("Config version for version control")
   private static final double configVersion = 3.3;
 
+  /** Enable portal lighting using native Light blocks */
+  @Comment("Enable portal lighting using native Light blocks")
+  public static boolean enablePortalLighting = true;
+
   /** Enable to show players the available portals */
   @Comment("Enable to show players the available portals")
   public static boolean showPortalsToPlayers = true;

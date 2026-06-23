@@ -21,6 +21,7 @@ import org.bukkit.World;
 import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Light;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -682,31 +683,46 @@ public class CompletePortal {
    * @param p null to broadcast the packets or the player to send the packets to
    */
   public void fill(Player p) {
-    if (p == null && customPortal.canSpawnEntities()) {
+    if (p == null) {
+      if (DimensionsSettings.enablePortalLighting && customPortal.getLightLevel() > 0) {
+        int level = customPortal.getLightLevel();
+        for (PortalEntity en : spawnedEntities) {
+          Location loc = en.getLocation();
+          Block block = loc.getBlock();
+          if (DimensionsUtils.isAir(block)) {
+            block.setType(Material.LIGHT);
+            Light lightData = (Light) block.getBlockData();
+            lightData.setLevel(level);
+            block.setBlockData(lightData);
+          }
+        }
+      }
 
-      Bukkit.getScheduler().cancelTask(entitiesTask);
-      entitiesTask =
-          Bukkit.getScheduler()
-              .scheduleSyncRepeatingTask(
-                  Dimensions.getInstance(),
-                  new Runnable() {
+      if (customPortal.canSpawnEntities()) {
+        Bukkit.getScheduler().cancelTask(entitiesTask);
+        entitiesTask =
+            Bukkit.getScheduler()
+                .scheduleSyncRepeatingTask(
+                    Dimensions.getInstance(),
+                    new Runnable() {
 
-                    @Override
-                    public void run() {
-                      if (!isActive()) return;
+                      @Override
+                      public void run() {
+                        if (!isActive()) return;
 
-                      EntityType type = customPortal.getNextSpawn();
-                      if (type == null) return;
+                        EntityType type = customPortal.getNextSpawn();
+                        if (type == null) return;
 
-                      Location spawnLoc = getCenter().clone();
-                      spawnLoc.setY(portalGeometry.getInsideMin().getY());
+                        Location spawnLoc = getCenter().clone();
+                        spawnLoc.setY(portalGeometry.getInsideMin().getY());
 
-                      Entity en = world.spawnEntity(spawnLoc, type);
-                      pushToHold(en);
-                    }
-                  },
-                  customPortal.getSpawnDelay(),
-                  customPortal.getSpawnDelay());
+                        Entity en = world.spawnEntity(spawnLoc, type);
+                        pushToHold(en);
+                      }
+                    },
+                    customPortal.getSpawnDelay(),
+                    customPortal.getSpawnDelay());
+      }
     }
 
     if (getTag("hidePortalInside") != null) return;
@@ -771,6 +787,16 @@ public class CompletePortal {
       Bukkit.getScheduler().cancelTask(particlesTask);
       Bukkit.getScheduler().cancelTask(entitiesTask);
       brokenPortal = true;
+
+      if (DimensionsSettings.enablePortalLighting && customPortal.getLightLevel() > 0) {
+        for (PortalEntity en : spawnedEntities) {
+          Location loc = en.getLocation();
+          Block block = loc.getBlock();
+          if (block.getType() == Material.LIGHT) {
+            block.setType(Material.AIR);
+          }
+        }
+      }
     }
 
     world.playSound(getCenter(), customPortal.getBreakSound(), 1, 8);

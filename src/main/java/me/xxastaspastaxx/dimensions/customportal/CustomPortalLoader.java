@@ -141,7 +141,14 @@ public class CustomPortalLoader {
         portalConfig.set("configVersion", CONFIG_VERSION);
       }
 
-      if (versionMismatch || commentsUpdated) {
+      boolean migrated = false;
+      if (portalConfig.contains("Addon.LightAPI.Level")) {
+        portalConfig.set("Options.LightLevel", portalConfig.getInt("Addon.LightAPI.Level"));
+        portalConfig.set("Addon.LightAPI", null);
+        migrated = true;
+      }
+
+      if (versionMismatch || commentsUpdated || migrated) {
         try {
           portalConfig.save(f);
         } catch (IOException e) {
@@ -211,6 +218,8 @@ public class CustomPortalLoader {
 
       int teleportDelay = portalConfig.getInt("Options.TeleportDelay", 4);
       boolean enableParticles = portalConfig.getBoolean("Options.EnableParticles", true);
+      int lightLevel =
+          portalConfig.getInt("Options.LightLevel", 0);
 
       HashMap<EntityType, EntityType> entityTransformation = new HashMap<EntityType, EntityType>();
       for (String entity : portalConfig.getStringList("Entities.Transformation")) {
@@ -258,6 +267,7 @@ public class CustomPortalLoader {
               allowedWorlds,
               teleportDelay,
               enableParticles,
+              lightLevel,
               entityTransformation,
               spawningDelay[0],
               spawningDelay[1],
@@ -392,6 +402,9 @@ public class CustomPortalLoader {
     commentsMap.put(
         "Options.EnableParticles",
         Arrays.asList("Whether to enable particle effects for this portal"));
+    commentsMap.put(
+        "Options.LightLevel",
+        Arrays.asList("The light level emitted by the portal (0 to disable)"));
     commentsMap.put(
         "Entities.Transformation",
         Arrays.asList(
