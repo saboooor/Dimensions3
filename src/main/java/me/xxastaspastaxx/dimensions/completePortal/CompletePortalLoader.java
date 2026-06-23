@@ -6,7 +6,6 @@ import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,16 +42,15 @@ public class CompletePortalLoader {
     }
   }
 
-  /**
-   * Load all the portals from the .json file
-   *
-   * @throws FileNotFoundException
-   */
-  public void loadAll() throws FileNotFoundException {
-    Reader reader = new BufferedReader((new FileReader(FILE_PATH)));
-    ArrayList<HashMap<String, Object>> portals =
-        gson.fromJson(reader, new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
-    try {
+  /** Load all the portals from the .json file */
+  public void loadAll() {
+    File f = new File(FILE_PATH);
+    if (!f.exists() || f.length() == 0) return;
+
+    try (Reader reader = new BufferedReader(new FileReader(f))) {
+      ArrayList<HashMap<String, Object>> portals =
+          gson.fromJson(reader, new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
+      if (portals == null) return;
 
       for (HashMap<String, Object> portal : portals) {
         CustomPortal customPortal =
@@ -127,10 +125,8 @@ public class CompletePortalLoader {
       res.add(map);
     }
 
-    try {
-      PrintWriter writer = new PrintWriter(FILE_PATH, "UTF-8");
+    try (PrintWriter writer = new PrintWriter(FILE_PATH, "UTF-8")) {
       writer.println(gson.toJson(res));
-      writer.close();
     } catch (JsonIOException | IOException e) {
       e.printStackTrace();
     }

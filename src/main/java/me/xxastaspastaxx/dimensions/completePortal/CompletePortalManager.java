@@ -1,6 +1,5 @@
 package me.xxastaspastaxx.dimensions.completePortal;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -304,10 +303,6 @@ public class CompletePortalManager {
 
   /** Load the portals */
   public void loadAll() {
-    try {
-      loader.loadAll();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
+    loader.loadAll();
   }
 }
