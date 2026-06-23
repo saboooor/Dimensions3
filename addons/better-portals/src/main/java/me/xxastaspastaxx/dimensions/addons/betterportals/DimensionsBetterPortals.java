@@ -19,8 +19,7 @@ import me.xxastaspastaxx.dimensions.customportal.CustomPortalIgniteCause;
 import me.xxastaspastaxx.dimensions.events.CustomPortalBreakEvent;
 import me.xxastaspastaxx.dimensions.events.CustomPortalIgniteEvent;
 import me.xxastaspastaxx.dimensions.events.CustomPortalUseEvent;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -150,12 +149,9 @@ public class DimensionsBetterPortals extends DimensionsAddon implements Listener
 
                   @Override
                   public void run() {
-                    if (entity != null && entity instanceof Player)
-                      ((Player) entity)
-                          .spigot()
-                          .sendMessage(
-                              ChatMessageType.ACTION_BAR,
-                              new TextComponent("Creating exit portal...."));
+                    if (entity instanceof Player player) {
+                      player.sendActionBar(Component.text("Creating exit portal...."));
+                    }
 
                     CompletePortal tpPortal = complete.getDestinationPortal(true, null, null);
 

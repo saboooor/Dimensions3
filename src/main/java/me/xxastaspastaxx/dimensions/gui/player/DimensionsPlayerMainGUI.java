@@ -74,8 +74,16 @@ public class DimensionsPlayerMainGUI extends CreatePortalGUI {
       }
     }
 
-    inventory.getItem(48).setType(page == 0 ? Material.MINECART : Material.CHEST_MINECART);
-    inventory.getItem(50).setType(page == maxPage ? Material.MINECART : Material.CHEST_MINECART);
+    ItemStack prevItem = inventory.getItem(48);
+    if (prevItem != null) {
+      inventory.setItem(
+          48, prevItem.withType(page == 0 ? Material.MINECART : Material.CHEST_MINECART));
+    }
+    ItemStack nextItem = inventory.getItem(50);
+    if (nextItem != null) {
+      inventory.setItem(
+          50, nextItem.withType(page == maxPage ? Material.MINECART : Material.CHEST_MINECART));
+    }
 
     super.open();
   }

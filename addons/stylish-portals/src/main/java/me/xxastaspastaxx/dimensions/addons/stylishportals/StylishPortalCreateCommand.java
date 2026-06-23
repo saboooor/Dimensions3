@@ -1,10 +1,11 @@
 package me.xxastaspastaxx.dimensions.addons.stylishportals;
 
 import me.xxastaspastaxx.dimensions.commands.DimensionsCommand;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -34,15 +35,18 @@ public class StylishPortalCreateCommand extends DimensionsCommand {
 
     Block block = p.getTargetBlockExact(5);
     if (block == null || block.getBlockData() == null) {
-      p.sendMessage("§7[§cDimensions§7] §aBlock not found");
+      p.sendMessage(
+          DimensionsSettings.getPrefix()
+              .append(Component.text("Block not found", NamedTextColor.RED)));
       return;
     }
 
     String str = block.getBlockData().getAsString();
 
-    TextComponent message = new TextComponent("§7[§cDimensions§7] §aClick here to copy block data");
-    message.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, str));
-    message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(str)));
-    p.spigot().sendMessage(message);
+    Component message =
+        Component.text("Click here to copy block data", NamedTextColor.GREEN)
+            .clickEvent(ClickEvent.copyToClipboard(str))
+            .hoverEvent(HoverEvent.showText(Component.text(str)));
+    p.sendMessage(DimensionsSettings.getPrefix().append(message));
   }
 }

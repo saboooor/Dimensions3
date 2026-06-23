@@ -5,6 +5,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.completePortal.PortalGeometry;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
@@ -76,14 +77,14 @@ public class WorldEditLogger extends AbstractLoggingExtent {
 
                     Sign signData = (Sign) pastedBlock.getState();
 
-                    if (!signData.getSide(Side.FRONT).getLine(0).contentEquals("[DIMENSIONS]"))
-                      return;
+                    if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
+                        .contentEquals("[DIMENSIONS]")) return;
 
                     pastedBlock.setType(Material.AIR);
 
                     CustomPortal portal =
                         Dimensions.getCustomPortalManager()
-                            .getCustomPortal(signData.getSide(Side.FRONT).getLine(1));
+                            .getCustomPortal(DimensionsUtils.getSignLine(signData, Side.FRONT, 1));
                     if (portal == null) return;
 
                     PortalGeometry temp =

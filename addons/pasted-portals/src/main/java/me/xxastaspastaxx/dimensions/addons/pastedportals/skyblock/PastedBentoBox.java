@@ -2,6 +2,7 @@ package me.xxastaspastaxx.dimensions.addons.pastedportals.skyblock;
 
 import java.util.ArrayList;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.addons.pastedportals.DimensionsPastedPortalsAddon;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.completePortal.PortalGeometry;
@@ -77,8 +78,8 @@ public class PastedBentoBox implements Listener {
 
                       Sign signData = (Sign) block.getState();
 
-                      if (!signData.getSide(Side.FRONT).getLine(0).contentEquals("[DIMENSIONS]"))
-                        continue;
+                      if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
+                          .contentEquals("[DIMENSIONS]")) continue;
 
                       Bukkit.getScheduler()
                           .runTask(
@@ -90,7 +91,8 @@ public class PastedBentoBox implements Listener {
                                   block.setType(Material.AIR);
                                   CustomPortal portal =
                                       Dimensions.getCustomPortalManager()
-                                          .getCustomPortal(signData.getSide(Side.FRONT).getLine(1));
+                                          .getCustomPortal(
+                                              DimensionsUtils.getSignLine(signData, Side.FRONT, 1));
                                   if (portal != null) {
                                     PortalGeometry temp =
                                         PortalGeometry.getPortalGeometry(portal)

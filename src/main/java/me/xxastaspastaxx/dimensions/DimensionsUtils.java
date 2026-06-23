@@ -1,5 +1,6 @@
 package me.xxastaspastaxx.dimensions;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -8,9 +9,11 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.type.Light;
+import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
@@ -126,6 +129,7 @@ public class DimensionsUtils {
     return face == BlockFace.WEST || face == BlockFace.EAST;
   }
 
+  @SuppressWarnings("removal")
   public static void cloneEntity(Entity en, Entity newEn) {
     newEn.customName(en.name());
     newEn.setCustomNameVisible(en.isCustomNameVisible());
@@ -198,5 +202,17 @@ public class DimensionsUtils {
         block.setBlockData(lightData);
       }
     }
+  }
+
+  /**
+   * Get the plain text representation of a sign line.
+   *
+   * @param sign the sign
+   * @param side the sign side (FRONT or BACK)
+   * @param index the line index (0-3)
+   * @return the plain text string of the line
+   */
+  public static String getSignLine(Sign sign, Side side, int index) {
+    return PlainTextComponentSerializer.plainText().serialize(sign.getSide(side).line(index));
   }
 }

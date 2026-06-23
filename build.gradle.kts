@@ -88,11 +88,11 @@ allprojects {
             googleJavaFormat("1.35.0").reflowLongStrings()
         }
     }
-}
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    options.compilerArgs.add("-parameters")
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        options.compilerArgs.addAll(listOf("-parameters", "-Xlint:deprecation"))
+    }
 }
 
 tasks.jar {

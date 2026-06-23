@@ -6,6 +6,7 @@ import com.bgsoftware.superiorskyblock.api.events.IslandDisbandEvent;
 import com.bgsoftware.superiorskyblock.api.island.Island;
 import java.util.HashMap;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.addons.pastedportals.DimensionsPastedPortalsAddon;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.completePortal.PortalGeometry;
@@ -40,6 +41,7 @@ public class PastedSuperiorSkyblock implements Listener {
     creating.put(e.getIsland(), true);
   }
 
+  @SuppressWarnings("deprecation")
   @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
   public void onIslandRegen(IslandChunkResetEvent e) {
 
@@ -74,8 +76,8 @@ public class PastedSuperiorSkyblock implements Listener {
 
                         Sign signData = (Sign) block.getState();
 
-                        if (!signData.getSide(Side.FRONT).getLine(0).contentEquals("[DIMENSIONS]"))
-                          continue;
+                        if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
+                            .contentEquals("[DIMENSIONS]")) continue;
 
                         Bukkit.getScheduler()
                             .runTask(
@@ -88,7 +90,8 @@ public class PastedSuperiorSkyblock implements Listener {
                                     CustomPortal portal =
                                         Dimensions.getCustomPortalManager()
                                             .getCustomPortal(
-                                                signData.getSide(Side.FRONT).getLine(1));
+                                                DimensionsUtils.getSignLine(
+                                                    signData, Side.FRONT, 1));
                                     if (portal != null) {
                                       PortalGeometry temp =
                                           PortalGeometry.getPortalGeometry(portal)

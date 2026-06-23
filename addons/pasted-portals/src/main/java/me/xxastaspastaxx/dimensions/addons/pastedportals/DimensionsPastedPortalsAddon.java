@@ -4,6 +4,7 @@ import com.bgsoftware.superiorskyblock.api.SuperiorSkyblock;
 import com.iridium.iridiumskyblock.IridiumSkyblock;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
 import me.xxastaspastaxx.dimensions.addons.pastedportals.skyblock.PastedBentoBox;
@@ -100,8 +101,8 @@ public class DimensionsPastedPortalsAddon extends DimensionsAddon implements Lis
 
                       Sign signData = (Sign) block.getState();
 
-                      if (!signData.getSide(Side.FRONT).getLine(0).contentEquals("[DIMENSIONS]"))
-                        continue;
+                      if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
+                          .contentEquals("[DIMENSIONS]")) continue;
                       Bukkit.getScheduler()
                           .runTask(
                               pl,
@@ -113,7 +114,8 @@ public class DimensionsPastedPortalsAddon extends DimensionsAddon implements Lis
 
                                   CustomPortal portal =
                                       Dimensions.getCustomPortalManager()
-                                          .getCustomPortal(signData.getSide(Side.FRONT).getLine(1));
+                                          .getCustomPortal(
+                                              DimensionsUtils.getSignLine(signData, Side.FRONT, 1));
                                   if (portal != null) {
                                     PortalGeometry temp =
                                         PortalGeometry.getPortalGeometry(portal)

@@ -437,7 +437,11 @@ final class CachedPortal {
 
     File f = new File(CustomPortalLoader.DIRECTORY_PATH + "/" + file + ".yml");
     if (f.exists()) {
-      p.sendMessage(DimensionsSettings.getPrefix() + "A portal with the same name already exists.");
+      p.sendMessage(
+          DimensionsSettings.getPrefix()
+              .append(
+                  Component.text(
+                      "A portal with the same name already exists.", NamedTextColor.RED)));
       return false;
     }
 

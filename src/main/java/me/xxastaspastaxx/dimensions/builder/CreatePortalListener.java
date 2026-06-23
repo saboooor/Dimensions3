@@ -1,22 +1,28 @@
 package me.xxastaspastaxx.dimensions.builder;
 
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class CreatePortalListener implements Listener {
 
-  CreatePortalManager manager;
+  private CreatePortalManager manager;
 
   public CreatePortalListener(CreatePortalManager manager) {
     this.manager = manager;
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onClick(InventoryClickEvent e) {
-    if (!manager.hasInstance((Player) e.getWhoClicked())) return;
+  public void onItemClick(InventoryClickEvent e) {
+    if (e.getInventory() == null
+        || e.getCurrentItem() == null
+        || e.getClickedInventory() == null
+        || e.getWhoClicked() == null
+        || !(e.getWhoClicked() instanceof Player)) return;
+
     if (manager.click(
         (Player) e.getWhoClicked(),
         e.getClickedInventory(),
@@ -28,9 +34,10 @@ public class CreatePortalListener implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onchat(AsyncPlayerChatEvent e) {
+  public void onchat(AsyncChatEvent e) {
     if (!manager.hasInstance(e.getPlayer())) return;
 
-    e.setCancelled(manager.getInstance(e.getPlayer()).handleChatInput(e.getMessage()));
+    String msg = PlainTextComponentSerializer.plainText().serialize(e.message());
+    e.setCancelled(manager.getInstance(e.getPlayer()).handleChatInput(msg));
   }
 }

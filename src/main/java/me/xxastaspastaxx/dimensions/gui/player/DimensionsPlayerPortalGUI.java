@@ -119,8 +119,16 @@ public class DimensionsPlayerPortalGUI extends CreatePortalGUI {
               java.util.List.of(Component.text("Ignite using this item.", NamedTextColor.GRAY))));
     }
 
-    inventory.getItem(51).setType(page == 0 ? Material.MINECART : Material.CHEST_MINECART);
-    inventory.getItem(52).setType(page == maxPage ? Material.MINECART : Material.CHEST_MINECART);
+    ItemStack prevItem = inventory.getItem(51);
+    if (prevItem != null) {
+      inventory.setItem(
+          51, prevItem.withType(page == 0 ? Material.MINECART : Material.CHEST_MINECART));
+    }
+    ItemStack nextItem = inventory.getItem(52);
+    if (nextItem != null) {
+      inventory.setItem(
+          52, nextItem.withType(page == maxPage ? Material.MINECART : Material.CHEST_MINECART));
+    }
 
     super.open();
   }

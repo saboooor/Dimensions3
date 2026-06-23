@@ -208,7 +208,9 @@ public class PortalListener implements Listener {
           if (e.getPlayer().getGameMode() != GameMode.CREATIVE && DimensionsSettings.consumeItems) {
             ItemStack item = e.getItem();
             if (item.getType().toString().contains("BUCKET") && item.getType() != Material.BUCKET) {
-              item.setType(Material.BUCKET);
+              if (e.getHand() != null) {
+                e.getPlayer().getInventory().setItem(e.getHand(), item.withType(Material.BUCKET));
+              }
             } else if (item.getItemMeta() instanceof Damageable) {
               Damageable dmg = (Damageable) item.getItemMeta();
               dmg.setDamage(dmg.getDamage() + 1);

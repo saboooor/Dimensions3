@@ -19,6 +19,8 @@ import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import me.xxastaspastaxx.dimensions.events.CustomPortalBreakEvent;
 import me.xxastaspastaxx.dimensions.events.CustomPortalIgniteEvent;
 import me.xxastaspastaxx.dimensions.events.CustomPortalUseEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -108,8 +110,11 @@ public class DimensionsModelEngine extends DimensionsAddon implements Listener {
     CompletePortal complete = e.getCompletePortal();
     if (getOption(complete, "modelEngineList") == null) return;
 
-    if (e.getEntity() == null || e.getEntity().getCustomName() == null) return;
-    e.setCancelled(e.getEntity().getCustomName().equals("DIMENSIONS"));
+    if (e.getEntity() == null || e.getEntity().customName() == null) return;
+    e.setCancelled(
+        PlainTextComponentSerializer.plainText()
+            .serialize(e.getEntity().customName())
+            .equals("DIMENSIONS"));
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -198,7 +203,7 @@ public class DimensionsModelEngine extends DimensionsAddon implements Listener {
 
             LivingEntity mob =
                 (LivingEntity) complete.getWorld().spawnEntity(overrideLoc, EntityType.ARMOR_STAND);
-            mob.setCustomName("DIMENSIONS");
+            mob.customName(Component.text("DIMENSIONS"));
             mob.setCustomNameVisible(false);
             mob.setGravity(false);
             mob.setAI(false);
