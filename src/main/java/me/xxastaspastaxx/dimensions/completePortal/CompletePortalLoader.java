@@ -103,7 +103,12 @@ public class CompletePortalLoader {
 
     ArrayList<HashMap<String, Object>> res = new ArrayList<HashMap<String, Object>>();
 
-    for (CompletePortal portal : portals) {
+    List<CompletePortal> portalsCopy;
+    synchronized (portals) {
+      portalsCopy = new ArrayList<>(portals);
+    }
+
+    for (CompletePortal portal : portalsCopy) {
       HashMap<String, Object> map = new HashMap<String, Object>();
       map.put("customPortal", portal.getCustomPortal().getPortalId());
       map.put("world", portal.getWorld().getName());

@@ -812,9 +812,7 @@ public class CompletePortal {
     world.playSound(getCenter(), customPortal.getBreakSound(), 1, 8);
 
     Particle blockCrackParticle =
-        Particle.valueOf("BLOCK_CRACK") == null
-            ? Particle.valueOf("BLOCK_CRUMBLE")
-            : Particle.valueOf("BLOCK_CRACK");
+        DimensionsUtils.getParticle("BLOCK", "BLOCK_CRUMBLE", "BLOCK_CRACK");
     for (PortalEntity en : spawnedEntities) {
       world.spawnParticle(
           blockCrackParticle,

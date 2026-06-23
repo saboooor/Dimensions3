@@ -1,0 +1,44 @@
+name: Dimensions
+main: me.xxastaspastaxx.dimensions.Dimensions
+api-version: '1.21'
+version: 4.0.0
+author: astaspasta
+description: Allow players to easily build portals to another world
+dependencies:
+  server:
+    packetevents:
+      load: AFTER
+      required: true
+    BetterPortals:
+      load: AFTER
+      required: false
+    Vault:
+      load: AFTER
+      required: false
+    WorldEdit:
+      load: AFTER
+      required: false
+    WorldGuard:
+      load: AFTER
+      required: false
+    BentoBox:
+      load: AFTER
+      required: false
+    IridiumSkyblock:
+      load: AFTER
+      required: false
+    SuperiorSkyblock2:
+      load: AFTER
+      required: false
+    Oraxen:
+      load: AFTER
+      required: false
+    ItemsAdder:
+      load: AFTER
+      required: false
+    CustomItems:
+      load: AFTER
+      required: false
+    ModelEngine:
+      load: AFTER
+      required: false

@@ -1,13 +1,13 @@
 package me.xxastaspastaxx.dimensions.addons.exampleaddon;
 
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.events.CustomPortalIgniteEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -49,11 +49,6 @@ public class DimensionsExampleAddonMain extends DimensionsAddon implements Liste
     // We summon the particles
     location
         .getWorld()
-        .spawnParticle(
-            Particle.valueOf("EXPLOSION_NORMAL") == null
-                ? Particle.valueOf("EXPLOSION")
-                : Particle.valueOf("EXPLOSION_NORMAL"),
-            location,
-            5);
+        .spawnParticle(DimensionsUtils.getParticle("EXPLOSION", "EXPLOSION_NORMAL"), location, 5);
   }
 }

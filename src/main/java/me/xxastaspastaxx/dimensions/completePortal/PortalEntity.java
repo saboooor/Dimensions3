@@ -1,5 +1,6 @@
 package me.xxastaspastaxx.dimensions.completePortal;
 
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -42,10 +43,7 @@ public abstract class PortalEntity {
    * @param color the color of the particle
    */
   public void emitParticles(Color color) {
-    Particle redstoneParticle =
-        Particle.valueOf("REDSTONE") == null
-            ? Particle.valueOf("DUST")
-            : Particle.valueOf("REDSTONE");
+    Particle redstoneParticle = DimensionsUtils.getParticle("DUST", "REDSTONE");
     location
         .getWorld()
         .spawnParticle(

@@ -76,7 +76,11 @@ public class DimensionsCommandManager implements CommandExecutor, TabCompleter {
             true));
     commands.add(new PortalsCommand("portals", "", new String[0], "Show all portals", "", true));
 
-    main.getCommand("dimensions").setExecutor(this);
+    org.bukkit.Bukkit.getCommandMap()
+        .register(
+            "dimensions",
+            new DimensionsBukkitCommand(
+                "dimensions", "Main command", "/<command>", List.of("dim"), this));
   }
 
   /** Check if the command is registered and execute it */
@@ -189,5 +193,30 @@ public class DimensionsCommandManager implements CommandExecutor, TabCompleter {
    */
   public void unregisterCommand(DimensionsCommand cmd) {
     commands.remove(cmd);
+  }
+
+  private static class DimensionsBukkitCommand extends Command {
+    private final DimensionsCommandManager manager;
+
+    protected DimensionsBukkitCommand(
+        String name,
+        String description,
+        String usageMessage,
+        List<String> aliases,
+        DimensionsCommandManager manager) {
+      super(name, description, usageMessage, aliases);
+      this.manager = manager;
+    }
+
+    @Override
+    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+      return manager.onCommand(sender, this, commandLabel, args);
+    }
+
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+        throws IllegalArgumentException {
+      return manager.onTabComplete(sender, this, alias, args);
+    }
   }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import me.xxastaspastaxx.dimensions.AxisOrFace;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.completePortal.PortalGeometry;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
@@ -192,7 +193,8 @@ public class CustomPortalLoader {
               Integer.parseInt(particlesColorString[0]));
 
       Sound breakEffect =
-          Sound.valueOf(portalConfig.getString("Portal.BreakEffect", "BLOCK_GLASS_BREAK"));
+          DimensionsUtils.getSound(
+              portalConfig.getString("Portal.BreakEffect", "BLOCK_GLASS_BREAK"));
 
       int minimumHeight = portalConfig.getInt("Portal.MinimumHeight", 4);
       int maximumHeight = portalConfig.getInt("Portal.MaximumHeight", 15);

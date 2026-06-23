@@ -85,6 +85,7 @@ public class DimensionsPastedPortalsAddon extends DimensionsAddon implements Lis
     Chunk chunk = e.getChunk();
     final int minY = chunk.getWorld().getMinHeight();
     final int maxY = chunk.getWorld().getMaxHeight();
+    final org.bukkit.ChunkSnapshot snapshot = chunk.getChunkSnapshot(true, false, false);
 
     Bukkit.getScheduler()
         .runTaskAsynchronously(
@@ -96,13 +97,12 @@ public class DimensionsPastedPortalsAddon extends DimensionsAddon implements Lis
                 for (int x = 0; x <= 15; ++x) {
                   for (int y = minY; y <= maxY; ++y) {
                     for (int z = 0; z <= 15; ++z) {
-                      Block block = chunk.getBlock(x, y, z);
-                      if (block.getType() != Material.OAK_WALL_SIGN) continue;
+                      if (snapshot.getBlockType(x, y, z) != Material.OAK_WALL_SIGN) continue;
 
-                      Sign signData = (Sign) block.getState();
+                      final int fx = x;
+                      final int fy = y;
+                      final int fz = z;
 
-                      if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
-                          .contentEquals("[DIMENSIONS]")) continue;
                       Bukkit.getScheduler()
                           .runTask(
                               pl,
@@ -110,6 +110,14 @@ public class DimensionsPastedPortalsAddon extends DimensionsAddon implements Lis
 
                                 @Override
                                 public void run() {
+                                  Block block = chunk.getBlock(fx, fy, fz);
+                                  if (block.getType() != Material.OAK_WALL_SIGN) return;
+
+                                  Sign signData = (Sign) block.getState();
+
+                                  if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
+                                      .contentEquals("[DIMENSIONS]")) return;
+
                                   block.setType(Material.AIR);
 
                                   CustomPortal portal =

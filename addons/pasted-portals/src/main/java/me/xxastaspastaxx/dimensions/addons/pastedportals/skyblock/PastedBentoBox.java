@@ -59,6 +59,23 @@ public class PastedBentoBox implements Listener {
     Location max =
         new Location(island.getWorld(), island.getMaxProtectedX(), 0, island.getMaxProtectedZ());
 
+    final org.bukkit.World world = island.getWorld();
+    final java.util.HashMap<Long, org.bukkit.ChunkSnapshot> snapshots = new java.util.HashMap<>();
+    int minChunkX = Math.min(min.getBlockX(), max.getBlockX()) >> 4;
+    int maxChunkX = Math.max(min.getBlockX(), max.getBlockX()) >> 4;
+    int minChunkZ = Math.min(min.getBlockZ(), max.getBlockZ()) >> 4;
+    int maxChunkZ = Math.max(min.getBlockZ(), max.getBlockZ()) >> 4;
+
+    for (int cx = minChunkX; cx <= maxChunkX; cx++) {
+      for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
+        if (world.isChunkLoaded(cx, cz)) {
+          snapshots.put(
+              ((long) cx << 32) | (cz & 0xFFFFFFFFL),
+              world.getChunkAt(cx, cz).getChunkSnapshot(true, false, false));
+        }
+      }
+    }
+
     Bukkit.getScheduler()
         .runTaskAsynchronously(
             main.getPlugin(),
@@ -73,13 +90,17 @@ public class PastedBentoBox implements Listener {
                     for (int z = (int) Math.max(max.getBlockZ(), min.getBlockZ());
                         z >= (int) Math.min(min.getBlockZ(), max.getBlockZ());
                         z--) {
-                      Block block = new Location(island.getWorld(), x, y, z).getBlock();
-                      if (block.getType() != Material.OAK_WALL_SIGN) continue;
+                      int cx = x >> 4;
+                      int cz = z >> 4;
+                      long chunkKey = ((long) cx << 32) | (cz & 0xFFFFFFFFL);
+                      org.bukkit.ChunkSnapshot snapshot = snapshots.get(chunkKey);
+                      if (snapshot == null) continue;
+                      if (snapshot.getBlockType(x & 15, y, z & 15) != Material.OAK_WALL_SIGN)
+                        continue;
 
-                      Sign signData = (Sign) block.getState();
-
-                      if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
-                          .contentEquals("[DIMENSIONS]")) continue;
+                      final int fx = x;
+                      final int fy = y;
+                      final int fz = z;
 
                       Bukkit.getScheduler()
                           .runTask(
@@ -88,6 +109,14 @@ public class PastedBentoBox implements Listener {
 
                                 @Override
                                 public void run() {
+                                  Block block = new Location(world, fx, fy, fz).getBlock();
+                                  if (block.getType() != Material.OAK_WALL_SIGN) return;
+
+                                  Sign signData = (Sign) block.getState();
+
+                                  if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
+                                      .contentEquals("[DIMENSIONS]")) return;
+
                                   block.setType(Material.AIR);
                                   CustomPortal portal =
                                       Dimensions.getCustomPortalManager()

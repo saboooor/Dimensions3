@@ -5,6 +5,10 @@ import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.Registry;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
@@ -24,10 +28,13 @@ public class DimensionsUtils {
    * Check if the block is air
    *
    * @param block block that is being checked
-   * @return true if the type of the block is AIR or CAVE_AIR
+   * @return true if the type of the block is AIR, CAVE_AIR, or LIGHT (invisible light source block
+   *     placed by portals)
    */
   public static boolean isAir(Block block) {
-    return block.getType() == Material.AIR || block.getType() == Material.CAVE_AIR;
+    return block.getType() == Material.AIR
+        || block.getType() == Material.CAVE_AIR
+        || block.getType() == Material.LIGHT;
   }
 
   /**
@@ -231,5 +238,66 @@ public class DimensionsUtils {
    */
   public static String getSignLine(Sign sign, Side side, int index) {
     return PlainTextComponentSerializer.plainText().serialize(sign.getSide(side).line(index));
+  }
+
+  /**
+   * Safe utility to get a Sound from its string representation. Supports legacy uppercase enum
+   * names (via reflection) and modern namespaced keys (via Registry).
+   *
+   * @param soundName the name or key of the sound
+   * @return the resolved Sound, or Sound.BLOCK_GLASS_BREAK as a fallback
+   */
+  public static Sound getSound(String soundName) {
+    if (soundName == null || soundName.trim().isEmpty()) {
+      return Sound.BLOCK_GLASS_BREAK;
+    }
+
+    // 1. Try reflection for legacy uppercase names (e.g. BLOCK_GLASS_BREAK)
+    try {
+      java.lang.reflect.Field field = Sound.class.getField(soundName.toUpperCase());
+      return (Sound) field.get(null);
+    } catch (Exception ignored) {
+    }
+
+    // 2. Try Registry lookup for modern namespaced keys (e.g. block.glass.break)
+    try {
+      NamespacedKey key = NamespacedKey.fromString(soundName.toLowerCase());
+      if (key != null) {
+        Sound registrySound = Registry.SOUNDS.get(key);
+        if (registrySound != null) {
+          return registrySound;
+        }
+      }
+    } catch (Exception ignored) {
+    }
+
+    // 3. Ultimate fallback to prevent crashes
+    return Sound.BLOCK_GLASS_BREAK;
+  }
+
+  /**
+   * Safe utility to get a Particle from a list of possible names (in order of preference). Prevents
+   * IllegalArgumentException by catching it and trying the next fallback name.
+   *
+   * @param names one or more particle names to try
+   * @return the resolved Particle, or a default fallback if none match
+   */
+  public static Particle getParticle(String... names) {
+    for (String name : names) {
+      try {
+        return Particle.valueOf(name);
+      } catch (IllegalArgumentException ignored) {
+      }
+    }
+    // Ultimate fallback
+    try {
+      return Particle.valueOf("DUST");
+    } catch (IllegalArgumentException ignored) {
+      try {
+        return Particle.valueOf("REDSTONE");
+      } catch (IllegalArgumentException ignored2) {
+        return null;
+      }
+    }
   }
 }
