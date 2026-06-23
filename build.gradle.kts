@@ -1,6 +1,6 @@
 plugins {
     java
-    id("com.diffplug.spotless") version "8.7.0"
+    id("com.diffplug.spotless") version "8.7.0" apply false
 }
 
 group = "me.xxastaspastaxx"
@@ -34,17 +34,15 @@ dependencies {
     compileOnly("com.github.retrooper:packetevents-spigot:2.12.0")
 }
 
-spotless {
-    java {
-        // Fixes trailing spaces, line endings, and multiple empty lines
-        trimTrailingWhitespace()
-        endWithNewline()
-        
-        // Maps to your 'ignores' array
-        targetExclude("**/build/**", "**/target/**", "**/bin/**")
-
-        // Enforces Google Java Format (2-space indent, strict bracket/curly spacing)
-        googleJavaFormat("1.35.0").reflowLongStrings()
+allprojects {
+    apply(plugin = "com.diffplug.spotless")
+    configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+        java {
+            trimTrailingWhitespace()
+            endWithNewline()
+            targetExclude("**/build/**", "**/target/**", "**/bin/**")
+            googleJavaFormat("1.35.0").reflowLongStrings()
+        }
     }
 }
 

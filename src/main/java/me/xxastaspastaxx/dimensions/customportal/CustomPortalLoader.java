@@ -218,8 +218,7 @@ public class CustomPortalLoader {
 
       int teleportDelay = portalConfig.getInt("Options.TeleportDelay", 4);
       boolean enableParticles = portalConfig.getBoolean("Options.EnableParticles", true);
-      int lightLevel =
-          portalConfig.getInt("Options.LightLevel", 0);
+      int lightLevel = portalConfig.getInt("Options.LightLevel", 0);
 
       HashMap<EntityType, EntityType> entityTransformation = new HashMap<EntityType, EntityType>();
       for (String entity : portalConfig.getStringList("Entities.Transformation")) {

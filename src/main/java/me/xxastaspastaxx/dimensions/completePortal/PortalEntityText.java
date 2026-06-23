@@ -88,6 +88,14 @@ public class PortalEntityText extends PortalEntity {
         translation = new Vector3f(0.66f, -0.25f, 0.625f);
         leftRotation = new Quaternion4f(0f, 0.7071f, 0f, 0.7071f); // 90 deg around Y
         break;
+      case UP:
+        translation = new Vector3f(0.375f, 0.16f, 0.375f);
+        leftRotation = new Quaternion4f(0.7071f, 0f, 0f, 0.7071f); // 90 deg around X
+        break;
+      case DOWN:
+        translation = new Vector3f(0.375f, -0.16f, 0.625f);
+        leftRotation = new Quaternion4f(-0.7071f, 0f, 0f, 0.7071f); // -90 deg around X
+        break;
       default: // Fallback/Default case
         translation = new Vector3f(0.375f, -0.25f, 0.66f);
         leftRotation = new Quaternion4f(0f, 0f, 0f, 1f); // Identity (0 deg)
