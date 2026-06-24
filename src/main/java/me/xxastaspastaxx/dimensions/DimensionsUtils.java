@@ -220,8 +220,7 @@ public class DimensionsUtils {
       }
     } else {
       if (isAir(block)) {
-        block.setType(Material.LIGHT);
-        Light lightData = (Light) block.getBlockData();
+        Light lightData = (Light) Material.LIGHT.createBlockData();
         lightData.setLevel(level);
         block.setBlockData(lightData);
       }
