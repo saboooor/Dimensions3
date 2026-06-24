@@ -42,6 +42,7 @@ public class CompletePortal {
 
   private ScheduledTask particlesTask;
   private ScheduledTask entitiesTask;
+  private ScheduledTask updateTask;
 
   // We store the last linked world in case the plugin needs to return the player to the world he
   // came from but for some reason the portal is broken
@@ -274,7 +275,55 @@ public class CompletePortal {
    * @see CustomPortalUseEvent
    */
   public void handleEntity(Entity en) {
-    if (hold.contains(en) || brokenPortal) return;
+    if (linkedPortal == null && customPortal.getWorld() == null) {
+      if (DimensionsSettings.enableDebugLogging) {
+        java.util.List<World> worlds = Bukkit.getWorlds();
+        ArrayList<String> worldNames = new ArrayList<>();
+        for (World w : worlds) {
+          worldNames.add(w.getName());
+        }
+        Bukkit.getLogger()
+            .info(
+                "[Dimensions-Debug] Destination world \""
+                    + customPortal.getWorldName()
+                    + "\" for portal at "
+                    + getCenter()
+                    + " is missing or not loaded. Loaded worlds: ["
+                    + String.join(", ", worldNames)
+                    + "]");
+      }
+      if (en instanceof Player) {
+        en.sendMessage(
+            DimensionsSettings.getPrefix()
+                .append(
+                    net.kyori.adventure.text.Component.text(
+                        "§cThe destination world is not loaded or does not exist.")));
+      }
+      return;
+    }
+
+    if (hasInHold(en) || brokenPortal) {
+      if (DimensionsSettings.enableDebugLogging && en instanceof Player) {
+        Bukkit.getLogger()
+            .info(
+                "[Dimensions-Debug] handleEntity early return: hasInHold="
+                    + hasInHold(en)
+                    + ", broken="
+                    + brokenPortal
+                    + " for player "
+                    + en.getName());
+      }
+      return;
+    }
+
+    if (DimensionsSettings.enableDebugLogging && en instanceof Player) {
+      Bukkit.getLogger()
+          .info(
+              "[Dimensions-Debug] handleEntity scheduling teleport for player "
+                  + en.getName()
+                  + " from portal at "
+                  + getCenter());
+    }
 
     int delay = customPortal.getTeleportDelay() * 20;
     if ((en instanceof Player)
@@ -288,63 +337,263 @@ public class CompletePortal {
             en,
             Dimensions.getInstance(),
             () -> {
-              if (brokenPortal) return;
+              if (brokenPortal) {
+                if (DimensionsSettings.enableDebugLogging) {
+                  Bukkit.getLogger()
+                      .info("[Dimensions-Debug] Teleport task aborted: portal is broken");
+                }
+                return;
+              }
+              if (DimensionsSettings.enableDebugLogging && en instanceof Player) {
+                Bukkit.getLogger()
+                    .info("[Dimensions-Debug] Teleport task executing for player " + en.getName());
+              }
               CustomPortalUseEvent useEvent =
                   new CustomPortalUseEvent(
                       CompletePortal.this, en, getDestinationPortal(false, null, null));
               Bukkit.getPluginManager().callEvent(useEvent);
 
-              if (useEvent.isCancelled()) return;
+              if (useEvent.isCancelled()) {
+                if (DimensionsSettings.enableDebugLogging && en instanceof Player) {
+                  Bukkit.getLogger()
+                      .info(
+                          "[Dimensions-Debug] Teleport task cancelled by CustomPortalUseEvent for"
+                              + " player "
+                              + en.getName());
+                }
+                return;
+              }
 
               if (tags.containsKey("disableTP")) {
                 tags.remove("disableTP");
                 DimensionsDebbuger.DEBUG.print("DISABLE");
+                if (DimensionsSettings.enableDebugLogging && en instanceof Player) {
+                  Bukkit.getLogger()
+                      .info(
+                          "[Dimensions-Debug] Teleport task aborted: disableTP tag present for"
+                              + " player "
+                              + en.getName());
+                }
                 return;
               }
 
               CompletePortal destination = useEvent.getDestinationPortal();
-
-              // If no portal was put as a destination from other sources, we create our own
-              if (destination == null) {
-                if (customPortal.canBuildExitPortal()) {
-                  destination = getDestinationPortal(true, null, null);
-                } else {
-                  Location destLoc = getDestinationLocation(null, null);
-                  destination =
-                      new CompletePortal(
-                          customPortal,
-                          destLoc.getWorld(),
-                          portalGeometry.createGeometry(destLoc.toVector(), destLoc.toVector()));
-
-                  Block b = destination.getCenter().getBlock().getRelative(BlockFace.DOWN);
-                  if (!b.getType().isSolid()) b.setType(customPortal.getOutsideMaterial());
+              if (destination != null) {
+                if (DimensionsSettings.enableDebugLogging && en instanceof Player) {
+                  Bukkit.getLogger()
+                      .info(
+                          "[Dimensions-Debug] Destination portal found at "
+                              + destination.getCenter()
+                              + ". Loading chunk asynchronously...");
                 }
-              }
+                // Destination portal exists. We load the destination chunk asynchronously first
+                Location destLoc = destination.getCenter();
+                destLoc
+                    .getWorld()
+                    .getChunkAtAsync(destLoc)
+                    .thenAccept(
+                        chunk -> {
+                          DimensionsScheduler.run(
+                              Dimensions.getInstance(),
+                              destLoc,
+                              () -> {
+                                if (brokenPortal) return;
+                                Location teleportLocation = destination.getCenter().clone();
+                                teleportLocation.setY(
+                                    destination.getPortalGeometry().getInsideMin().getY());
+                                teleportLocation.setYaw(en.getLocation().getYaw());
+                                teleportLocation.setPitch(en.getLocation().getPitch());
 
-              Location teleportLocation = destination.getCenter().clone();
-              teleportLocation.setY(destination.getPortalGeometry().getInsideMin().getY());
-              teleportLocation.setYaw(en.getLocation().getYaw());
-              teleportLocation.setPitch(en.getLocation().getPitch());
+                                EntityType trasnformation =
+                                    customPortal.getEntityTransformation(en.getType());
+                                if (trasnformation == null) {
+                                  if (DimensionsSettings.enableDebugLogging
+                                      && en instanceof Player) {
+                                    Bukkit.getLogger()
+                                        .info(
+                                            "[Dimensions-Debug] Teleporting player "
+                                                + en.getName()
+                                                + " to "
+                                                + teleportLocation);
+                                  }
+                                  destination.pushToHold(en);
+                                  en.teleportAsync(teleportLocation)
+                                      .thenRun(
+                                          () -> {
+                                            if (DimensionsSettings.enableDebugLogging
+                                                && en instanceof Player) {
+                                              Bukkit.getLogger()
+                                                  .info(
+                                                      "[Dimensions-Debug] Teleport completed for"
+                                                          + " player "
+                                                          + en.getName()
+                                                          + ", removing from origin hold");
+                                            }
+                                            if (Bukkit.isOwnedByCurrentRegion(getCenter())) {
+                                              removeFromHold(en);
+                                            } else {
+                                              DimensionsScheduler.run(
+                                                  Dimensions.getInstance(),
+                                                  getCenter(),
+                                                  () -> removeFromHold(en));
+                                            }
+                                          });
+                                } else {
+                                  if (DimensionsSettings.enableDebugLogging
+                                      && en instanceof Player) {
+                                    Bukkit.getLogger()
+                                        .info(
+                                            "[Dimensions-Debug] Spawning transformed entity for"
+                                                + " player "
+                                                + en.getName()
+                                                + " at "
+                                                + teleportLocation);
+                                  }
+                                  Entity newEn =
+                                      teleportLocation
+                                          .getWorld()
+                                          .spawnEntity(teleportLocation, trasnformation);
 
-              EntityType trasnformation = customPortal.getEntityTransformation(en.getType());
-              if (trasnformation == null) {
-                destination.pushToHold(en);
-                en.teleportAsync(teleportLocation)
-                    .thenRun(
-                        () -> {
-                          removeFromHold(en);
+                                  DimensionsUtils.cloneEntity(en, newEn);
+                                  destination.pushToHold(newEn);
+
+                                  en.remove();
+                                  removeFromHold(en);
+                                }
+                              });
                         });
               } else {
-                Entity newEn =
-                    teleportLocation.getWorld().spawnEntity(teleportLocation, trasnformation);
+                if (DimensionsSettings.enableDebugLogging && en instanceof Player) {
+                  Bukkit.getLogger()
+                      .info(
+                          "[Dimensions-Debug] Destination portal not found. Calculating exit"
+                              + " location and loading chunk asynchronously...");
+                }
+                // Destination portal does not exist. We must load the target chunk asynchronously
+                // first,
+                // then run the portal building and teleportation on the destination region thread.
+                Location destLoc = getDestinationLocation(null, null);
+                destLoc
+                    .getWorld()
+                    .getChunkAtAsync(destLoc)
+                    .thenAccept(
+                        chunk -> {
+                          DimensionsScheduler.run(
+                              Dimensions.getInstance(),
+                              destLoc,
+                              () -> {
+                                if (brokenPortal) return;
 
-                DimensionsUtils.cloneEntity(en, newEn);
-                destination.pushToHold(newEn);
+                                CompletePortal finalDestination = null;
+                                if (customPortal.canBuildExitPortal()) {
+                                  finalDestination = getDestinationPortal(true, null, null);
+                                } else {
+                                  Location destLocation = getDestinationLocation(null, null);
+                                  finalDestination =
+                                      new CompletePortal(
+                                          customPortal,
+                                          destLocation.getWorld(),
+                                          portalGeometry.createGeometry(
+                                              destLocation.toVector(), destLocation.toVector()));
 
-                en.remove();
+                                  Block b =
+                                      finalDestination
+                                          .getCenter()
+                                          .getBlock()
+                                          .getRelative(BlockFace.DOWN);
+                                  if (!b.getType().isSolid())
+                                    b.setType(customPortal.getOutsideMaterial());
+                                }
+
+                                if (finalDestination == null) {
+                                  if (DimensionsSettings.enableDebugLogging
+                                      && en instanceof Player) {
+                                    Bukkit.getLogger()
+                                        .info(
+                                            "[Dimensions-Debug] Failed to build or locate final"
+                                                + " destination portal for player "
+                                                + en.getName());
+                                  }
+                                  removeFromHold(en);
+                                  return;
+                                }
+
+                                Location teleportLocation = finalDestination.getCenter().clone();
+                                teleportLocation.setY(
+                                    finalDestination.getPortalGeometry().getInsideMin().getY());
+                                teleportLocation.setYaw(en.getLocation().getYaw());
+                                teleportLocation.setPitch(en.getLocation().getPitch());
+
+                                EntityType trasnformation =
+                                    customPortal.getEntityTransformation(en.getType());
+                                if (trasnformation == null) {
+                                  if (DimensionsSettings.enableDebugLogging
+                                      && en instanceof Player) {
+                                    Bukkit.getLogger()
+                                        .info(
+                                            "[Dimensions-Debug] Teleporting player "
+                                                + en.getName()
+                                                + " to new exit portal at "
+                                                + teleportLocation);
+                                  }
+                                  finalDestination.pushToHold(en);
+                                  en.teleportAsync(teleportLocation)
+                                      .thenRun(
+                                          () -> {
+                                            if (DimensionsSettings.enableDebugLogging
+                                                && en instanceof Player) {
+                                              Bukkit.getLogger()
+                                                  .info(
+                                                      "[Dimensions-Debug] Teleport completed to new"
+                                                          + " exit portal for player "
+                                                          + en.getName()
+                                                          + ", removing from origin hold");
+                                            }
+                                            if (Bukkit.isOwnedByCurrentRegion(getCenter())) {
+                                              removeFromHold(en);
+                                            } else {
+                                              DimensionsScheduler.run(
+                                                  Dimensions.getInstance(),
+                                                  getCenter(),
+                                                  () -> removeFromHold(en));
+                                            }
+                                          });
+                                } else {
+                                  if (DimensionsSettings.enableDebugLogging
+                                      && en instanceof Player) {
+                                    Bukkit.getLogger()
+                                        .info(
+                                            "[Dimensions-Debug] Spawning transformed entity for"
+                                                + " player "
+                                                + en.getName()
+                                                + " at new exit portal "
+                                                + teleportLocation);
+                                  }
+                                  Entity newEn =
+                                      teleportLocation
+                                          .getWorld()
+                                          .spawnEntity(teleportLocation, trasnformation);
+
+                                  DimensionsUtils.cloneEntity(en, newEn);
+                                  finalDestination.pushToHold(newEn);
+
+                                  en.remove();
+                                  removeFromHold(en);
+                                }
+                              });
+                        });
               }
             },
-            null,
+            () -> {
+              if (DimensionsSettings.enableDebugLogging && en instanceof Player) {
+                Bukkit.getLogger()
+                    .info(
+                        "[Dimensions-Debug] Teleport task retired (entity removed or unticked) for"
+                            + " player "
+                            + en.getName());
+              }
+              removeFromHold(en);
+            },
             delay));
 
     // customPortal.usePortal(en, this);
@@ -377,9 +626,12 @@ public class CompletePortal {
     World destinationWorld = overrideWorld;
     if (destinationWorld == null) {
       destinationWorld = customPortal.getWorld();
-      if (world.equals(destinationWorld))
+      if (destinationWorld == null || world.equals(destinationWorld))
         destinationWorld =
             lastLinkedWorld == null ? DimensionsSettings.fallbackWorld : lastLinkedWorld;
+    }
+    if (destinationWorld == null) {
+      destinationWorld = world;
     }
     newLocation.setWorld(destinationWorld);
 
@@ -704,67 +956,90 @@ public class CompletePortal {
    */
   public void fill(Player p) {
     if (p == null) {
-      if (DimensionsSettings.enablePortalLighting && customPortal.getLightLevel() > 0) {
-        int level = customPortal.getLightLevel();
-        for (PortalEntity en : spawnedEntities) {
-          DimensionsUtils.setLight(en.getLocation(), level);
-        }
-      }
+      Runnable fillRunnable =
+          () -> {
+            if (DimensionsSettings.enablePortalLighting && customPortal.getLightLevel() > 0) {
+              int level = customPortal.getLightLevel();
+              for (PortalEntity en : spawnedEntities) {
+                DimensionsUtils.setLight(en.getLocation(), level);
+              }
+            }
 
-      if (customPortal.canSpawnEntities()) {
-        DimensionsScheduler.cancel(entitiesTask);
-        Location center = getCenter();
-        entitiesTask =
-            DimensionsScheduler.runAtFixedRate(
-                Dimensions.getInstance(),
-                center,
-                () -> {
-                  if (!isActive()) return;
+            if (customPortal.canSpawnEntities()) {
+              DimensionsScheduler.cancel(entitiesTask);
+              Location center = getCenter();
+              entitiesTask =
+                  DimensionsScheduler.runAtFixedRate(
+                      Dimensions.getInstance(),
+                      center,
+                      () -> {
+                        if (!isActive()) return;
 
-                  EntityType type = customPortal.getNextSpawn();
-                  if (type == null) return;
+                        EntityType type = customPortal.getNextSpawn();
+                        if (type == null) return;
 
-                  Location spawnLoc = getCenter().clone();
-                  spawnLoc.setY(portalGeometry.getInsideMin().getY());
+                        Location spawnLoc = getCenter().clone();
+                        spawnLoc.setY(portalGeometry.getInsideMin().getY());
 
-                  Entity en = world.spawnEntity(spawnLoc, type);
-                  pushToHold(en);
-                },
-                customPortal.getSpawnDelay(),
-                customPortal.getSpawnDelay());
-      }
-    }
+                        Entity en = world.spawnEntity(spawnLoc, type);
+                        pushToHold(en);
+                      },
+                      customPortal.getSpawnDelay(),
+                      customPortal.getSpawnDelay());
+            }
 
-    if (getTag("hidePortalInside") != null) return;
-    if (p == null) {
-      DimensionsScheduler.cancel(particlesTask);
-      if (customPortal.isEnableParticles()) {
-        Location center = getCenter();
-        particlesTask =
-            DimensionsScheduler.runAtFixedRate(
-                Dimensions.getInstance(),
-                center,
-                () -> {
-                  if (!isActive() || getTag("hidePortalParticles") != null) return;
-                  for (PortalEntity en : spawnedEntities) {
-                    en.emitParticles(customPortal.getParticlesColor());
-                  }
-                },
-                20,
-                20);
-      }
+            if (DimensionsSettings.enableEntitiesTeleport
+                || customPortal.isEnableEntitiesTeleport()) {
+              DimensionsScheduler.cancel(updateTask);
+              Location center = getCenter();
+              updateTask =
+                  DimensionsScheduler.runAtFixedRate(
+                      Dimensions.getInstance(),
+                      center,
+                      () -> updatePortal(),
+                      1,
+                      DimensionsSettings.updateEveryTick);
+            }
 
-      for (Entity player :
-          world.getNearbyEntities(
-              getCenter(),
-              16 * Bukkit.getViewDistance(),
-              255,
-              16 * Bukkit.getViewDistance(),
-              (player) -> player instanceof Player)) {
-        fill((Player) player);
+            if (getTag("hidePortalInside") != null) return;
+
+            DimensionsScheduler.cancel(particlesTask);
+            if (customPortal.isEnableParticles()) {
+              Location center = getCenter();
+              particlesTask =
+                  DimensionsScheduler.runAtFixedRate(
+                      Dimensions.getInstance(),
+                      center,
+                      () -> {
+                        if (!isActive() || getTag("hidePortalParticles") != null) return;
+                        for (PortalEntity en : spawnedEntities) {
+                          en.emitParticles(customPortal.getParticlesColor());
+                        }
+                      },
+                      20,
+                      20);
+            }
+
+            for (Entity player :
+                world.getNearbyEntities(
+                    getCenter(),
+                    16 * Bukkit.getViewDistance(),
+                    255,
+                    16 * Bukkit.getViewDistance(),
+                    (player) -> player instanceof Player)) {
+              fill((Player) player);
+            }
+          };
+
+      if (Bukkit.isOwnedByCurrentRegion(getCenter())) {
+        fillRunnable.run();
+      } else {
+        DimensionsScheduler.run(Dimensions.getInstance(), getCenter(), fillRunnable);
       }
       return;
     }
+
+    if (getTag("hidePortalInside") != null) return;
 
     for (PortalEntity en : spawnedEntities) {
       en.destroy(p);
@@ -782,36 +1057,48 @@ public class CompletePortal {
    * @param p null to stop the running tasks or the player to play the destroy packet
    */
   public void destroy(Player p) {
+    Runnable destroyRunnable =
+        () -> {
+          if (p == null) {
+            DimensionsScheduler.cancel(particlesTask);
+            DimensionsScheduler.cancel(entitiesTask);
+            DimensionsScheduler.cancel(updateTask);
+            particlesTask = null;
+            entitiesTask = null;
+            updateTask = null;
 
-    if (p == null) {
-      DimensionsScheduler.cancel(particlesTask);
-      DimensionsScheduler.cancel(entitiesTask);
-      particlesTask = null;
-      entitiesTask = null;
-      brokenPortal = true;
+            brokenPortal = true;
 
-      if (DimensionsSettings.enablePortalLighting && customPortal.getLightLevel() > 0) {
-        for (PortalEntity en : spawnedEntities) {
-          DimensionsUtils.setLight(en.getLocation(), 0);
-        }
-      }
-    }
+            if (DimensionsSettings.enablePortalLighting && customPortal.getLightLevel() > 0) {
+              for (PortalEntity en : spawnedEntities) {
+                DimensionsUtils.setLight(en.getLocation(), 0);
+              }
+            }
+            savedEntities.clear();
+          }
 
-    world.playSound(getCenter(), customPortal.getBreakSound(), 1, 8);
+          world.playSound(getCenter(), customPortal.getBreakSound(), 1, 8);
 
-    Particle blockCrackParticle =
-        DimensionsUtils.getParticle("BLOCK", "BLOCK_CRUMBLE", "BLOCK_CRACK");
-    for (PortalEntity en : spawnedEntities) {
-      world.spawnParticle(
-          blockCrackParticle,
-          en.getLocation(),
-          10,
-          // fallback to outside material if the inside material is made of text
-          customPortal.getInsideBlockData(false) == null
-              ? customPortal.getOutsideMaterial().createBlockData()
-              : customPortal.getInsideBlockData(false));
-      if (p == null) en.destroyBroadcast();
-      else en.destroy(p);
+          Particle blockCrackParticle =
+              DimensionsUtils.getParticle("BLOCK", "BLOCK_CRUMBLE", "BLOCK_CRACK");
+          for (PortalEntity en : spawnedEntities) {
+            world.spawnParticle(
+                blockCrackParticle,
+                en.getLocation(),
+                10,
+                // fallback to outside material if the inside material is made of text
+                customPortal.getInsideBlockData(false) == null
+                    ? customPortal.getOutsideMaterial().createBlockData()
+                    : customPortal.getInsideBlockData(false));
+            if (p == null) en.destroyBroadcast();
+            else en.destroy(p);
+          }
+        };
+
+    if (Bukkit.isOwnedByCurrentRegion(getCenter())) {
+      destroyRunnable.run();
+    } else {
+      DimensionsScheduler.run(Dimensions.getInstance(), getCenter(), destroyRunnable);
     }
   }
 
@@ -834,6 +1121,7 @@ public class CompletePortal {
    * @param en the entity to add
    */
   public void pushToHold(Entity en) {
+    if (en == null) return;
     hold.add(en);
   }
 
@@ -844,6 +1132,7 @@ public class CompletePortal {
    * @return true if the player is in hold or queue
    */
   public boolean hasInHold(Entity en) {
+    if (en == null) return false;
     return hold.contains(en) || queue.containsKey(en);
   }
 
@@ -853,6 +1142,7 @@ public class CompletePortal {
    * @param en the entity to remove
    */
   public void removeFromHold(Entity en) {
+    if (en == null) return;
     hold.remove(en);
     try {
       ScheduledTask t = queue.remove(en);
@@ -889,7 +1179,7 @@ public class CompletePortal {
    * @return the portal tags
    */
   public HashMap<String, Object> getTags() {
-    return tags;
+    return new HashMap<>(tags);
   }
 
   /**
@@ -898,7 +1188,10 @@ public class CompletePortal {
    * @param tags
    */
   public void setTags(HashMap<String, Object> tags) {
-    this.tags = tags;
+    this.tags.clear();
+    if (tags != null) {
+      this.tags.putAll(tags);
+    }
   }
 
   /**

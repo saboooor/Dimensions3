@@ -82,6 +82,10 @@ public class DimensionsSettings {
   @Comment("The level of the debug messages in the console")
   public static int debugLevel = 2;
 
+  /** Enable detailed diagnostic logging in the console for portal events */
+  @Comment("Enable detailed diagnostic logging in the console for portal events")
+  public static boolean enableDebugLogging = false;
+
   /**
    * Enable if a fake block is being placed at the feet of the player to play the nether portal
    * effect

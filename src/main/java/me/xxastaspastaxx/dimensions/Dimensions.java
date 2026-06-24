@@ -68,6 +68,18 @@ public class Dimensions extends JavaPlugin {
         this,
         () -> {
           DimensionsSettings.setDefaultWorld();
+          if (DimensionsSettings.enableDebugLogging) {
+            java.util.List<org.bukkit.World> worlds = org.bukkit.Bukkit.getWorlds();
+            java.util.ArrayList<String> worldNames = new java.util.ArrayList<>();
+            for (org.bukkit.World w : worlds) {
+              worldNames.add(w.getName());
+            }
+            org.bukkit.Bukkit.getLogger()
+                .info(
+                    "[Dimensions-Debug] Loaded worlds at startup: ["
+                        + String.join(", ", worldNames)
+                        + "]");
+          }
           DimensionsDebbuger.DEBUG.print("Loading saved portals...");
           completePortalManager.loadAll();
           DimensionsDebbuger.DEBUG.print("Loading complete...");

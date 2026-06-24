@@ -150,17 +150,15 @@ public class PastedIridium implements Listener {
   }
 
   public void onIslandDelete(Island island) {
-    @SuppressWarnings("unchecked")
     ArrayList<CompletePortal> toRemove =
-        (ArrayList<CompletePortal>)
+        new ArrayList<>(
             Dimensions.getCompletePortalManager()
                 .getNearestPortals(
                     island.getHome(),
                     (int)
                         island
                             .getMaximumPosition1(world)
-                            .distance(island.getMaximumPosition2(world)))
-                .clone();
+                            .distance(island.getMaximumPosition2(world))));
     for (CompletePortal complete : toRemove) {
       Dimensions.getCompletePortalManager()
           .removePortal(complete, CustomPortalDestroyCause.PLUGIN, null);

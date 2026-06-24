@@ -6,11 +6,9 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChunkData;
-import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.util.HashMap;
 import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
-import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.completePortal.PortalEntitySolid;
@@ -63,56 +61,35 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class PortalListener implements Listener {
 
   // private Dimensions pl;
-  private ScheduledTask updateTask;
 
   public PortalListener(Dimensions pl) {
     // this.pl = pl;
 
-    PacketEvents.getAPI()
-        .getEventManager()
-        .registerListener(
-            new PacketListenerAbstract(PacketListenerPriority.MONITOR) {
-              @Override
-              public void onPacketSend(PacketSendEvent event) {
-                if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
-                  WrapperPlayServerChunkData wrapper = new WrapperPlayServerChunkData(event);
-                  Player player = event.getPlayer();
-                  if (player != null) {
-                    for (CompletePortal complete :
-                        Dimensions.getCompletePortalManager()
-                            .getCompletePortals(
-                                player.getWorld(),
-                                wrapper.getColumn().getX(),
-                                wrapper.getColumn().getZ())) {
-                      complete.fill(player);
+    try {
+      PacketEvents.getAPI()
+          .getEventManager()
+          .registerListener(
+              new PacketListenerAbstract(PacketListenerPriority.MONITOR) {
+                @Override
+                public void onPacketSend(PacketSendEvent event) {
+                  if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
+                    WrapperPlayServerChunkData wrapper = new WrapperPlayServerChunkData(event);
+                    Player player = event.getPlayer();
+                    if (player != null) {
+                      for (CompletePortal complete :
+                          Dimensions.getCompletePortalManager()
+                              .getCompletePortals(
+                                  player.getWorld(),
+                                  wrapper.getColumn().getX(),
+                                  wrapper.getColumn().getZ())) {
+                        complete.fill(player);
+                      }
                     }
                   }
                 }
-              }
-            });
-
-    boolean anyPortalEntitiesTeleport = DimensionsSettings.enableEntitiesTeleport;
-    if (!anyPortalEntitiesTeleport) {
-      for (CustomPortal portal : Dimensions.getCustomPortalManager().getCustomPortals()) {
-        if (portal.isEnableEntitiesTeleport()) {
-          anyPortalEntitiesTeleport = true;
-          break;
-        }
-      }
-    }
-
-    if (anyPortalEntitiesTeleport) {
-      updateTask =
-          DimensionsScheduler.runAtFixedRate(
-              pl,
-              () -> {
-                for (CompletePortal portal :
-                    Dimensions.getCompletePortalManager().getCompletePortals()) {
-                  portal.updatePortal();
-                }
-              },
-              1,
-              DimensionsSettings.updateEveryTick);
+              });
+    } catch (Throwable t) {
+      pl.getLogger().warning("Failed to register PacketEvents listener: " + t.getMessage());
     }
 
     Bukkit.getPluginManager().registerEvents(this, pl);
@@ -120,8 +97,7 @@ public class PortalListener implements Listener {
 
   /** Cancel the portal update repeating task (called during reload). */
   public void cancelTasks() {
-    DimensionsScheduler.cancel(updateTask);
-    updateTask = null;
+    // No-op (ticking has been decentralized to individual CompletePortal instances)
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -145,6 +121,30 @@ public class PortalListener implements Listener {
     CompletePortal complFrom =
         Dimensions.getCompletePortalManager().getCompletePortal(from, false, false);
 
+    if (DimensionsSettings.enableDebugLogging && (complTo != null || complFrom != null)) {
+      Bukkit.getLogger()
+          .info(
+              "[Dimensions-Debug] handlePositionChange for player "
+                  + p.getName()
+                  + ": from="
+                  + from.getBlockX()
+                  + ","
+                  + from.getBlockY()
+                  + ","
+                  + from.getBlockZ()
+                  + " (complFrom="
+                  + (complFrom != null ? complFrom.getCenter() : "null")
+                  + "), to="
+                  + to.getBlockX()
+                  + ","
+                  + to.getBlockY()
+                  + ","
+                  + to.getBlockZ()
+                  + " (complTo="
+                  + (complTo != null ? complTo.getCenter() : "null")
+                  + ")");
+    }
+
     if (DimensionsSettings.enableNetherPortalEffect && complTo != null) {
       p.sendBlockChange(
           to, DimensionsUtils.getNetherPortalEffect(complTo.getPortalGeometry().iszAxis()));
@@ -162,12 +162,39 @@ public class PortalListener implements Listener {
     }
 
     if (complFrom != null && complFrom.hasInHold(p)) {
-
-      if (complTo != null && complFrom.equals(complTo)) return;
+      if (complTo != null && complFrom.equals(complTo)) {
+        if (DimensionsSettings.enableDebugLogging) {
+          Bukkit.getLogger()
+              .info(
+                  "[Dimensions-Debug] handlePositionChange player "
+                      + p.getName()
+                      + " moved within same portal; returning early");
+        }
+        return;
+      }
+      if (DimensionsSettings.enableDebugLogging) {
+        Bukkit.getLogger()
+            .info(
+                "[Dimensions-Debug] Removing player "
+                    + p.getName()
+                    + " from hold of portal "
+                    + complFrom.getCenter());
+      }
       complFrom.removeFromHold(p);
     }
 
-    if (complTo != null) complTo.handleEntity(p);
+    if (complTo != null) {
+      if (DimensionsSettings.enableDebugLogging) {
+        Bukkit.getLogger()
+            .info(
+                "[Dimensions-Debug] Player "
+                    + p.getName()
+                    + " is inside portal "
+                    + complTo.getCenter()
+                    + "; calling handleEntity");
+      }
+      complTo.handleEntity(p);
+    }
   }
 
   HashMap<Player, Long> clicked = new HashMap<Player, Long>();
@@ -245,20 +272,62 @@ public class PortalListener implements Listener {
       }
     }
     if (e.getAnimationType() == PlayerAnimationType.ARM_SWING) {
+      if (DimensionsSettings.enableDebugLogging) {
+        Bukkit.getLogger()
+            .info("[Dimensions-Debug] onPlayerClick ARM_SWING detected for player " + p.getName());
+      }
       try {
         List<Block> los = p.getLineOfSight(null, 5);
+        if (DimensionsSettings.enableDebugLogging) {
+          Bukkit.getLogger().info("[Dimensions-Debug] Line of sight block count: " + los.size());
+        }
         for (Block block : los) {
-          if (!DimensionsUtils.isAir(block)) break;
+          boolean isAir = DimensionsUtils.isAir(block);
           CompletePortal portal =
               Dimensions.getCompletePortalManager()
                   .getCompletePortal(block.getLocation(), false, false);
+          if (DimensionsSettings.enableDebugLogging) {
+            Bukkit.getLogger()
+                .info(
+                    "[Dimensions-Debug] LOS Block at "
+                        + block.getX()
+                        + ","
+                        + block.getY()
+                        + ","
+                        + block.getZ()
+                        + " is "
+                        + block.getType()
+                        + " (isAir="
+                        + isAir
+                        + "), portal="
+                        + (portal != null ? portal.getCenter() : "null"));
+          }
+          if (!isAir) {
+            if (DimensionsSettings.enableDebugLogging) {
+              Bukkit.getLogger().info("[Dimensions-Debug] LOS Block is solid; breaking loop");
+            }
+            break;
+          }
           if (portal != null) {
+            if (DimensionsSettings.enableDebugLogging) {
+              Bukkit.getLogger()
+                  .info("[Dimensions-Debug] Found portal in LOS, attempting to destroy it");
+            }
             Dimensions.getCompletePortalManager()
                 .removePortal(portal, CustomPortalDestroyCause.PLAYER_INSIDE, p);
             break;
           }
         }
-      } catch (IllegalStateException ex) {
+      } catch (Throwable ex) {
+        if (DimensionsSettings.enableDebugLogging) {
+          Bukkit.getLogger()
+              .info(
+                  "[Dimensions-Debug] Error in onPlayerClick LOS processing: "
+                      + ex.getClass().getName()
+                      + ": "
+                      + ex.getMessage());
+          ex.printStackTrace();
+        }
       }
     }
   }
@@ -403,19 +472,52 @@ public class PortalListener implements Listener {
 
   public boolean handleBlockChange(Block block, Entity ent, CustomPortalDestroyCause cause) {
 
-    if (clicked.containsKey(ent)) {
+    if (ent != null && clicked.containsKey(ent)) {
       if (System.currentTimeMillis() - clicked.get(ent) < 500) {
         return false;
       } else {
         clicked.remove(ent);
       }
     }
-    if (!DimensionsSettings.listenToEvents.contains(cause.name())) return false;
+    if (!DimensionsSettings.listenToEvents.contains(cause.name())) {
+      if (DimensionsSettings.enableDebugLogging) {
+        Bukkit.getLogger()
+            .info(
+                "[Dimensions-Debug] handleBlockChange ignore cause "
+                    + cause.name()
+                    + " for block at "
+                    + block.getLocation());
+      }
+      return false;
+    }
 
     List<CompletePortal> portals =
         Dimensions.getCompletePortalManager().getCompletePortals(block.getLocation(), true, false);
+    if (DimensionsSettings.enableDebugLogging && !portals.isEmpty()) {
+      Bukkit.getLogger()
+          .info(
+              "[Dimensions-Debug] handleBlockChange block at "
+                  + block.getX()
+                  + ","
+                  + block.getY()
+                  + ","
+                  + block.getZ()
+                  + " changed. Cause: "
+                  + cause.name()
+                  + ", Entity: "
+                  + (ent != null ? ent.getName() : "null")
+                  + ", Found portals count: "
+                  + portals.size());
+    }
     boolean cancel = false;
     for (CompletePortal portal : portals) {
+      if (DimensionsSettings.enableDebugLogging) {
+        Bukkit.getLogger()
+            .info(
+                "[Dimensions-Debug] Removing portal "
+                    + portal.getCenter()
+                    + " due to block change");
+      }
       cancel = !Dimensions.getCompletePortalManager().removePortal(portal, cause, ent) || cancel;
     }
     return cancel;

@@ -148,12 +148,10 @@ public class PastedBentoBox implements Listener {
   }
 
   public void onIslandDelete(Island island) {
-    @SuppressWarnings("unchecked")
     ArrayList<CompletePortal> toRemove =
-        (ArrayList<CompletePortal>)
+        new ArrayList<>(
             Dimensions.getCompletePortalManager()
-                .getNearestPortals(island.getCenter(), island.getRange())
-                .clone();
+                .getNearestPortals(island.getCenter(), island.getRange()));
     for (CompletePortal complete : toRemove) {
       Dimensions.getCompletePortalManager()
           .removePortal(complete, CustomPortalDestroyCause.PLUGIN, null);
