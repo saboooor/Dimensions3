@@ -11,7 +11,6 @@ import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import me.xxastaspastaxx.dimensions.events.CustomPortalUseEvent;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -69,9 +68,9 @@ public class CompletePortal {
 
     if (portalGeometry == null) return;
 
-    Chunk c = getCenter().getChunk();
-    chunkX = c.getX();
-    chunkZ = c.getZ();
+    Location center = getCenter();
+    chunkX = center.getBlockX() >> 4;
+    chunkZ = center.getBlockZ() >> 4;
 
     Vector min = portalGeometry.getInsideMin();
     Vector max = portalGeometry.getInsideMax();
@@ -410,15 +409,24 @@ public class CompletePortal {
       return;
     }
 
-    if (getTag("hidePortalInside") != null) return;
+    Runnable fillPlayerRunnable =
+        () -> {
+          if (getTag("hidePortalInside") != null) return;
 
-    for (PortalEntity en : spawnedEntities) {
-      en.destroy(p);
-      DimensionsScheduler.runDelayed(
-          Dimensions.getInstance(),
-          en.getLocation(),
-          () -> en.summon(p),
-          DimensionsSettings.portalInsideDelay);
+          for (PortalEntity en : spawnedEntities) {
+            en.destroy(p);
+            DimensionsScheduler.runDelayed(
+                Dimensions.getInstance(),
+                en.getLocation(),
+                () -> en.summon(p),
+                DimensionsSettings.portalInsideDelay);
+          }
+        };
+
+    if (Bukkit.isOwnedByCurrentRegion(getCenter())) {
+      fillPlayerRunnable.run();
+    } else {
+      DimensionsScheduler.run(Dimensions.getInstance(), getCenter(), fillPlayerRunnable);
     }
   }
 

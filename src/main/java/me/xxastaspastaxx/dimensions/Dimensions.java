@@ -133,7 +133,7 @@ public class Dimensions extends JavaPlugin {
 
   public void reload() {
     addonsManager.unloadAll();
-    completePortalManager.save();
+    completePortalManager.save(true);
     HandlerList.unregisterAll(this);
     // Cancel running tasks explicitly (Folia has no cancelTasks equivalent)
     if (portalsListener != null) portalsListener.cancelTasks();
@@ -158,7 +158,7 @@ public class Dimensions extends JavaPlugin {
   public void onDisable() {
 
     addonsManager.onDisable();
-    completePortalManager.save();
+    completePortalManager.save(false);
   }
 
   public static Dimensions getInstance() {

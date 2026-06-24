@@ -26,7 +26,8 @@ public class CompletePortalManager {
 
   private CompletePortalLoader loader;
 
-  private ArrayList<CompletePortal> completePortals = new ArrayList<CompletePortal>();
+  private final List<CompletePortal> completePortals =
+      new java.util.concurrent.CopyOnWriteArrayList<CompletePortal>();
 
   /**
    * Constructor of the manager
@@ -44,7 +45,7 @@ public class CompletePortalManager {
    * @return all the complete portals that have been built
    */
   public ArrayList<CompletePortal> getCompletePortals() {
-    return completePortals;
+    return new ArrayList<CompletePortal>(completePortals);
   }
 
   /**
@@ -85,10 +86,9 @@ public class CompletePortalManager {
    * @param world the world the check in
    */
   public ArrayList<CompletePortal> getCompletePortals(World world) {
-    return (ArrayList<CompletePortal>)
-        completePortals.stream()
-            .filter(complete -> complete.getWorld().equals(world))
-            .collect(Collectors.toList());
+    return completePortals.stream()
+        .filter(complete -> complete.getWorld().equals(world))
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -99,10 +99,9 @@ public class CompletePortalManager {
    * @param z chunk Z
    */
   public ArrayList<CompletePortal> getCompletePortals(World world, int x, int z) {
-    return (ArrayList<CompletePortal>)
-        completePortals.stream()
-            .filter(complete -> complete.isInChunk(world, x, z))
-            .collect(Collectors.toList());
+    return completePortals.stream()
+        .filter(complete -> complete.isInChunk(world, x, z))
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -112,13 +111,12 @@ public class CompletePortalManager {
    * @param world the world the check in
    */
   public ArrayList<CompletePortal> getCompletePortals(CustomPortal customPortal, World world) {
-    return (ArrayList<CompletePortal>)
-        completePortals.stream()
-            .filter(
-                complete ->
-                    complete.getCustomPortal().equals(customPortal)
-                        && complete.getWorld().equals(world))
-            .collect(Collectors.toList());
+    return completePortals.stream()
+        .filter(
+            complete ->
+                complete.getCustomPortal().equals(customPortal)
+                    && complete.getWorld().equals(world))
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -127,10 +125,9 @@ public class CompletePortalManager {
    * @param customPortal the type of the portal
    */
   public ArrayList<CompletePortal> getCompletePortals(CustomPortal customPortal) {
-    return (ArrayList<CompletePortal>)
-        completePortals.stream()
-            .filter(complete -> complete.getCustomPortal().equals(customPortal))
-            .collect(Collectors.toList());
+    return completePortals.stream()
+        .filter(complete -> complete.getCustomPortal().equals(customPortal))
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -143,13 +140,12 @@ public class CompletePortalManager {
 
     final int searchRadiusSquared = searchRadius * searchRadius;
 
-    return (ArrayList<CompletePortal>)
-        completePortals.stream()
-            .filter(
-                complete ->
-                    complete.getWorld().equals(loc.getWorld())
-                        && complete.getCenter().distanceSquared(loc) <= searchRadiusSquared)
-            .collect(Collectors.toList());
+    return completePortals.stream()
+        .filter(
+            complete ->
+                complete.getWorld().equals(loc.getWorld())
+                    && complete.getCenter().distanceSquared(loc) <= searchRadiusSquared)
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -164,14 +160,13 @@ public class CompletePortalManager {
 
     final int searchRadiusSquared = searchRadius * searchRadius;
 
-    return (ArrayList<CompletePortal>)
-        completePortals.stream()
-            .filter(
-                complete ->
-                    complete.getWorld().equals(loc.getWorld())
-                        && complete.getCustomPortal().equals(customPortal)
-                        && complete.getCenter().distanceSquared(loc) <= searchRadiusSquared)
-            .collect(Collectors.toList());
+    return completePortals.stream()
+        .filter(
+            complete ->
+                complete.getWorld().equals(loc.getWorld())
+                    && complete.getCustomPortal().equals(customPortal)
+                    && complete.getCenter().distanceSquared(loc) <= searchRadiusSquared)
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
@@ -298,7 +293,11 @@ public class CompletePortalManager {
 
   /** Save the portals */
   public void save() {
-    this.loader.save(completePortals);
+    save(true);
+  }
+
+  public void save(boolean destroy) {
+    this.loader.save(completePortals, destroy);
   }
 
   /** Load the portals */

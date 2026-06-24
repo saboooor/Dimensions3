@@ -57,37 +57,53 @@ public class CompletePortalLoader {
             Dimensions.getCustomPortalManager()
                 .getCustomPortal((String) portal.get("customPortal"));
         World world = Bukkit.getWorld((String) portal.get("world"));
+        if (world == null) continue;
         Location loc =
             new Location(
                 world,
                 (double) portal.get("centerX"),
                 (double) portal.get("centerY"),
                 (double) portal.get("centerZ"));
-        PortalGeometry geom =
-            PortalGeometry.getPortalGeometry(customPortal).getPortal(customPortal, loc);
-        if (geom == null) continue;
 
-        CompletePortal linked = null;
+        me.xxastaspastaxx.dimensions.DimensionsScheduler.run(
+            Dimensions.getInstance(),
+            loc,
+            () -> {
+              try {
+                PortalGeometry geom =
+                    PortalGeometry.getPortalGeometry(customPortal).getPortal(customPortal, loc);
+                if (geom == null) return;
 
-        if (portal.containsKey("linkedPortalWorld")) {
-          World linkedWorld = Bukkit.getWorld((String) portal.get("linkedPortalWorld"));
-          Location linkedLoc =
-              new Location(
-                  linkedWorld,
-                  (double) portal.get("linkedPortalCenterX"),
-                  (double) portal.get("linkedPortalCenterY"),
-                  (double) portal.get("linkedPortalCenterZ"));
-          linked = Dimensions.getCompletePortalManager().getCompletePortal(linkedLoc, false, false);
-        }
+                CompletePortal linked = null;
 
-        CompletePortal completePortal = new CompletePortal(customPortal, world, geom, linked);
-        completePortal.setTags(
-            gson.fromJson(
-                (String) portal.get("portalTags"),
-                new TypeToken<HashMap<String, Object>>() {}.getType()));
+                if (portal.containsKey("linkedPortalWorld")) {
+                  World linkedWorld = Bukkit.getWorld((String) portal.get("linkedPortalWorld"));
+                  if (linkedWorld != null) {
+                    Location linkedLoc =
+                        new Location(
+                            linkedWorld,
+                            (double) portal.get("linkedPortalCenterX"),
+                            (double) portal.get("linkedPortalCenterY"),
+                            (double) portal.get("linkedPortalCenterZ"));
+                    linked =
+                        Dimensions.getCompletePortalManager()
+                            .getCompletePortal(linkedLoc, false, false);
+                  }
+                }
 
-        Dimensions.getCompletePortalManager()
-            .createNew(completePortal, null, CustomPortalIgniteCause.LOAD_PORTAL, null);
+                CompletePortal completePortal =
+                    new CompletePortal(customPortal, world, geom, linked);
+                completePortal.setTags(
+                    gson.fromJson(
+                        (String) portal.get("portalTags"),
+                        new TypeToken<HashMap<String, Object>>() {}.getType()));
+
+                Dimensions.getCompletePortalManager()
+                    .createNew(completePortal, null, CustomPortalIgniteCause.LOAD_PORTAL, null);
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            });
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -100,6 +116,10 @@ public class CompletePortalLoader {
    * @param portals
    */
   public void save(List<CompletePortal> portals) {
+    save(portals, true);
+  }
+
+  public void save(List<CompletePortal> portals, boolean destroy) {
 
     ArrayList<HashMap<String, Object>> res = new ArrayList<HashMap<String, Object>>();
 
@@ -126,7 +146,9 @@ public class CompletePortalLoader {
 
       map.put("portalTags", gson.toJson(portal.getTags()));
 
-      portal.destroy(null);
+      if (destroy) {
+        portal.destroy(null);
+      }
       res.add(map);
     }
 
