@@ -1,9 +1,9 @@
 package me.xxastaspastaxx.dimensions.addons.patreoncosmetics.cosmetics;
 
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -50,25 +50,25 @@ public class CosmeticEffectManager {
         Location loc2 = location.clone().add(zAxis ? -0.5 : 0, 0, zAxis ? 0 : -0.5);
         for (int j = 0; j < 3; j++) {
           final int i = j;
-          Bukkit.getScheduler()
-              .scheduleSyncDelayedTask(
-                  Dimensions.getInstance(),
-                  new Runnable() {
+          DimensionsScheduler.runDelayed(
+              Dimensions.getInstance(),
+              location,
+              new Runnable() {
 
-                    @Override
-                    public void run() {
-                      location
-                          .getWorld()
-                          .spawnParticle(Particle.HEART, loc1, (int) (7 * i), i / 3, i / 3, i / 3);
-                      location
-                          .getWorld()
-                          .spawnParticle(Particle.HEART, loc2, (int) (7 * i), i / 3, i / 3, i / 3);
-                      location
-                          .getWorld()
-                          .playSound(location, Sound.ENTITY_CHICKEN_EGG, 3, (float) (i / 3));
-                    }
-                  },
-                  i * 2);
+                @Override
+                public void run() {
+                  location
+                      .getWorld()
+                      .spawnParticle(Particle.HEART, loc1, (int) (7 * i), i / 3, i / 3, i / 3);
+                  location
+                      .getWorld()
+                      .spawnParticle(Particle.HEART, loc2, (int) (7 * i), i / 3, i / 3, i / 3);
+                  location
+                      .getWorld()
+                      .playSound(location, Sound.ENTITY_CHICKEN_EGG, 3, (float) (i / 3));
+                }
+              },
+              i * 2);
         }
 
         break;

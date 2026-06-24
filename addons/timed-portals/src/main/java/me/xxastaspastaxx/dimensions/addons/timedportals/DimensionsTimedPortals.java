@@ -1,9 +1,11 @@
 package me.xxastaspastaxx.dimensions.addons.timedportals;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
 import me.xxastaspastaxx.dimensions.addons.particles.ParticlePack;
@@ -27,8 +29,8 @@ public class DimensionsTimedPortals extends DimensionsAddon implements Listener 
 
   private Plugin pl;
 
-  private HashMap<CompletePortal, ArrayList<Integer>> threads =
-      new HashMap<CompletePortal, ArrayList<Integer>>();
+  private HashMap<CompletePortal, ArrayList<ScheduledTask>> threads =
+      new HashMap<CompletePortal, ArrayList<ScheduledTask>>();
 
   public DimensionsTimedPortals() {
     super(
@@ -54,12 +56,12 @@ public class DimensionsTimedPortals extends DimensionsAddon implements Listener 
     if (destroyAfter == null) return;
 
     if (threads.containsKey(complete)) {
-      for (int i : threads.remove(complete)) {
-        Bukkit.getScheduler().cancelTask(i);
+      for (ScheduledTask task : threads.remove(complete)) {
+        task.cancel();
       }
     }
 
-    ArrayList<Integer> ids = new ArrayList<Integer>();
+    ArrayList<ScheduledTask> ids = new ArrayList<ScheduledTask>();
 
     @SuppressWarnings("unchecked")
     List<String> effects = (List<String>) getOption(complete, "timedPortalsEffects");
@@ -67,33 +69,33 @@ public class DimensionsTimedPortals extends DimensionsAddon implements Listener 
       for (String effect : effects) {
         String[] spl = effect.split("->");
         ids.add(
-            Bukkit.getScheduler()
-                .scheduleSyncDelayedTask(
-                    pl,
-                    new Runnable() {
-
-                      @Override
-                      public void run() {
-                        ParticlePack.get(spl[1]).begin(complete);
-                      }
-                    },
-                    (Integer.parseInt(spl[0])) / 50));
-      }
-    }
-
-    ids.add(
-        Bukkit.getScheduler()
-            .scheduleSyncDelayedTask(
+            DimensionsScheduler.runDelayed(
                 pl,
+                complete.getCenter(),
                 new Runnable() {
 
                   @Override
                   public void run() {
-
-                    destroy(complete, (String) getOption(complete, "timedPortalsAction"));
+                    ParticlePack.get(spl[1]).begin(complete);
                   }
                 },
-                ((int) destroyAfter) / 50));
+                (Integer.parseInt(spl[0])) / 50));
+      }
+    }
+
+    ids.add(
+        DimensionsScheduler.runDelayed(
+            pl,
+            complete.getCenter(),
+            new Runnable() {
+
+              @Override
+              public void run() {
+
+                destroy(complete, (String) getOption(complete, "timedPortalsAction"));
+              }
+            },
+            ((int) destroyAfter) / 50));
 
     threads.put(complete, ids);
   }
@@ -104,8 +106,8 @@ public class DimensionsTimedPortals extends DimensionsAddon implements Listener 
     CompletePortal complete = e.getCompletePortal();
 
     if (threads.containsKey(complete)) {
-      for (int i : threads.remove(complete)) {
-        Bukkit.getScheduler().cancelTask(i);
+      for (ScheduledTask task : threads.remove(complete)) {
+        task.cancel();
       }
     }
   }

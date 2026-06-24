@@ -2,6 +2,7 @@ package me.xxastaspastaxx.dimensions.addons.pastedportals.skyblock;
 
 import java.util.ArrayList;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.addons.pastedportals.DimensionsPastedPortalsAddon;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
@@ -76,71 +77,69 @@ public class PastedBentoBox implements Listener {
       }
     }
 
-    Bukkit.getScheduler()
-        .runTaskAsynchronously(
-            main.getPlugin(),
-            new Runnable() {
+    DimensionsScheduler.runAsync(
+        main.getPlugin(),
+        new Runnable() {
 
-              @Override
-              public void run() {
-                for (int x = (int) Math.max(max.getBlockX(), min.getBlockX());
-                    x >= (int) Math.min(min.getBlockX(), max.getBlockX());
-                    x--) {
-                  for (int y = 200; y >= 50; y--) {
-                    for (int z = (int) Math.max(max.getBlockZ(), min.getBlockZ());
-                        z >= (int) Math.min(min.getBlockZ(), max.getBlockZ());
-                        z--) {
-                      int cx = x >> 4;
-                      int cz = z >> 4;
-                      long chunkKey = ((long) cx << 32) | (cz & 0xFFFFFFFFL);
-                      org.bukkit.ChunkSnapshot snapshot = snapshots.get(chunkKey);
-                      if (snapshot == null) continue;
-                      if (snapshot.getBlockType(x & 15, y, z & 15) != Material.OAK_WALL_SIGN)
-                        continue;
+          @Override
+          public void run() {
+            for (int x = (int) Math.max(max.getBlockX(), min.getBlockX());
+                x >= (int) Math.min(min.getBlockX(), max.getBlockX());
+                x--) {
+              for (int y = 200; y >= 50; y--) {
+                for (int z = (int) Math.max(max.getBlockZ(), min.getBlockZ());
+                    z >= (int) Math.min(min.getBlockZ(), max.getBlockZ());
+                    z--) {
+                  int cx = x >> 4;
+                  int cz = z >> 4;
+                  long chunkKey = ((long) cx << 32) | (cz & 0xFFFFFFFFL);
+                  org.bukkit.ChunkSnapshot snapshot = snapshots.get(chunkKey);
+                  if (snapshot == null) continue;
+                  if (snapshot.getBlockType(x & 15, y, z & 15) != Material.OAK_WALL_SIGN) continue;
 
-                      final int fx = x;
-                      final int fy = y;
-                      final int fz = z;
+                  final int fx = x;
+                  final int fy = y;
+                  final int fz = z;
 
-                      Bukkit.getScheduler()
-                          .runTask(
-                              main.getPlugin(),
-                              new Runnable() {
+                  DimensionsScheduler.run(
+                      main.getPlugin(),
+                      new Location(world, fx, fy, fz),
+                      new Runnable() {
 
-                                @Override
-                                public void run() {
-                                  Block block = new Location(world, fx, fy, fz).getBlock();
-                                  if (block.getType() != Material.OAK_WALL_SIGN) return;
+                        @Override
+                        public void run() {
+                          Block block = new Location(world, fx, fy, fz).getBlock();
+                          if (block.getType() != Material.OAK_WALL_SIGN) return;
 
-                                  Sign signData = (Sign) block.getState();
+                          Sign signData = (Sign) block.getState();
 
-                                  if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
-                                      .contentEquals("[DIMENSIONS]")) return;
+                          if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
+                              .contentEquals("[DIMENSIONS]")) return;
 
-                                  block.setType(Material.AIR);
-                                  CustomPortal portal =
-                                      Dimensions.getCustomPortalManager()
-                                          .getCustomPortal(
-                                              DimensionsUtils.getSignLine(signData, Side.FRONT, 1));
-                                  if (portal != null) {
-                                    PortalGeometry temp =
-                                        PortalGeometry.getPortalGeometry(portal)
-                                            .getPortal(portal, block.getLocation());
-                                    if (temp != null)
-                                      Dimensions.getCompletePortalManager()
-                                          .createNew(
-                                              new CompletePortal(portal, block.getWorld(), temp),
-                                              null,
-                                              CustomPortalIgniteCause.PLUGIN,
-                                              null);
-                                  }
-                                }
-                              });
-                    }
-                  }
+                          block.setType(Material.AIR);
+                          CustomPortal portal =
+                              Dimensions.getCustomPortalManager()
+                                  .getCustomPortal(
+                                      DimensionsUtils.getSignLine(signData, Side.FRONT, 1));
+                          if (portal != null) {
+                            PortalGeometry temp =
+                                PortalGeometry.getPortalGeometry(portal)
+                                    .getPortal(portal, block.getLocation());
+                            if (temp != null)
+                              Dimensions.getCompletePortalManager()
+                                  .createNew(
+                                      new CompletePortal(portal, block.getWorld(), temp),
+                                      null,
+                                      CustomPortalIgniteCause.PLUGIN,
+                                      null);
+                          }
+                        }
+                      });
                 }
               }
-            });
+            }
+          }
+        });
   }
 
   @EventHandler(ignoreCancelled = true)

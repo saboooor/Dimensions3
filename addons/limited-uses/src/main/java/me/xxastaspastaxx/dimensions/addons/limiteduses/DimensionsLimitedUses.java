@@ -1,6 +1,7 @@
 package me.xxastaspastaxx.dimensions.addons.limiteduses;
 
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
@@ -84,17 +85,17 @@ public class DimensionsLimitedUses extends DimensionsAddon implements Listener {
 
       if (action.contains("{explode%")
           && Math.random() <= Integer.parseInt(action.split("%")[1].replace("}", "")) / 100) {
-        Bukkit.getScheduler()
-            .scheduleSyncDelayedTask(
-                pl,
-                new Runnable() {
+        DimensionsScheduler.runDelayed(
+            pl,
+            complete.getCenter(),
+            new Runnable() {
 
-                  @Override
-                  public void run() {
-                    complete.getWorld().createExplosion(complete.getCenter(), 5);
-                  }
-                },
-                1);
+              @Override
+              public void run() {
+                complete.getWorld().createExplosion(complete.getCenter(), 5);
+              }
+            },
+            1);
       }
     }
   }

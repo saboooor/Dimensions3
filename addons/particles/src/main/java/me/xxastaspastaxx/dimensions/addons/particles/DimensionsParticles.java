@@ -1,8 +1,10 @@
 package me.xxastaspastaxx.dimensions.addons.particles;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
@@ -20,8 +22,8 @@ public class DimensionsParticles extends DimensionsAddon implements Listener {
 
   private Plugin pl;
 
-  HashMap<CompletePortal, ArrayList<Integer>> tasks =
-      new HashMap<CompletePortal, ArrayList<Integer>>();
+  HashMap<CompletePortal, ArrayList<ScheduledTask>> tasks =
+      new HashMap<CompletePortal, ArrayList<ScheduledTask>>();
 
   public DimensionsParticles() {
     super("DimensionsParticlesAddon", "3.0.4", "Particles!!!", DimensionsAddonPriority.NORMAL);
@@ -45,22 +47,22 @@ public class DimensionsParticles extends DimensionsAddon implements Listener {
 
     complete.setTag("hidePortalParticles", true);
 
-    ArrayList<Integer> list = new ArrayList<Integer>();
+    ArrayList<ScheduledTask> list = new ArrayList<ScheduledTask>();
 
     for (ParticlePack pack : packs) {
       list.add(
-          Bukkit.getScheduler()
-              .scheduleSyncRepeatingTask(
-                  pl,
-                  new Runnable() {
+          DimensionsScheduler.runAtFixedRate(
+              pl,
+              complete.getCenter(),
+              new Runnable() {
 
-                    @Override
-                    public void run() {
-                      pack.begin(complete);
-                    }
-                  },
-                  0,
-                  pack.vars.get("frequency").intValue()));
+                @Override
+                public void run() {
+                  pack.begin(complete);
+                }
+              },
+              1,
+              pack.vars.get("frequency").intValue()));
     }
 
     tasks.put(complete, list);
@@ -78,8 +80,8 @@ public class DimensionsParticles extends DimensionsAddon implements Listener {
     packs.forEach(pack -> pack.remove(complete));
 
     complete.setTag("hidePortalParticles", null);
-    for (int i : tasks.get(complete)) {
-      Bukkit.getScheduler().cancelTask(i);
+    for (ScheduledTask task : tasks.get(complete)) {
+      task.cancel();
     }
     tasks.remove(complete);
   }
@@ -103,8 +105,8 @@ public class DimensionsParticles extends DimensionsAddon implements Listener {
     for (CompletePortal completePortal :
         Dimensions.getCompletePortalManager().getCompletePortals()) {
       if (!tasks.containsKey(completePortal)) continue;
-      for (int i : tasks.get(completePortal)) {
-        Bukkit.getScheduler().cancelTask(i);
+      for (ScheduledTask task : tasks.get(completePortal)) {
+        task.cancel();
       }
     }
   }

@@ -1,10 +1,12 @@
 package me.xxastaspastaxx.dimensions.completePortal;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Predicate;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.DimensionsDebbuger;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortalIgniteCause;
@@ -38,8 +40,8 @@ public class CompletePortal {
   private int chunkX;
   private int chunkZ;
 
-  private int particlesTask;
-  private int entitiesTask;
+  private ScheduledTask particlesTask;
+  private ScheduledTask entitiesTask;
 
   // We store the last linked world in case the plugin needs to return the player to the world he
   // came from but for some reason the portal is broken
@@ -52,7 +54,7 @@ public class CompletePortal {
   // We keep a list of players that have been teleported to the portal in order to not spam teleport
   // them around
   private ArrayList<Entity> hold = new ArrayList<Entity>();
-  private HashMap<Entity, Integer> queue = new HashMap<Entity, Integer>();
+  private HashMap<Entity, ScheduledTask> queue = new HashMap<Entity, ScheduledTask>();
 
   private HashMap<String, Object> tags = new HashMap<String, Object>();
 
@@ -279,74 +281,71 @@ public class CompletePortal {
         && (((Player) en).getGameMode() == GameMode.CREATIVE
             || ((Player) en).getGameMode() == GameMode.SPECTATOR)) delay = 0;
 
+    // Use the entity scheduler so the task runs on the correct region in Folia
     queue.put(
         en,
-        Bukkit.getScheduler()
-            .scheduleSyncDelayedTask(
-                Dimensions.getInstance(),
-                new Runnable() {
+        DimensionsScheduler.runEntityDelayed(
+            en,
+            Dimensions.getInstance(),
+            () -> {
+              if (brokenPortal) return;
+              CustomPortalUseEvent useEvent =
+                  new CustomPortalUseEvent(
+                      CompletePortal.this, en, getDestinationPortal(false, null, null));
+              Bukkit.getPluginManager().callEvent(useEvent);
 
-                  @Override
-                  public void run() {
-                    if (brokenPortal) return;
-                    CustomPortalUseEvent useEvent =
-                        new CustomPortalUseEvent(
-                            CompletePortal.this, en, getDestinationPortal(false, null, null));
-                    Bukkit.getPluginManager().callEvent(useEvent);
+              if (useEvent.isCancelled()) return;
 
-                    if (useEvent.isCancelled()) return;
+              if (tags.containsKey("disableTP")) {
+                tags.remove("disableTP");
+                DimensionsDebbuger.DEBUG.print("DISABLE");
+                return;
+              }
 
-                    if (tags.containsKey("disableTP")) {
-                      tags.remove("disableTP");
-                      DimensionsDebbuger.DEBUG.print("DISABLE");
-                      return;
-                    }
+              CompletePortal destination = useEvent.getDestinationPortal();
 
-                    CompletePortal destination = useEvent.getDestinationPortal();
+              // If no portal was put as a destination from other sources, we create our own
+              if (destination == null) {
+                if (customPortal.canBuildExitPortal()) {
+                  destination = getDestinationPortal(true, null, null);
+                } else {
+                  Location destLoc = getDestinationLocation(null, null);
+                  destination =
+                      new CompletePortal(
+                          customPortal,
+                          destLoc.getWorld(),
+                          portalGeometry.createGeometry(destLoc.toVector(), destLoc.toVector()));
 
-                    // If no portal was put as a destination from other sources, we create our own
-                    if (destination == null) {
-                      if (customPortal.canBuildExitPortal()) {
-                        destination = getDestinationPortal(true, null, null);
-                      } else {
-                        Location destLoc = getDestinationLocation(null, null);
-                        destination =
-                            new CompletePortal(
-                                customPortal,
-                                destLoc.getWorld(),
-                                portalGeometry.createGeometry(
-                                    destLoc.toVector(), destLoc.toVector()));
+                  Block b = destination.getCenter().getBlock().getRelative(BlockFace.DOWN);
+                  if (!b.getType().isSolid()) b.setType(customPortal.getOutsideMaterial());
+                }
+              }
 
-                        Block b = destination.getCenter().getBlock().getRelative(BlockFace.DOWN);
-                        if (!b.getType().isSolid()) b.setType(customPortal.getOutsideMaterial());
-                      }
-                    }
+              Location teleportLocation = destination.getCenter().clone();
+              teleportLocation.setY(destination.getPortalGeometry().getInsideMin().getY());
+              teleportLocation.setYaw(en.getLocation().getYaw());
+              teleportLocation.setPitch(en.getLocation().getPitch());
 
-                    Location teleportLocation = destination.getCenter().clone();
-                    teleportLocation.setY(destination.getPortalGeometry().getInsideMin().getY());
-                    teleportLocation.setYaw(en.getLocation().getYaw());
-                    teleportLocation.setPitch(en.getLocation().getPitch());
+              EntityType trasnformation = customPortal.getEntityTransformation(en.getType());
+              if (trasnformation == null) {
+                destination.pushToHold(en);
+                en.teleportAsync(teleportLocation)
+                    .thenRun(
+                        () -> {
+                          removeFromHold(en);
+                        });
+              } else {
+                Entity newEn =
+                    teleportLocation.getWorld().spawnEntity(teleportLocation, trasnformation);
 
-                    EntityType trasnformation = customPortal.getEntityTransformation(en.getType());
-                    if (trasnformation == null) {
-                      destination.pushToHold(en);
-                      en.teleportAsync(teleportLocation)
-                          .thenRun(
-                              () -> {
-                                removeFromHold(en);
-                              });
-                    } else {
-                      Entity newEn =
-                          teleportLocation.getWorld().spawnEntity(teleportLocation, trasnformation);
+                DimensionsUtils.cloneEntity(en, newEn);
+                destination.pushToHold(newEn);
 
-                      DimensionsUtils.cloneEntity(en, newEn);
-                      destination.pushToHold(newEn);
-
-                      en.remove();
-                    }
-                  }
-                },
-                delay));
+                en.remove();
+              }
+            },
+            null,
+            delay));
 
     // customPortal.usePortal(en, this);
   }
@@ -713,53 +712,46 @@ public class CompletePortal {
       }
 
       if (customPortal.canSpawnEntities()) {
-        Bukkit.getScheduler().cancelTask(entitiesTask);
+        DimensionsScheduler.cancel(entitiesTask);
+        Location center = getCenter();
         entitiesTask =
-            Bukkit.getScheduler()
-                .scheduleSyncRepeatingTask(
-                    Dimensions.getInstance(),
-                    new Runnable() {
+            DimensionsScheduler.runAtFixedRate(
+                Dimensions.getInstance(),
+                center,
+                () -> {
+                  if (!isActive()) return;
 
-                      @Override
-                      public void run() {
-                        if (!isActive()) return;
+                  EntityType type = customPortal.getNextSpawn();
+                  if (type == null) return;
 
-                        EntityType type = customPortal.getNextSpawn();
-                        if (type == null) return;
+                  Location spawnLoc = getCenter().clone();
+                  spawnLoc.setY(portalGeometry.getInsideMin().getY());
 
-                        Location spawnLoc = getCenter().clone();
-                        spawnLoc.setY(portalGeometry.getInsideMin().getY());
-
-                        Entity en = world.spawnEntity(spawnLoc, type);
-                        pushToHold(en);
-                      }
-                    },
-                    customPortal.getSpawnDelay(),
-                    customPortal.getSpawnDelay());
+                  Entity en = world.spawnEntity(spawnLoc, type);
+                  pushToHold(en);
+                },
+                customPortal.getSpawnDelay(),
+                customPortal.getSpawnDelay());
       }
     }
 
     if (getTag("hidePortalInside") != null) return;
     if (p == null) {
-      Bukkit.getScheduler().cancelTask(particlesTask);
+      DimensionsScheduler.cancel(particlesTask);
       if (customPortal.isEnableParticles()) {
+        Location center = getCenter();
         particlesTask =
-            Bukkit.getScheduler()
-                .scheduleSyncRepeatingTask(
-                    Dimensions.getInstance(),
-                    new Runnable() {
-
-                      @Override
-                      public void run() {
-
-                        if (!isActive() || getTag("hidePortalParticles") != null) return;
-                        for (PortalEntity en : spawnedEntities) {
-                          en.emitParticles(customPortal.getParticlesColor());
-                        }
-                      }
-                    },
-                    20,
-                    20);
+            DimensionsScheduler.runAtFixedRate(
+                Dimensions.getInstance(),
+                center,
+                () -> {
+                  if (!isActive() || getTag("hidePortalParticles") != null) return;
+                  for (PortalEntity en : spawnedEntities) {
+                    en.emitParticles(customPortal.getParticlesColor());
+                  }
+                },
+                20,
+                20);
       }
 
       for (Entity player :
@@ -776,17 +768,11 @@ public class CompletePortal {
 
     for (PortalEntity en : spawnedEntities) {
       en.destroy(p);
-      Bukkit.getScheduler()
-          .runTaskLater(
-              Dimensions.getInstance(),
-              new Runnable() {
-
-                @Override
-                public void run() {
-                  en.summon(p);
-                }
-              },
-              DimensionsSettings.portalInsideDelay);
+      DimensionsScheduler.runDelayed(
+          Dimensions.getInstance(),
+          en.getLocation(),
+          () -> en.summon(p),
+          DimensionsSettings.portalInsideDelay);
     }
   }
 
@@ -798,8 +784,10 @@ public class CompletePortal {
   public void destroy(Player p) {
 
     if (p == null) {
-      Bukkit.getScheduler().cancelTask(particlesTask);
-      Bukkit.getScheduler().cancelTask(entitiesTask);
+      DimensionsScheduler.cancel(particlesTask);
+      DimensionsScheduler.cancel(entitiesTask);
+      particlesTask = null;
+      entitiesTask = null;
       brokenPortal = true;
 
       if (DimensionsSettings.enablePortalLighting && customPortal.getLightLevel() > 0) {
@@ -867,8 +855,9 @@ public class CompletePortal {
   public void removeFromHold(Entity en) {
     hold.remove(en);
     try {
-      Bukkit.getScheduler().cancelTask(queue.remove(en));
-    } catch (NullPointerException e) {
+      ScheduledTask t = queue.remove(en);
+      if (t != null) t.cancel();
+    } catch (Exception e) {
 
     }
   }

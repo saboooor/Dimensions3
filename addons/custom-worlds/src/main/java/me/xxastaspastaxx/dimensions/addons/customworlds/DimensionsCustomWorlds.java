@@ -2,6 +2,7 @@ package me.xxastaspastaxx.dimensions.addons.customworlds;
 
 import java.util.Random;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
 import me.xxastaspastaxx.dimensions.addons.customworlds.generators.WorldGenerator;
@@ -35,13 +36,12 @@ public class DimensionsCustomWorlds extends DimensionsAddon implements Listener 
   @Override
   public void registerPortal(YamlConfiguration portalConfig, CustomPortal portal) {
 
-    Bukkit.getScheduler()
-        .scheduleSyncDelayedTask(
-            pl,
-            () -> {
-              // code
-            },
-            20);
+    DimensionsScheduler.runDelayed(
+        pl,
+        () -> {
+          // code
+        },
+        20);
 
     String spl = portalConfig.getString("Addon.WorldGenerator.Name", "none");
 

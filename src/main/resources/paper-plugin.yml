@@ -4,6 +4,7 @@ api-version: '1.21'
 version: 4.0.0
 author: astaspasta
 description: Allow players to easily build portals to another world
+folia-supported: true
 dependencies:
   server:
     packetevents:

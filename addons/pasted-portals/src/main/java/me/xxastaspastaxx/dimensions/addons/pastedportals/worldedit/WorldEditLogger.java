@@ -5,6 +5,7 @@ import com.sk89q.worldedit.extent.Extent;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.completePortal.PortalGeometry;
@@ -63,44 +64,45 @@ public class WorldEditLogger extends AbstractLoggingExtent {
       String materialName = block.getBlockType().getId().toUpperCase();
       if (materialName.startsWith("MINECRAFT:")) {
 
-        Bukkit.getScheduler()
-            .scheduleSyncDelayedTask(
-                Dimensions.getInstance(),
-                new Runnable() {
+        DimensionsScheduler.runDelayed(
+            Dimensions.getInstance(),
+            new org.bukkit.Location(
+                p.getWorld(), position.getBlockX(), position.getBlockY(), position.getBlockZ()),
+            new Runnable() {
 
-                  public void run() {
-                    Block pastedBlock =
-                        p.getWorld()
-                            .getBlockAt(
-                                position.getBlockX(), position.getBlockY(), position.getBlockZ());
-                    if (pastedBlock.getType() != Material.OAK_WALL_SIGN) return;
+              public void run() {
+                Block pastedBlock =
+                    p.getWorld()
+                        .getBlockAt(
+                            position.getBlockX(), position.getBlockY(), position.getBlockZ());
+                if (pastedBlock.getType() != Material.OAK_WALL_SIGN) return;
 
-                    Sign signData = (Sign) pastedBlock.getState();
+                Sign signData = (Sign) pastedBlock.getState();
 
-                    if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
-                        .contentEquals("[DIMENSIONS]")) return;
+                if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
+                    .contentEquals("[DIMENSIONS]")) return;
 
-                    pastedBlock.setType(Material.AIR);
+                pastedBlock.setType(Material.AIR);
 
-                    CustomPortal portal =
-                        Dimensions.getCustomPortalManager()
-                            .getCustomPortal(DimensionsUtils.getSignLine(signData, Side.FRONT, 1));
-                    if (portal == null) return;
+                CustomPortal portal =
+                    Dimensions.getCustomPortalManager()
+                        .getCustomPortal(DimensionsUtils.getSignLine(signData, Side.FRONT, 1));
+                if (portal == null) return;
 
-                    PortalGeometry temp =
-                        PortalGeometry.getPortalGeometry(portal)
-                            .getPortal(portal, pastedBlock.getLocation());
-                    if (temp == null) return;
+                PortalGeometry temp =
+                    PortalGeometry.getPortalGeometry(portal)
+                        .getPortal(portal, pastedBlock.getLocation());
+                if (temp == null) return;
 
-                    Dimensions.getCompletePortalManager()
-                        .createNew(
-                            new CompletePortal(portal, pastedBlock.getWorld(), temp),
-                            p,
-                            CustomPortalIgniteCause.PLUGIN,
-                            null);
-                  }
-                },
-                20);
+                Dimensions.getCompletePortalManager()
+                    .createNew(
+                        new CompletePortal(portal, pastedBlock.getWorld(), temp),
+                        p,
+                        CustomPortalIgniteCause.PLUGIN,
+                        null);
+              }
+            },
+            20);
       }
     }
   }

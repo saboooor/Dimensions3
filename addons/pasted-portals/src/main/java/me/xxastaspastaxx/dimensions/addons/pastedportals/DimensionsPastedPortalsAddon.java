@@ -4,6 +4,7 @@ import com.bgsoftware.superiorskyblock.api.SuperiorSkyblock;
 import com.iridium.iridiumskyblock.IridiumSkyblock;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
@@ -87,61 +88,60 @@ public class DimensionsPastedPortalsAddon extends DimensionsAddon implements Lis
     final int maxY = chunk.getWorld().getMaxHeight();
     final org.bukkit.ChunkSnapshot snapshot = chunk.getChunkSnapshot(true, false, false);
 
-    Bukkit.getScheduler()
-        .runTaskAsynchronously(
-            pl,
-            new Runnable() {
+    DimensionsScheduler.runAsync(
+        pl,
+        new Runnable() {
 
-              @Override
-              public void run() {
-                for (int x = 0; x <= 15; ++x) {
-                  for (int y = minY; y <= maxY; ++y) {
-                    for (int z = 0; z <= 15; ++z) {
-                      if (snapshot.getBlockType(x, y, z) != Material.OAK_WALL_SIGN) continue;
+          @Override
+          public void run() {
+            for (int x = 0; x <= 15; ++x) {
+              for (int y = minY; y <= maxY; ++y) {
+                for (int z = 0; z <= 15; ++z) {
+                  if (snapshot.getBlockType(x, y, z) != Material.OAK_WALL_SIGN) continue;
 
-                      final int fx = x;
-                      final int fy = y;
-                      final int fz = z;
+                  final int fx = x;
+                  final int fy = y;
+                  final int fz = z;
 
-                      Bukkit.getScheduler()
-                          .runTask(
-                              pl,
-                              new Runnable() {
+                  DimensionsScheduler.run(
+                      pl,
+                      chunk.getBlock(fx, fy, fz).getLocation(),
+                      new Runnable() {
 
-                                @Override
-                                public void run() {
-                                  Block block = chunk.getBlock(fx, fy, fz);
-                                  if (block.getType() != Material.OAK_WALL_SIGN) return;
+                        @Override
+                        public void run() {
+                          Block block = chunk.getBlock(fx, fy, fz);
+                          if (block.getType() != Material.OAK_WALL_SIGN) return;
 
-                                  Sign signData = (Sign) block.getState();
+                          Sign signData = (Sign) block.getState();
 
-                                  if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
-                                      .contentEquals("[DIMENSIONS]")) return;
+                          if (!DimensionsUtils.getSignLine(signData, Side.FRONT, 0)
+                              .contentEquals("[DIMENSIONS]")) return;
 
-                                  block.setType(Material.AIR);
+                          block.setType(Material.AIR);
 
-                                  CustomPortal portal =
-                                      Dimensions.getCustomPortalManager()
-                                          .getCustomPortal(
-                                              DimensionsUtils.getSignLine(signData, Side.FRONT, 1));
-                                  if (portal != null) {
-                                    PortalGeometry temp =
-                                        PortalGeometry.getPortalGeometry(portal)
-                                            .getPortal(portal, block.getLocation());
-                                    if (temp != null)
-                                      Dimensions.getCompletePortalManager()
-                                          .createNew(
-                                              new CompletePortal(portal, block.getWorld(), temp),
-                                              null,
-                                              CustomPortalIgniteCause.PLUGIN,
-                                              null);
-                                  }
-                                }
-                              });
-                    }
-                  }
+                          CustomPortal portal =
+                              Dimensions.getCustomPortalManager()
+                                  .getCustomPortal(
+                                      DimensionsUtils.getSignLine(signData, Side.FRONT, 1));
+                          if (portal != null) {
+                            PortalGeometry temp =
+                                PortalGeometry.getPortalGeometry(portal)
+                                    .getPortal(portal, block.getLocation());
+                            if (temp != null)
+                              Dimensions.getCompletePortalManager()
+                                  .createNew(
+                                      new CompletePortal(portal, block.getWorld(), temp),
+                                      null,
+                                      CustomPortalIgniteCause.PLUGIN,
+                                      null);
+                          }
+                        }
+                      });
                 }
               }
-            });
+            }
+          }
+        });
   }
 }

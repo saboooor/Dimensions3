@@ -2,6 +2,7 @@ package me.xxastaspastaxx.dimensions.addons.worldguardflags;
 
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
 import me.xxastaspastaxx.dimensions.events.CustomPortalBreakEvent;
@@ -45,21 +46,20 @@ public class DimensionsWorldGuardFlags extends DimensionsAddon implements Listen
 
   @Override
   public void onEnable(Dimensions main) {
-    Bukkit.getScheduler()
-        .scheduleSyncDelayedTask(
-            main,
-            new Runnable() {
+    DimensionsScheduler.runDelayed(
+        main,
+        new Runnable() {
 
-              @Override
-              public void run() {
-                try {
-                  if (worldGuardFlags != null) worldGuardFlags.enablePlatform();
-                } catch (Exception e) {
-                  e.printStackTrace();
-                }
-              }
-            },
-            20);
+          @Override
+          public void run() {
+            try {
+              if (worldGuardFlags != null) worldGuardFlags.enablePlatform();
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+          }
+        },
+        20);
 
     Bukkit.getPluginManager().registerEvents(this, pl);
   }

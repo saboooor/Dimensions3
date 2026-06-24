@@ -5,9 +5,11 @@ import com.lauriethefish.betterportals.api.BetterPortalsAPI;
 import com.lauriethefish.betterportals.api.PortalDirection;
 import com.lauriethefish.betterportals.api.PortalPosition;
 import com.lauriethefish.betterportals.api.PortalPredicate;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.util.HashMap;
 import java.util.UUID;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddon;
 import me.xxastaspastaxx.dimensions.addons.DimensionsAddonPriority;
 import me.xxastaspastaxx.dimensions.addons.horizontalportals.HorizontalPortalGeometry;
@@ -28,7 +30,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,7 +39,7 @@ public class DimensionsBetterPortals extends DimensionsAddon implements Listener
 
   private BetterPortalsAPI bpAPI;
 
-  HashMap<CompletePortal, BukkitTask> tasks = new HashMap<CompletePortal, BukkitTask>();
+  HashMap<CompletePortal, ScheduledTask> tasks = new HashMap<CompletePortal, ScheduledTask>();
 
   // ArrayList<CompletePortal> used = new ArrayList<CompletePortal>();
 
@@ -109,7 +110,7 @@ public class DimensionsBetterPortals extends DimensionsAddon implements Listener
     // }
 
     if ((tasks.containsKey(complete)
-        && Bukkit.getScheduler().isCurrentlyRunning(tasks.get(complete).getTaskId()))) {
+        && tasks.get(complete).getExecutionState() == ScheduledTask.ExecutionState.RUNNING)) {
       e.setCancelled(true);
     } else if ((complete.getTag("betterPortal") != null
         && ((boolean) complete.getTag("betterPortal")))) {
@@ -142,27 +143,27 @@ public class DimensionsBetterPortals extends DimensionsAddon implements Listener
 
     tasks.put(
         complete,
-        Bukkit.getScheduler()
-            .runTask(
-                pl,
-                new Runnable() {
+        DimensionsScheduler.run(
+            pl,
+            entity.getLocation(),
+            new Runnable() {
 
-                  @Override
-                  public void run() {
-                    if (entity instanceof Player player) {
-                      player.sendActionBar(Component.text("Creating exit portal...."));
-                    }
+              @Override
+              public void run() {
+                if (entity instanceof Player player) {
+                  player.sendActionBar(Component.text("Creating exit portal...."));
+                }
 
-                    CompletePortal tpPortal = complete.getDestinationPortal(true, null, null);
+                CompletePortal tpPortal = complete.getDestinationPortal(true, null, null);
 
-                    if (tpPortal == null) return;
+                if (tpPortal == null) return;
 
-                    if (tpPortal.getLinkedPortal() == null
-                        || tpPortal.getLinkedPortal().equals(complete)) {
-                      link(complete, tpPortal, false);
-                    }
-                  }
-                }));
+                if (tpPortal.getLinkedPortal() == null
+                    || tpPortal.getLinkedPortal().equals(complete)) {
+                  link(complete, tpPortal, false);
+                }
+              }
+            }));
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -304,7 +305,7 @@ public class DimensionsBetterPortals extends DimensionsAddon implements Listener
     if (temp == null) return;
 
     if (tasks.containsKey(complete)
-        && Bukkit.getScheduler().isCurrentlyRunning(tasks.get(complete).getTaskId())) {
+        && tasks.get(complete).getExecutionState() == ScheduledTask.ExecutionState.RUNNING) {
       e.setCancelled(true);
       return;
     }

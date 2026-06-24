@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.DimensionsDebbuger;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.completePortal.PortalEntity;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -164,26 +164,24 @@ public class ParticlePack {
 
   public void runPortal(CompletePortal complete, Location loc) {
     if (config.contains("portal"))
-      Bukkit.getScheduler()
-          .runTaskAsynchronously(
-              Dimensions.getInstance(),
-              new Runnable() {
-                public void run() {
-                  ParticlePack.this.run("portal", complete, loc);
-                }
-              });
+      DimensionsScheduler.runAsync(
+          Dimensions.getInstance(),
+          new Runnable() {
+            public void run() {
+              ParticlePack.this.run("portal", complete, loc);
+            }
+          });
   }
 
   public void runTile(CompletePortal complete, Location loc) {
     if (config.contains("tile"))
-      Bukkit.getScheduler()
-          .runTaskAsynchronously(
-              Dimensions.getInstance(),
-              new Runnable() {
-                public void run() {
-                  ParticlePack.this.run("tile", complete, loc);
-                }
-              });
+      DimensionsScheduler.runAsync(
+          Dimensions.getInstance(),
+          new Runnable() {
+            public void run() {
+              ParticlePack.this.run("tile", complete, loc);
+            }
+          });
   }
 
   public void run(String parent, CompletePortal complete, Location loc) {

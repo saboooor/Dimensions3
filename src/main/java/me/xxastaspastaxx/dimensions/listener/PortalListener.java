@@ -6,9 +6,11 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChunkData;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import java.util.HashMap;
 import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
 import me.xxastaspastaxx.dimensions.completePortal.CompletePortal;
 import me.xxastaspastaxx.dimensions.completePortal.PortalEntitySolid;
@@ -61,6 +63,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 public class PortalListener implements Listener {
 
   // private Dimensions pl;
+  private ScheduledTask updateTask;
 
   public PortalListener(Dimensions pl) {
     // this.pl = pl;
@@ -99,24 +102,26 @@ public class PortalListener implements Listener {
     }
 
     if (anyPortalEntitiesTeleport) {
-      Bukkit.getScheduler()
-          .scheduleSyncRepeatingTask(
+      updateTask =
+          DimensionsScheduler.runAtFixedRate(
               pl,
-              new Runnable() {
-
-                @Override
-                public void run() {
-                  for (CompletePortal portal :
-                      Dimensions.getCompletePortalManager().getCompletePortals()) {
-                    portal.updatePortal();
-                  }
+              () -> {
+                for (CompletePortal portal :
+                    Dimensions.getCompletePortalManager().getCompletePortals()) {
+                  portal.updatePortal();
                 }
               },
-              0,
+              1,
               DimensionsSettings.updateEveryTick);
     }
 
     Bukkit.getPluginManager().registerEvents(this, pl);
+  }
+
+  /** Cancel the portal update repeating task (called during reload). */
+  public void cancelTasks() {
+    DimensionsScheduler.cancel(updateTask);
+    updateTask = null;
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)

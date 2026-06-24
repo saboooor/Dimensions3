@@ -11,7 +11,6 @@ import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortalManager;
 import me.xxastaspastaxx.dimensions.listener.PortalListener;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
-import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,6 +23,7 @@ public class Dimensions extends JavaPlugin {
   private static CompletePortalManager completePortalManager;
   private static CustomPortalManager customPortalManager;
   private static CreatePortalManager createPortalManager;
+  private static PortalListener portalsListener;
 
   public void onLoad() {
 
@@ -55,7 +55,7 @@ public class Dimensions extends JavaPlugin {
     createPortalManager = new CreatePortalManager(this);
 
     DimensionsDebbuger.DEBUG.print("Registering Listener class...");
-    new PortalListener(this);
+    portalsListener = new PortalListener(this);
 
     // Use a task in order to load portals only after all plugins have loaded and have
     // generated/loaded their worlds
@@ -64,22 +64,15 @@ public class Dimensions extends JavaPlugin {
 
     DimensionsDebbuger.DEBUG.print(
         "Dimensions has been loaded. Waiting for server to tick before loading saved portals...");
-    Bukkit.getScheduler()
-        .runTaskLater(
-            this,
-            new Runnable() {
-
-              @Override
-              public void run() {
-
-                DimensionsSettings.setDefaultWorld();
-
-                DimensionsDebbuger.DEBUG.print("Loading saved portals...");
-                completePortalManager.loadAll();
-                DimensionsDebbuger.DEBUG.print("Loading complete...");
-              }
-            },
-            1);
+    DimensionsScheduler.runDelayed(
+        this,
+        () -> {
+          DimensionsSettings.setDefaultWorld();
+          DimensionsDebbuger.DEBUG.print("Loading saved portals...");
+          completePortalManager.loadAll();
+          DimensionsDebbuger.DEBUG.print("Loading complete...");
+        },
+        1);
 
     int pluginId = 6978;
     Metrics metrics = new Metrics(this, pluginId);
@@ -130,7 +123,9 @@ public class Dimensions extends JavaPlugin {
     addonsManager.unloadAll();
     completePortalManager.save();
     HandlerList.unregisterAll(this);
-    Bukkit.getScheduler().cancelTasks(this);
+    // Cancel running tasks explicitly (Folia has no cancelTasks equivalent)
+    if (portalsListener != null) portalsListener.cancelTasks();
+    if (createPortalManager != null) createPortalManager.cancel();
 
     new DimensionsSettings(this);
     DimensionsSettings.setDefaultWorld();
@@ -143,7 +138,7 @@ public class Dimensions extends JavaPlugin {
     completePortalManager = new CompletePortalManager(this);
     createPortalManager = new CreatePortalManager(this);
 
-    new PortalListener(this);
+    portalsListener = new PortalListener(this);
 
     completePortalManager.loadAll();
   }

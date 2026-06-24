@@ -2,9 +2,9 @@ package me.xxastaspastaxx.dimensions.gui;
 
 import java.util.List;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.builder.CreatePortalInstance;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -44,12 +44,11 @@ public abstract class CreatePortalGUI {
   public boolean handleChatAsync(String input) {
     if (waitingResponse == "no") return false;
 
-    Bukkit.getScheduler()
-        .runTask(
-            Dimensions.getInstance(),
-            () -> {
-              if (handleChat(input)) waitingResponse = "no";
-            });
+    DimensionsScheduler.run(
+        Dimensions.getInstance(),
+        () -> {
+          if (handleChat(input)) waitingResponse = "no";
+        });
 
     return true;
   }

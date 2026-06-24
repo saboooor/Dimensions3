@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.DimensionsScheduler;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,36 +24,35 @@ public class ListenerHandler implements Listener {
     this.main = main;
     this.pl = pl;
 
-    Bukkit.getScheduler()
-        .scheduleSyncRepeatingTask(
-            pl,
-            () -> {
-              ArrayList<Entity> toRemove = new ArrayList<Entity>();
-              trackedItems.forEach(
-                  (item, location) -> {
-                    if (item.getLocation().equals(location)) toRemove.add(item);
-                  });
+    DimensionsScheduler.runAtFixedRate(
+        pl,
+        () -> {
+          ArrayList<Entity> toRemove = new ArrayList<Entity>();
+          trackedItems.forEach(
+              (item, location) -> {
+                if (item.getLocation().equals(location)) toRemove.add(item);
+              });
 
-              // instead of location maybe use item.getLocation
-              trackedItems.forEach(
-                  (item, location) -> {
-                    if (main.getHandler(DropItem.class).stream()
-                        .anyMatch(i -> i.ignite(item.getLocation()))) {
-                      if (DimensionsSettings.consumeItems) item.remove();
-                      toRemove.add(item);
-                    }
-                  });
+          // instead of location maybe use item.getLocation
+          trackedItems.forEach(
+              (item, location) -> {
+                if (main.getHandler(DropItem.class).stream()
+                    .anyMatch(i -> i.ignite(item.getLocation()))) {
+                  if (DimensionsSettings.consumeItems) item.remove();
+                  toRemove.add(item);
+                }
+              });
 
-              toRemove.forEach(item -> trackedItems.remove(item));
+          toRemove.forEach(item -> trackedItems.remove(item));
 
-              Iterator<Entity> iter = trackedItems.keySet().iterator();
-              while (iter.hasNext()) {
-                Entity en = iter.next();
-                trackedItems.put(en, en.getLocation());
-              }
-            },
-            DimensionsSettings.updateEveryTick,
-            DimensionsSettings.updateEveryTick);
+          Iterator<Entity> iter = trackedItems.keySet().iterator();
+          while (iter.hasNext()) {
+            Entity en = iter.next();
+            trackedItems.put(en, en.getLocation());
+          }
+        },
+        DimensionsSettings.updateEveryTick,
+        DimensionsSettings.updateEveryTick);
 
     Bukkit.getPluginManager().registerEvents(this, pl);
   }
@@ -81,13 +81,13 @@ public class ListenerHandler implements Listener {
     if (onEntityDeath != null) {
 
       Location loc = e.getEntity().getLocation();
-      Bukkit.getScheduler()
-          .runTaskLater(
-              pl,
-              () -> {
-                onEntityDeath.ignite(loc);
-              },
-              1);
+      DimensionsScheduler.runDelayed(
+          pl,
+          loc,
+          () -> {
+            onEntityDeath.ignite(loc);
+          },
+          1);
     }
   }
 
