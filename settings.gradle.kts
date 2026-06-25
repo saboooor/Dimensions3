@@ -72,6 +72,4 @@ include("weather")
 project(":weather").projectDir = file("addons/weather")
 include("portal-sounds")
 project(":portal-sounds").projectDir = file("addons/portal-sounds")
-include("text-display-control")
-project(":text-display-control").projectDir = file("addons/text-display-control")
 

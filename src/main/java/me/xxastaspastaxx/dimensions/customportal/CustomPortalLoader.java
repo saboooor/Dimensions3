@@ -173,6 +173,7 @@ public class CustomPortalLoader {
               ? null
               : MiniMessage.miniMessage()
                   .deserialize(portalConfig.getString("Portal.InsideSprite"));
+      float opacity = (float) portalConfig.getDouble("Portal.InsideSpriteOpacity", portalConfig.getDouble("Portal.Opacity", 1.0));
 
       //			BlockData[] insideBlockData = new BlockData[] {getInsideBlockData(false,
       // tempBlockData),getInsideBlockData(true, tempBlockData)};
@@ -279,7 +280,8 @@ public class CustomPortalLoader {
               entityTransformation,
               spawningDelay[0],
               spawningDelay[1],
-              entitySpawning);
+              entitySpawning,
+              opacity);
       if (insideMaterial != null) portal.setInsideBlockData(insideMaterial.createBlockData());
       for (DimensionsAddon addon : Dimensions.getAddonManager().getAddons()) {
         addon.registerPortal(portalConfig, portal);

@@ -33,6 +33,7 @@ public class CustomPortal {
   private AxisOrFace outsideBlockDir;
   private Material insideMaterial;
   private Component insideSprite;
+  private float opacity;
   private int[] combinedID;
   private BlockData[] insideBlockData;
   private Material lighterMaterial;
@@ -127,7 +128,8 @@ public class CustomPortal {
       HashMap<EntityType, EntityType> entityTransformationList,
       int spawnDelayMin,
       int spawnDelayMax,
-      HashMap<EntityType, Integer> entitySpawnList) {
+      HashMap<EntityType, Integer> entitySpawnList,
+      float opacity) {
     this.portalId = portalId;
     this.displayName = displayName;
     this.enabled = enabled;
@@ -165,6 +167,7 @@ public class CustomPortal {
     this.spawnDelayMin = spawnDelayMin;
     this.spawnDelayMax = spawnDelayMax;
     this.entitySpawnList = entitySpawnList;
+    this.opacity = opacity;
   }
 
   /** The id of the portal (the file name without the .yml) */
@@ -194,6 +197,10 @@ public class CustomPortal {
 
   public Component getInsideSprite() {
     return insideSprite;
+  }
+
+  public float getOpacity() {
+    return opacity;
   }
 
   /**
