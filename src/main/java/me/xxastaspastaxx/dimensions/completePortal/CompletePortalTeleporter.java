@@ -174,8 +174,16 @@ class CompletePortalTeleporter {
                                   en.teleportAsync(teleportLocation)
                                       .thenRun(
                                           () -> {
-                                            Object soundOpt = me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(portal, "travelSound");
-                                            me.xxastaspastaxx.dimensions.DimensionsUtils.playPortalSound(teleportLocation, soundOpt, org.bukkit.Sound.BLOCK_PORTAL_TRAVEL, 1.0f, 1.0f);
+                                            Object soundOpt =
+                                                me.xxastaspastaxx.dimensions.addons.DimensionsAddon
+                                                    .getOption(portal, "travelSound");
+                                            me.xxastaspastaxx.dimensions.DimensionsUtils
+                                                .playPortalSound(
+                                                    teleportLocation,
+                                                    soundOpt,
+                                                    org.bukkit.Sound.BLOCK_PORTAL_TRAVEL,
+                                                    1.0f,
+                                                    1.0f);
 
                                             if (DimensionsSettings.enableDebugLogging
                                                 && en instanceof Player) {
@@ -214,8 +222,15 @@ class CompletePortalTeleporter {
                                   DimensionsUtils.cloneEntity(en, newEn);
                                   destination.pushToHold(newEn);
 
-                                  Object soundOpt = me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(portal, "travelSound");
-                                  me.xxastaspastaxx.dimensions.DimensionsUtils.playPortalSound(teleportLocation, soundOpt, org.bukkit.Sound.BLOCK_PORTAL_TRAVEL, 1.0f, 1.0f);
+                                  Object soundOpt =
+                                      me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+                                          portal, "travelSound");
+                                  me.xxastaspastaxx.dimensions.DimensionsUtils.playPortalSound(
+                                      teleportLocation,
+                                      soundOpt,
+                                      org.bukkit.Sound.BLOCK_PORTAL_TRAVEL,
+                                      1.0f,
+                                      1.0f);
 
                                   en.remove();
                                   portal.removeFromHold(en);
@@ -300,8 +315,16 @@ class CompletePortalTeleporter {
                                   en.teleportAsync(teleportLocation)
                                       .thenRun(
                                           () -> {
-                                            Object soundOpt = me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(portal, "travelSound");
-                                            me.xxastaspastaxx.dimensions.DimensionsUtils.playPortalSound(teleportLocation, soundOpt, org.bukkit.Sound.BLOCK_PORTAL_TRAVEL, 1.0f, 1.0f);
+                                            Object soundOpt =
+                                                me.xxastaspastaxx.dimensions.addons.DimensionsAddon
+                                                    .getOption(portal, "travelSound");
+                                            me.xxastaspastaxx.dimensions.DimensionsUtils
+                                                .playPortalSound(
+                                                    teleportLocation,
+                                                    soundOpt,
+                                                    org.bukkit.Sound.BLOCK_PORTAL_TRAVEL,
+                                                    1.0f,
+                                                    1.0f);
 
                                             if (DimensionsSettings.enableDebugLogging
                                                 && en instanceof Player) {
@@ -340,8 +363,15 @@ class CompletePortalTeleporter {
                                   DimensionsUtils.cloneEntity(en, newEn);
                                   finalDestination.pushToHold(newEn);
 
-                                  Object soundOpt = me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(portal, "travelSound");
-                                  me.xxastaspastaxx.dimensions.DimensionsUtils.playPortalSound(teleportLocation, soundOpt, org.bukkit.Sound.BLOCK_PORTAL_TRAVEL, 1.0f, 1.0f);
+                                  Object soundOpt =
+                                      me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+                                          portal, "travelSound");
+                                  me.xxastaspastaxx.dimensions.DimensionsUtils.playPortalSound(
+                                      teleportLocation,
+                                      soundOpt,
+                                      org.bukkit.Sound.BLOCK_PORTAL_TRAVEL,
+                                      1.0f,
+                                      1.0f);
 
                                   en.remove();
                                   portal.removeFromHold(en);

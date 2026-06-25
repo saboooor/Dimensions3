@@ -69,10 +69,8 @@ public class DimensionsHorizontalPortals extends DimensionsAddon implements List
         Location loc = new Location(complete.getWorld(), x, min.getY(), z);
 
         if (customPortal.getInsideSprite() != null) {
-          spawnedEntities.add(
-              new PortalEntityText(loc, customPortal.getInsideSprite(), BlockFace.UP));
-          spawnedEntities.add(
-              new PortalEntityText(loc, customPortal.getInsideSprite(), BlockFace.DOWN));
+          spawnedEntities.add(new PortalEntityText(loc, customPortal, BlockFace.UP));
+          spawnedEntities.add(new PortalEntityText(loc, customPortal, BlockFace.DOWN));
         }
 
         if (customPortal.getInsideMaterial() != null) {

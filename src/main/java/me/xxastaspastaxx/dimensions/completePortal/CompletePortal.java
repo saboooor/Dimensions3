@@ -89,14 +89,12 @@ public class CompletePortal {
 
           PortalEntity frontEntity =
               new PortalEntityText(
-                  new Location(world, xLocation, y, zLocation),
-                  customPortal.getInsideSprite(),
-                  facing);
+                  new Location(world, xLocation, y, zLocation), customPortal, facing);
           spawnedEntities.add(frontEntity);
           PortalEntity backEntity =
               new PortalEntityText(
                   new Location(world, xLocation, y, zLocation),
-                  customPortal.getInsideSprite(),
+                  customPortal,
                   facing.getOppositeFace());
           spawnedEntities.add(backEntity);
         }
@@ -373,9 +371,12 @@ public class CompletePortal {
             }
 
             DimensionsScheduler.cancel(ambientSoundTask);
-            Object ambientSoundOpt = me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(customPortal, "ambientSound");
+            Object ambientSoundOpt =
+                me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+                    customPortal, "ambientSound");
             boolean playAmbient = true;
-            if (ambientSoundOpt instanceof String && ((String) ambientSoundOpt).equalsIgnoreCase("none")) {
+            if (ambientSoundOpt instanceof String
+                && ((String) ambientSoundOpt).equalsIgnoreCase("none")) {
               playAmbient = false;
             }
             if (playAmbient) {
@@ -386,7 +387,12 @@ public class CompletePortal {
                       center,
                       () -> {
                         if (!isActive()) return;
-                        DimensionsUtils.playPortalSound(center, ambientSoundOpt, org.bukkit.Sound.BLOCK_PORTAL_AMBIENT, 1.0f, 1.0f);
+                        DimensionsUtils.playPortalSound(
+                            center,
+                            ambientSoundOpt,
+                            org.bukkit.Sound.BLOCK_PORTAL_AMBIENT,
+                            1.0f,
+                            1.0f);
                       },
                       80,
                       80);
@@ -479,8 +485,11 @@ public class CompletePortal {
             savedEntities.clear();
           }
 
-          Object soundOpt = me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(customPortal, "breakSound");
-          DimensionsUtils.playPortalSound(getCenter(), soundOpt, customPortal.getBreakSound(), 1.0f, 8.0f);
+          Object soundOpt =
+              me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+                  customPortal, "breakSound");
+          DimensionsUtils.playPortalSound(
+              getCenter(), soundOpt, customPortal.getBreakSound(), 1.0f, 8.0f);
 
           Particle blockCrackParticle =
               DimensionsUtils.getParticle("BLOCK", "BLOCK_CRUMBLE", "BLOCK_CRACK");

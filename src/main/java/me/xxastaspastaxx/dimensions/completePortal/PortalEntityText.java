@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
-import net.kyori.adventure.text.Component;
+import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -37,10 +37,10 @@ public class PortalEntityText extends PortalEntity {
    * block display
    *
    * @param location the location to summon the entity
-   * @param insideSprite the text component representing the texture of the block display (using a
-   *     sprite)
+   * @param customPortal the custom portal instance
+   * @param facing the direction the portal is facing
    */
-  public PortalEntityText(Location location, Component insideSprite, BlockFace facing) {
+  public PortalEntityText(Location location, CustomPortal customPortal, BlockFace facing) {
     super(location);
     portalEntityId = (int) (Math.random() * Integer.MAX_VALUE);
 
@@ -57,17 +57,153 @@ public class PortalEntityText extends PortalEntity {
             Optional.empty() // velocity
             );
 
+    int backgroundColor = 0; // Default transparent
+    byte textOpacity = -1; // Default fully opaque (255 as signed byte is -1)
+    byte flags = 0;
+    boolean hasFlags = false;
+    boolean hasLineWidth = false;
+    int lineWidth = 200;
+
+    if (customPortal != null) {
+      // 1. Background color & background opacity
+      Object bgColObj =
+          me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+              customPortal, "text_display_background_color");
+      Object bgOpObj =
+          me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+              customPortal, "text_display_background_opacity");
+
+      int parsedColor = 0;
+      if (bgColObj instanceof Integer) {
+        parsedColor = (Integer) bgColObj;
+      }
+
+      int parsedOpacity = -1;
+      if (bgOpObj instanceof Integer) {
+        parsedOpacity = (Integer) bgOpObj;
+      } else if (bgOpObj instanceof Double) {
+        double opDouble = (Double) bgOpObj;
+        if (opDouble <= 1.0) {
+          parsedOpacity = (int) (opDouble * 255.0);
+        } else {
+          parsedOpacity = (int) opDouble;
+        }
+      } else if (bgOpObj instanceof Float) {
+        float opFloat = (Float) bgOpObj;
+        if (opFloat <= 1.0f) {
+          parsedOpacity = (int) (opFloat * 255.0f);
+        } else {
+          parsedOpacity = (int) opFloat;
+        }
+      }
+
+      if (bgColObj != null) {
+        if (parsedOpacity != -1) {
+          backgroundColor = (parsedColor & 0x00FFFFFF) | ((parsedOpacity & 0xFF) << 24);
+        } else {
+          if ((parsedColor & 0xFF000000) == 0 && parsedColor != 0) {
+            backgroundColor = parsedColor | 0xFF000000;
+          } else {
+            backgroundColor = parsedColor;
+          }
+        }
+      } else if (bgOpObj != null) {
+        backgroundColor = ((parsedOpacity & 0xFF) << 24);
+      }
+
+      // 2. Sprite/Text Opacity
+      Object textOpObj =
+          me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+              customPortal, "text_display_sprite_opacity");
+      if (textOpObj == null) {
+        textOpObj =
+            me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+                customPortal, "text_display_text_opacity");
+      }
+      if (textOpObj instanceof Integer) {
+        int val = (Integer) textOpObj;
+        textOpacity = (byte) (val <= 1 ? val * 255 : val);
+      } else if (textOpObj instanceof Double) {
+        double val = (Double) textOpObj;
+        textOpacity = (byte) (val <= 1.0 ? (val * 255.0) : val);
+      } else if (textOpObj instanceof Float) {
+        float val = (Float) textOpObj;
+        textOpacity = (byte) (val <= 1.0f ? (val * 255.0f) : val);
+      }
+
+      // 3. Flags
+      Object shadowObj =
+          me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+              customPortal, "text_display_shadow");
+      Object seeThroughObj =
+          me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+              customPortal, "text_display_see_through");
+      Object defaultBgObj =
+          me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+              customPortal, "text_display_default_background");
+      Object alignmentObj =
+          me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+              customPortal, "text_display_alignment");
+
+      if (shadowObj != null
+          || seeThroughObj != null
+          || defaultBgObj != null
+          || alignmentObj != null) {
+        hasFlags = true;
+        if (shadowObj instanceof Boolean && (Boolean) shadowObj) {
+          flags |= 0x01;
+        }
+        if (seeThroughObj instanceof Boolean && (Boolean) seeThroughObj) {
+          flags |= 0x02;
+        }
+        if (defaultBgObj instanceof Boolean && (Boolean) defaultBgObj) {
+          flags |= 0x04;
+        }
+        if (alignmentObj instanceof String) {
+          String align = ((String) alignmentObj).toUpperCase();
+          if (align.equals("LEFT")) {
+            flags |= 0x08;
+          } else if (align.equals("RIGHT")) {
+            flags |= 0x10;
+          }
+        }
+      }
+
+      // 4. Line width
+      Object lwObj =
+          me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+              customPortal, "text_display_line_width");
+      if (lwObj instanceof Integer) {
+        lineWidth = (Integer) lwObj;
+        hasLineWidth = true;
+      }
+    }
+
     List<EntityData<?>> metadataList = new ArrayList<>();
     // index 23 is the index of "Text"
-    metadataList.add(new EntityData<>(23, EntityDataTypes.ADV_COMPONENT, insideSprite));
-    // index 25 is the index of "Background Color", set it to 0 to make the background invisible
-    metadataList.add(new EntityData<>(25, EntityDataTypes.INT, 0));
+    metadataList.add(
+        new EntityData<>(23, EntityDataTypes.ADV_COMPONENT, customPortal.getInsideSprite()));
+    // index 25 is the index of "Background Color"
+    metadataList.add(new EntityData<>(25, EntityDataTypes.INT, backgroundColor));
     // index 16 is the index of "Brightness", set it to 15 to make the block display fully bright
     // todo: custom lightlevel
     metadataList.add(new EntityData<>(16, EntityDataTypes.INT, DimensionsUtils.packBrightness(10)));
     // index 12 is the index of "Scale", set it to 5 to make it the size of a block
     metadataList.add(
         new EntityData<>(12, EntityDataTypes.VECTOR3F, new Vector3f(5.0f, 5.0f, 5.0f)));
+
+    // index 26 is the index of "Text Opacity"
+    metadataList.add(new EntityData<>(26, EntityDataTypes.BYTE, textOpacity));
+
+    // index 27 is the index of "Flags"
+    if (hasFlags) {
+      metadataList.add(new EntityData<>(27, EntityDataTypes.BYTE, flags));
+    }
+
+    // index 24 is the index of "Line Width"
+    if (hasLineWidth) {
+      metadataList.add(new EntityData<>(24, EntityDataTypes.INT, lineWidth));
+    }
 
     // 1. Determine Translation and Rotation based on the facing direction
     Vector3f translation;

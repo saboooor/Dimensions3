@@ -262,8 +262,11 @@ public class CompletePortalManager {
     completePortal.fill(null);
 
     if (cause != CustomPortalIgniteCause.LOAD_PORTAL) {
-      Object soundOpt = me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(completePortal.getCustomPortal(), "igniteSound");
-      me.xxastaspastaxx.dimensions.DimensionsUtils.playPortalSound(completePortal.getCenter(), soundOpt, org.bukkit.Sound.BLOCK_PORTAL_TRIGGER, 1.0f, 1.0f);
+      Object soundOpt =
+          me.xxastaspastaxx.dimensions.addons.DimensionsAddon.getOption(
+              completePortal.getCustomPortal(), "igniteSound");
+      me.xxastaspastaxx.dimensions.DimensionsUtils.playPortalSound(
+          completePortal.getCenter(), soundOpt, org.bukkit.Sound.BLOCK_PORTAL_TRIGGER, 1.0f, 1.0f);
     }
 
     return completePortal;
