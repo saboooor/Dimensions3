@@ -20,13 +20,7 @@ public class CustomPortalManager {
     this.pl = pl;
 
     ArrayList<CustomPortal> loaded = (new CustomPortalLoader()).loadAll();
-    if (Oogabooga.oogabooga() && loaded.size() > 2) {
-      me.xxastaspastaxx.dimensions.DimensionsDebbuger.VERY_LOW.print(
-          Oogabooga.boogaooga() + ": Limiting custom portal configs to 2.");
-      customPortals.addAll(loaded.subList(0, 2));
-    } else {
-      customPortals.addAll(loaded);
-    }
+    customPortals.addAll(loaded);
 
     // customPortals.add(new CustomPortal("test", "", true,
     // Material.DIAMOND_BLOCK.createBlockData(),
