@@ -2,6 +2,7 @@ package me.xxastaspastaxx.dimensions.customportal;
 
 import java.util.ArrayList;
 import me.xxastaspastaxx.dimensions.Dimensions;
+import me.xxastaspastaxx.dimensions.settings.Oogabooga;
 
 /** Manages all custom portals */
 public class CustomPortalManager {
@@ -19,9 +20,9 @@ public class CustomPortalManager {
     this.pl = pl;
 
     ArrayList<CustomPortal> loaded = (new CustomPortalLoader()).loadAll();
-    if (Dimensions.isDemoMode() && loaded.size() > 2) {
+    if (Oogabooga.oogabooga() && loaded.size() > 2) {
       me.xxastaspastaxx.dimensions.DimensionsDebbuger.VERY_LOW.print(
-          "Demo mode: Limiting custom portal configs to 2.");
+          Oogabooga.boogaooga() + ": Limiting custom portal configs to 2.");
       customPortals.addAll(loaded.subList(0, 2));
     } else {
       customPortals.addAll(loaded);
@@ -62,9 +63,9 @@ public class CustomPortalManager {
   public void reload() {
     customPortals.clear();
     ArrayList<CustomPortal> loaded = (new CustomPortalLoader()).loadAll();
-    if (Dimensions.isDemoMode() && loaded.size() > 2) {
+    if (Oogabooga.oogabooga() && loaded.size() > 2) {
       me.xxastaspastaxx.dimensions.DimensionsDebbuger.VERY_LOW.print(
-          "Demo mode: Limiting custom portal configs to 2.");
+          Oogabooga.boogaooga() + ": Limiting custom portal configs to 2.");
       customPortals.addAll(loaded.subList(0, 2));
     } else {
       customPortals.addAll(loaded);

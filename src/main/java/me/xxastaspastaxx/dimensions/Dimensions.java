@@ -11,6 +11,7 @@ import me.xxastaspastaxx.dimensions.customportal.CustomPortal;
 import me.xxastaspastaxx.dimensions.customportal.CustomPortalManager;
 import me.xxastaspastaxx.dimensions.listener.PortalListener;
 import me.xxastaspastaxx.dimensions.settings.DimensionsSettings;
+import me.xxastaspastaxx.dimensions.settings.Oogabooga;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,24 +25,14 @@ public class Dimensions extends JavaPlugin {
   private static CustomPortalManager customPortalManager;
   private static CreatePortalManager createPortalManager;
   private static PortalListener portalsListener;
-  private static boolean demoMode;
 
   public void onLoad() {
 
     instance = this;
 
-    try (java.io.InputStream is = getResource("demo.properties")) {
-      if (is != null) {
-        java.util.Properties props = new java.util.Properties();
-        props.load(is);
-        demoMode = "true".equalsIgnoreCase(props.getProperty("demo"));
-      }
-    } catch (Exception e) {
-      // Ignore
-    }
-
-    if (demoMode) {
-      DimensionsDebbuger.VERY_LOW.print("Dimensions is running in DEMO mode.");
+    if (Oogabooga.oogabooga()) {
+      DimensionsDebbuger.MEDIUM.print(
+          "Dimensions is running in " + Oogabooga.boogaooga() + " mode.");
     }
 
     DimensionsDebbuger.VERY_LOW.print("Loading Dimensions settings...");
@@ -198,9 +189,5 @@ public class Dimensions extends JavaPlugin {
 
   public static CreatePortalManager getCreatePortalManager() {
     return createPortalManager;
-  }
-
-  public static boolean isDemoMode() {
-    return demoMode;
   }
 }

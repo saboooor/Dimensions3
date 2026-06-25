@@ -11,6 +11,7 @@ import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import me.xxastaspastaxx.dimensions.Dimensions;
 import me.xxastaspastaxx.dimensions.DimensionsDebbuger;
+import me.xxastaspastaxx.dimensions.settings.Oogabooga;
 import org.bukkit.event.HandlerList;
 
 /** Loads and enables all the Dimensions addons */
@@ -35,8 +36,6 @@ public class DimensionsAddonManager {
   public DimensionsAddonManager(Dimensions pl) {
     this.pl = pl;
 
-    boolean demoMode = Dimensions.isDemoMode();
-
     File dir = new File(ADDONS_PATH);
     if (!dir.exists()) dir.mkdirs();
 
@@ -58,13 +57,19 @@ public class DimensionsAddonManager {
     while (iter.hasNext()) {
       try {
         DimensionsAddon addon = iter.next();
-        if (demoMode) {
+        if (Oogabooga.oogabooga()) {
           String name = addon.getName();
           if (!name.equals("DimensionsWorldGuardFlagsAddon")
               && !name.equals("PatreonCosmetics")
               && !name.equals("DimensionsHorizontalPortalsAddon")
               && !name.equals("DimensionsForceLink")) {
-            DimensionsDebbuger.MEDIUM.print("Demo mode: Skipped loading addon: " + name);
+            DimensionsDebbuger.MEDIUM.print(
+                "The plugin is running in "
+                    + Oogabooga.boogaooga()
+                    + " mode, addon "
+                    + name
+                    + " will not be loaded, in order to use this addon, please purchase the"
+                    + " plugin.");
             continue;
           }
         }
