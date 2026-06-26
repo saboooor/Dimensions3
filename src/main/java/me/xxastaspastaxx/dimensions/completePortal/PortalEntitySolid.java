@@ -1,7 +1,6 @@
 package me.xxastaspastaxx.dimensions.completePortal;
 
 import me.xxastaspastaxx.dimensions.DimensionsUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

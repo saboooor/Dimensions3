@@ -30,8 +30,7 @@ public class DimensionsVelocity {
   public ChannelIdentifier identifier;
 
   @Inject
-  public DimensionsVelocity(
-      ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
+  public DimensionsVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
     this.server = server;
     this.logger = logger;
     this.dataDirectory = dataDirectory;

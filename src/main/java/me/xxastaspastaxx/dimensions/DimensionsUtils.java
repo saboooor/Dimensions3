@@ -1,5 +1,7 @@
 package me.xxastaspastaxx.dimensions;
 
+import io.github.retrooper.packetevents.util.GeyserUtil;
+import io.github.retrooper.packetevents.util.viaversion.ViaVersionUtil;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
@@ -21,9 +23,6 @@ import org.bukkit.block.sign.Side;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-
-import io.github.retrooper.packetevents.util.GeyserUtil;
-import io.github.retrooper.packetevents.util.viaversion.ViaVersionUtil;
 
 /** Contains methods that are commonly used */
 public class DimensionsUtils {
@@ -322,12 +321,12 @@ public class DimensionsUtils {
   /**
    * Check if the player's version is unsupported (older than 1.21.9) and the entity is a fallback
    * Geyser also doesn't support display entities natively (todo: try to find geyser equivalent)
-   * 
+   *
    * @param p the player to check
-   * 
    */
   public static boolean playerSupportsSprites(Player p) {
-    return ViaVersionUtil.getProtocolVersion(p) >= 773 && !GeyserUtil.isGeyserPlayer(p.getUniqueId());
+    return ViaVersionUtil.getProtocolVersion(p) >= 773
+        && !GeyserUtil.isGeyserPlayer(p.getUniqueId());
   }
 
   /**
