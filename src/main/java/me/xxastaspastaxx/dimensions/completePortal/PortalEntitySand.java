@@ -10,6 +10,8 @@ import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEn
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityTeleport;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity;
 import io.github.retrooper.packetevents.util.viaversion.ViaVersionUtil;
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
+import io.github.retrooper.packetevents.util.GeyserUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,14 +75,9 @@ public class PortalEntitySand extends PortalEntity {
     destroyPacket = new WrapperPlayServerDestroyEntities(fallingBlockId);
   }
 
-  // Check if the player's version is unsupported (older than 1.21.9) and the entity is a fallback
-  private boolean playerSupportsSprites(Player p) {
-    return isFallback && ViaVersionUtil.getProtocolVersion(p) >= 773;
-  }
-
   /** Send the spawn packets to the player */
   public void summon(Player p) {
-    if (playerSupportsSprites(p)) return;
+    if (isFallback && DimensionsUtils.playerSupportsSprites(p)) return;
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, spawnPacket);
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, teleportPacket);
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, metaPacket);
@@ -88,7 +85,7 @@ public class PortalEntitySand extends PortalEntity {
 
   /** Send the destroy packets to the player */
   public void destroy(Player p) {
-    if (playerSupportsSprites(p)) return;
+    if (isFallback && DimensionsUtils.playerSupportsSprites(p)) return;
     PacketEvents.getAPI().getPlayerManager().sendPacket(p, destroyPacket);
 
     p.sendBlockChange(getLocation(), getLocation().getBlock().getBlockData());
@@ -97,7 +94,7 @@ public class PortalEntitySand extends PortalEntity {
   /** Send the destroy packets to all players */
   public void destroyBroadcast() {
     for (Player p : Bukkit.getOnlinePlayers()) {
-      if (playerSupportsSprites(p)) return;
+      if (isFallback && DimensionsUtils.playerSupportsSprites(p)) return;
       PacketEvents.getAPI().getPlayerManager().sendPacket(p, destroyPacket);
       p.sendBlockChange(getLocation(), getLocation().getBlock().getBlockData());
     }

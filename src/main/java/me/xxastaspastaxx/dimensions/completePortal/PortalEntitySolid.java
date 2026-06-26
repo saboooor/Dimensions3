@@ -1,6 +1,7 @@
 package me.xxastaspastaxx.dimensions.completePortal;
 
-import io.github.retrooper.packetevents.util.viaversion.ViaVersionUtil;
+import me.xxastaspastaxx.dimensions.DimensionsUtils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,20 +29,15 @@ public class PortalEntitySolid extends PortalEntity {
     this.isFallback = isFallback;
   }
 
-  // Check if the player's version is unsupported (older than 1.21.9) and the entity is a fallback
-  private boolean playerSupportsSprites(Player p) {
-    return isFallback && ViaVersionUtil.getProtocolVersion(p) >= 773;
-  }
-
   /** Send block change (block data) to the player */
   public void summon(Player p) {
-    if (playerSupportsSprites(p)) return;
+    if (isFallback && DimensionsUtils.playerSupportsSprites(p)) return;
     p.sendBlockChange(getLocation(), blockdata);
   }
 
   /** Send block change (air) to the player */
   public void destroy(Player p) {
-    if (playerSupportsSprites(p)) return;
+    if (isFallback && DimensionsUtils.playerSupportsSprites(p)) return;
     p.sendBlockChange(getLocation(), Material.AIR.createBlockData());
   }
 
@@ -51,7 +47,7 @@ public class PortalEntitySolid extends PortalEntity {
     Bukkit.getOnlinePlayers()
         .forEach(
             p -> {
-              if (playerSupportsSprites(p)) return;
+              if (isFallback && DimensionsUtils.playerSupportsSprites(p)) return;
               p.sendBlockChange(getLocation(), Material.AIR.createBlockData());
             });
   }

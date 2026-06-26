@@ -1,4 +1,4 @@
-package me.xxastaspastaxx.dimensions.addons.DimensionsBungee;
+package me.xxastaspastaxx.dimensions.addons.dimensionsbungee;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-public class DimensionsDimensionsBungee extends Plugin {
+public class DimensionsBungee extends Plugin {
 
   private static String CONFIG_VERSION = "1.0.0";
 

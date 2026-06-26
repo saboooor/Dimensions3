@@ -1,4 +1,4 @@
-package me.xxastaspastaxx.dimensions.addons.DimensionsBungee;
+package me.xxastaspastaxx.dimensions.addons.dimensionsbungee;
 
 public class BungeeLocation {
 

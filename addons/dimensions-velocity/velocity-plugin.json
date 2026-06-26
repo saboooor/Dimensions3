@@ -1,7 +1,7 @@
 {
 	"id":"dimensionsvelocity",
-	"name":"Dimensions Velocity ",
+	"name":"Dimensions Velocity",
 	"version":"1.0.3",
 	"authors":["astaspasta"],
-	"main":"me.xxastaspastaxx.dimensions.addons.DimensionsVelocity.DimensionsDimensionsVelocity"
+	"main":"me.xxastaspastaxx.dimensions.addons.dimensionsvelocity.DimensionsVelocity"
 }

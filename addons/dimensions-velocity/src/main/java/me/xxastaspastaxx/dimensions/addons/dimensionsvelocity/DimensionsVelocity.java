@@ -1,4 +1,4 @@
-package me.xxastaspastaxx.dimensions.addons.DimensionsVelocity;
+package me.xxastaspastaxx.dimensions.addons.dimensionsvelocity;
 
 import com.google.inject.Inject;
 import com.moandjiezana.toml.Toml;
@@ -20,7 +20,7 @@ import org.slf4j.Logger;
     name = "Dimensions Velocity",
     version = "1.0.3",
     authors = {"astaspasta"})
-public class DimensionsDimensionsVelocity {
+public class DimensionsVelocity {
 
   private static String CONFIG_VERSION = "1.0.0";
 
@@ -30,7 +30,7 @@ public class DimensionsDimensionsVelocity {
   public ChannelIdentifier identifier;
 
   @Inject
-  public DimensionsDimensionsVelocity(
+  public DimensionsVelocity(
       ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
     this.server = server;
     this.logger = logger;
