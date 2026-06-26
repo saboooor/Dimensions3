@@ -8,5 +8,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("ProxyAddon-4.0.0.jar")
+    archiveFileName.set("ProxyAddon-4.0.1.jar")
 }

@@ -7,5 +7,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("DimensionsVelocity-4.0.0.jar")
+    archiveFileName.set("DimensionsVelocity-4.0.1.jar")
 }

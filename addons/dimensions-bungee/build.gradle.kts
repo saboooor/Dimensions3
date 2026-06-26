@@ -7,5 +7,5 @@ dependencies {
 }
 
 tasks.jar {
-    archiveFileName.set("DimensionsBungee-4.0.0.jar")
+    archiveFileName.set("DimensionsBungee-4.0.1.jar")
 }
